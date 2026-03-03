@@ -1,7 +1,7 @@
 // config/googleDrive.js
 
 const { google } = require("googleapis");
-const oauth2Client = require("./googleOAuth");
+const oauth2Client = require("./googleOauth");
 
 // Inisialisasi Google Drive API
 const drive = google.drive({
