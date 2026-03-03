@@ -1,0 +1,206 @@
+<%- include('../../partials/header') %>
+
+<style>
+  .hasil-header {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border-radius: 1rem;
+    padding: 2rem;
+    color: white;
+    margin-bottom: 2rem;
+  }
+  .hasil-header h2 {
+    font-weight: 700;
+  }
+  .info-card {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .info-item {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+  }
+  .info-item:last-child {
+    border-bottom: none;
+  }
+  .info-label {
+    font-weight: 600;
+    width: 150px;
+    color: #1e293b;
+  }
+  .btn-gradient {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border: none;
+    color: white;
+    font-weight: 500;
+    padding: 0.6rem 1.5rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(33,147,176,0.3);
+    color: white;
+  }
+  .btn-outline-gradient {
+    background: transparent;
+    border: 2px solid #2193b0;
+    color: #2193b0;
+    font-weight: 500;
+    padding: 0.6rem 1.5rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-outline-gradient:hover {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border-color: transparent;
+    color: white;
+  }
+  .foto-container {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  .foto-preview {
+    max-width: 300px;
+    max-height: 300px;
+    border-radius: 1rem;
+    object-fit: cover;
+    border: 3px solid #2193b0;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  }
+  .foto-thumb {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 0.5rem;
+    object-fit: cover;
+    border: 1px solid #ddd;
+    margin: 5px;
+  }
+</style>
+
+<div class="container-fluid mt-4">
+  <!-- Header -->
+  <div class="hasil-header d-flex justify-content-between align-items-center">
+    <div>
+      <h2><i class="bi bi-bar-chart-line me-2"></i>Hasil Tracer Study</h2>
+      <p class="mb-0 opacity-75">Terima kasih telah mengisi tracer study</p>
+    </div>
+    <a href="/mahasiswa/dashboard" class="btn btn-light">
+      <i class="bi bi-arrow-left me-2"></i>Kembali
+    </a>
+  </div>
+
+  <!-- Data Pekerjaan -->
+  <div class="info-card">
+    <h5 class="fw-bold mb-3">Data Pekerjaan</h5>
+    <div class="info-item">
+      <span class="info-label">Status</span>
+      <span>: <%= data.statusPekerjaan || '-' %></span>
+    </div>
+    <div class="info-item">
+      <span class="info-label">Pekerjaan</span>
+      <span>: <%= data.pekerjaan || '-' %></span>
+    </div>
+    <div class="info-item">
+      <span class="info-label">Tempat Kerja</span>
+      <span>: <%= data.tempatKerja || '-' %></span>
+    </div>
+    <div class="info-item">
+      <span class="info-label">Bidang</span>
+      <span>: <%= data.bidang || '-' %></span>
+    </div>
+    <div class="info-item">
+      <span class="info-label">Alamat Kerja</span>
+      <span>: <%= data.alamatKerja || '-' %></span>
+    </div>
+    <div class="info-item">
+      <span class="info-label">Kisaran Gaji</span>
+      <span>: <%= data.gaji || '-' %></span>
+    </div>
+    <div class="info-item">
+      <span class="info-label">Tanggal Mulai</span>
+      <span>: <%= data.tanggalMulai ? new Date(data.tanggalMulai).toLocaleDateString('id-ID') : '-' %></span>
+    </div>
+  </div>
+
+  <!-- Foto Tempat Kerja -->
+  <div class="info-card">
+    <h5 class="fw-bold mb-3"><i class="bi bi-image me-2"></i>Foto Tempat Kerja</h5>
+    <% 
+      // Fungsi untuk mengekstrak file ID dari URL Google Drive
+      const getFileIdFromUrl = (url) => {
+        if (!url) return null;
+        // Format: https://drive.google.com/uc?export=view&id=XXX
+        let match = url.match(/[?&]id=([^&]+)/);
+        if (match) return match[1];
+        // Format: https://drive.google.com/file/d/XXX/view
+        match = url.match(/\/d\/([^\/]+)/);
+        if (match) return match[1];
+        return null;
+      };
+      const fileId = data.fotoUrl ? getFileIdFromUrl(data.fotoUrl) : null;
+    %>
+
+    <% if (fileId) { %>
+      <div class="foto-container">
+        <img src="https://drive.google.com/thumbnail?id=<%= fileId %>&sz=w400" 
+             alt="foto tempat kerja" 
+             class="foto-preview mb-3"
+             onerror="this.onerror=null; this.src='https://drive.google.com/uc?export=view&id=<%= fileId %>';">
+        <p class="text-muted small mt-2">
+          <i class="bi bi-info-circle me-1"></i> Klik gambar untuk membuka di tab baru
+        </p>
+        <div class="d-flex gap-2 justify-content-center">
+          <a href="<%= data.fotoUrl %>" target="_blank" class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-box-arrow-up-right"></i> Buka di Drive
+          </a>
+          <form method="POST" action="/mahasiswa/tracer/foto/hapus" onsubmit="return confirm('Hapus foto ini?')">
+            <button type="submit" class="btn btn-sm btn-danger">
+              <i class="bi bi-trash"></i> Hapus Foto
+            </button>
+          </form>
+        </div>
+      </div>
+    <% } else if (data.fotoUrl) { %>
+      <!-- Fallback jika fileId tidak bisa diekstrak -->
+      <div class="foto-container">
+        <img src="<%= data.fotoUrl %>" alt="foto tempat kerja" class="foto-preview mb-3">
+        <div class="d-flex gap-2 justify-content-center">
+          <form method="POST" action="/mahasiswa/tracer/foto/hapus" onsubmit="return confirm('Hapus foto ini?')">
+            <button type="submit" class="btn btn-sm btn-danger">
+              <i class="bi bi-trash"></i> Hapus Foto
+            </button>
+          </form>
+        </div>
+      </div>
+    <% } else { %>
+      <p class="text-muted">Belum ada foto. Anda dapat mengunggah foto tempat kerja.</p>
+      <form method="POST" action="/mahasiswa/tracer/foto" enctype="multipart/form-data">
+        <div class="mb-3">
+          <label for="foto" class="form-label">Pilih foto (maks 5MB)</label>
+          <input type="file" class="form-control" id="foto" name="foto" accept="image/*" required>
+        </div>
+        <button type="submit" class="btn-gradient btn-sm">Upload Foto</button>
+      </form>
+    <% } %>
+  </div>
+
+  <!-- Tombol Aksi -->
+  <div class="d-flex gap-3 mb-4">
+    <a href="/mahasiswa/tracer/edit" class="btn-outline-gradient">
+      <i class="bi bi-pencil me-2"></i>Edit Data
+    </a>
+    <a href="/mahasiswa/tracer" class="btn-outline-gradient">
+      <i class="bi bi-arrow-left me-2"></i>Kembali ke Tracer
+    </a>
+  </div>
+</div>
+
+<%- include('../../partials/footer') %>

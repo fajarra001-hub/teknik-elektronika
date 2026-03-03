@@ -1,0 +1,405 @@
+<html>
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=utf-8">
+<meta name=Generator content="Microsoft Word 15 (filtered)">
+<style>
+ /* Font Definitions */
+ @font-face { font-family:"Cordia New"; panose-1:2 11 3 4 2 2 2 2 2 4; }
+ @font-face { font-family:"Cambria Math"; panose-1:2 4 5 3 5 4 6 3 2 4; }
+ @font-face { font-family:Calibri; panose-1:2 15 5 2 2 2 4 3 2 4; }
+ @font-face { font-family:Tahoma; panose-1:0 0 0 0 0 0 0 0 0 0; }
+ @font-face { font-family:Georgia; panose-1:2 4 5 2 5 4 5 2 3 3; }
+
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal { margin:0in; font-size:11.0pt; font-family:"Calibri",sans-serif; }
+ .MsoChpDefault { font-family:"Calibri",sans-serif; }
+
+ /* Page Definitions - A4 margin 2 cm */
+ @page WordSection1 { size:210mm 297mm; margin:2cm 2cm 2cm 2cm; }
+ div.WordSection1 { page:WordSection1; }
+
+ /* Panel Input (tidak ikut cetak) */
+ .input-panel {
+   background: #f8f9fa; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+   width: 100%; max-width: 1000px; margin: 0 auto 30px; padding: 20px;
+   font-family: 'Segoe UI', Arial, sans-serif; border: 1px solid #dee2e6;
+ }
+ .input-panel h3 { margin-top:0; color:#2c3e50; border-left:5px solid #3498db; padding-left:15px; }
+ .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap:15px; margin-bottom:15px; }
+ .form-group { display: flex; flex-direction: column; }
+ .form-group label { font-weight:600; font-size:0.75rem; color:#495057; margin-bottom:4px; text-transform:uppercase; }
+ .form-group input, .form-group select { padding:8px 12px; border:1px solid #ced4da; border-radius:6px; font-size:0.9rem; }
+ .mk-input-row { display: grid; grid-template-columns:1.5fr 4fr 1fr 0.5fr; gap:10px; background:#fff; padding:10px; border-radius:6px; margin-bottom:8px; border:1px solid #e9ecef; align-items:center; }
+ .btn-add { background:#28a745; color:white; border:none; padding:10px 20px; border-radius:30px; font-weight:bold; cursor:pointer; width:100%; margin-top:10px; }
+ .btn-del { background:#dc3545; color:white; border:none; padding:6px 12px; border-radius:4px; cursor:pointer; }
+ .btn-print { background:#007bff; color:white; border:none; padding:12px 40px; border-radius:50px; font-weight:bold; font-size:1.1rem; cursor:pointer; margin:20px auto; display:block; }
+ .btn-save { background:#28a745; margin-left:15px; }
+ @media print { .input-panel, .btn-print, .btn-save, .btn-add, .btn-del, .web-header { display:none !important; } body { background:white; margin:0; padding:0; } }
+
+ /* Header Web */
+ .web-header { text-align:center; margin-bottom:20px; max-width:1000px; margin-left:auto; margin-right:auto; position:relative; }
+ .web-header img { max-width:100%; height:auto; border:none; display:block; }
+
+ /* Kontainer KRS */
+ .krs-content { max-height:257mm; overflow:hidden; page-break-inside:avoid; page-break-after:avoid; font-size:11pt; line-height:1.3; }
+
+ /* Logo KRS */
+ .logo-krs { text-align:center; margin-bottom:6pt; }
+ .logo-krs img { max-width:100%; max-height:80px; display:block; margin:0 auto; border:none; }
+
+ /* Data Mahasiswa - Flex dengan lebar tetap agar titik dua sejajar */
+ .data-row { display: flex; align-items: baseline; margin: 2pt 0; }
+ .data-left { display: flex; flex: 1; align-items: baseline; }
+ .data-right { display: flex; flex: 1; align-items: baseline; }
+ .label-left { font-weight: bold; min-width: 70px; white-space: nowrap; }
+ .label-right { font-weight: bold; min-width: 130px; white-space: nowrap; }
+ .colon { margin: 0 5px; }
+ .value { font-weight: normal; }
+
+ /* Garis */
+ .hr { border-bottom:1px solid black; margin:4pt 0; }
+
+ /* Tabel - padding vertikal 10px */
+ table { width:100%; border-collapse:collapse; border:1px solid black; font-size:10.5pt; margin:4pt 0; }
+ td, th { border:1px solid black; padding:10px 4px; vertical-align:middle; }
+ th { font-weight:bold; text-align:center; }
+ td:first-child { text-align:center; }
+ td:nth-child(3) { text-align:left; }
+ td:last-child { text-align:center; }
+
+ /* Tanda Tangan */
+ .signature { display:flex; justify-content:space-between; margin-top:24pt; }
+ .signature div { flex:1; text-align:left; }
+ .signature .name { font-weight:bold; text-decoration:underline; margin:14pt 0 6pt; }
+ .signature .nip { font-size:10pt; margin-top:4pt; }
+ .signature p { margin:4pt 0; }
+</style>
+</head>
+<body lang=EN-US link="#0563C1" vlink="#954F72" style='word-wrap:break-word'>
+
+<!-- HEADER WEB -->
+<div class="web-header">
+    <img src="https://i.ibb.co.com/HDvRyt98/image.png" alt="Header KRS Elektronika">
+</div>
+
+<!-- PANEL INPUT -->
+<div class="input-panel">
+    <h3>📋 Edit Data KRS</h3>
+    <div class="grid-2">
+        <div class="form-group"><label>Nama Mahasiswa</label><input type="text" id="nama" value="" oninput="sinkron()"></div>
+        <div class="form-group"><label>NIM</label><input type="text" id="nim" value="" oninput="sinkron()"></div>
+        <div class="form-group"><label>IPK</label><input type="text" id="ipk" value="" oninput="sinkron()"></div>
+        <div class="form-group"><label>SKS Sebelumnya</label><input type="text" id="sksPrev" value="" oninput="sinkron()"></div>
+        <div class="form-group"><label>Program Studi</label><input type="text" id="prodi" value="Teknik Elektronika" oninput="sinkron()"></div>
+    </div>
+    <div class="grid-2">
+        <div class="form-group"><label>Semester</label><input type="text" id="semester" value="Genap" oninput="sinkron()"></div>
+        <div class="form-group"><label>Tahun Akademik</label><input type="text" id="tahun" value="2024/2025" oninput="sinkron()"></div>
+        <div class="form-group"><label>Kota, Tanggal</label><input type="text" id="kota" value="Palopo, Februari 2026" oninput="sinkron()"></div>
+    </div>
+    <div class="grid-2">
+        <div class="form-group"><label>Ketua Program Studi</label><input type="text" id="kaprodi" value="Fajar Ramadhan.S.Pd.,M.T" oninput="sinkron()"></div>
+        <div class="form-group"><label>NUPTK Kaprodi</label><input type="text" id="nuptkKaprodi" value="8559777678130153" oninput="sinkron()"></div>
+        <div class="form-group"><label>Pembimbing Akademik</label><input type="text" id="pembimbing" value="Fajar Ramadhan.S.Pd.,M.T" oninput="sinkron()"></div>
+        <div class="form-group"><label>NUPTK Pembimbing</label><input type="text" id="nuptkPembimbing" value="8559777678130153" oninput="sinkron()"></div>
+    </div>
+
+    <!-- Pilihan Semester -->
+    <div class="grid-2" style="margin-top:15px;">
+        <div class="form-group">
+            <label>📅 Pilih Semester</label>
+            <select id="pilihSemester" onchange="muatMKSemester()">
+                <option value="1">Semester I</option>
+                <option value="2">Semester II</option>
+                <option value="3i">Semester III (Instrumentasi)</option>
+                <option value="3t">Semester III (Telekomunikasi)</option>
+                <option value="4">Semester IV</option>
+                <option value="5">Semester V</option>
+                <option value="6">Semester VI</option>
+            </select>
+        </div>
+    </div>
+
+    <div style="margin:20px 0 10px; font-weight:bold;">📚 Daftar Mata Kuliah</div>
+    <div id="mkInputArea"></div>
+    <button class="btn-add" onclick="tambahMk()">+ Tambah Mata Kuliah Manual</button>
+</div>
+
+<div style="display: flex; gap: 15px; justify-content: center; margin-bottom: 30px;">
+    <button class="btn-print" onclick="window.print()">🖨️ Cetak / Simpan PDF</button>
+    <button class="btn-print btn-save" onclick="simpanKRS()">💾 Simpan KRS</button>
+</div>
+
+<!-- KRS PAPER -->
+<div class=WordSection1>
+<div class="krs-content">
+
+<!-- Logo -->
+<div class="logo-krs">
+    <img src="https://i.ibb.co.com/C5W3Gz3F/Picture1.png" alt="Logo">
+</div>
+
+<p class=MsoNormal style='margin:2pt 0;'><b><span style='font-size:14.0pt'>&nbsp;</span></b></p>
+
+<p class=MsoNormal align=center style='margin:4pt 0 6pt 0;text-align:center'><b><span style='font-size:14.0pt'>KARTU RENCANA STUDI (KRS)</span></b></p>
+
+<!-- Data Mahasiswa - dengan lebar tetap -->
+<div class="data-row">
+    <div class="data-left">
+        <span class="label-left">NIM</span><span class="colon">:</span>
+        <span class="value" id="outNim"></span>
+    </div>
+    <div class="data-right">
+        <span class="label-right">IPK</span><span class="colon">:</span>
+        <span class="value" id="outIpk"></span>
+    </div>
+</div>
+<div class="data-row">
+    <div class="data-left">
+        <span class="label-left">NAMA</span><span class="colon">:</span>
+        <span class="value" id="outNama"></span>
+    </div>
+    <div class="data-right">
+        <span class="label-right">SKS s/d Smt Sebelumnya</span><span class="colon">:</span>
+        <span class="value" id="outSksPrev"></span>
+    </div>
+</div>
+<div class="data-row">
+    <div class="data-left">
+        <span class="label-left">PRODI</span><span class="colon">:</span>
+        <span class="value" id="outProdi">Teknik Elektronika</span>
+    </div>
+    <div class="data-right">
+        <span class="label-right">SKS yang Direncanakan</span><span class="colon">:</span>
+        <span class="value" id="outSksRencana">20</span> SKS
+    </div>
+</div>
+
+<div class="hr"></div>
+
+<p class=MsoNormal align=center style='margin:4pt 0;'><b>Semester <span id="outSemester">Genap</span> Tahun Akademik <span id="outTahun">2024/2025</span></b></p>
+
+<!-- Tabel Mata Kuliah -->
+<table>
+ <thead>
+  <tr><th>No</th><th>Kode MK</th><th>Nama Mata Kuliah</th><th>SKS</th></tr>
+ </thead>
+ <tbody id="tableBody"></tbody>
+ <tfoot>
+  <tr><td colspan="3" style="text-align:right;"><b>Total SKS</b></td><td style="text-align:center;"><b id="totalSks">20</b></td></tr>
+ </tfoot>
+</table>
+
+<div class="hr"></div>
+
+<!-- Tanda Tangan -->
+<div class="signature">
+    <div>
+        <p>Mengetahui</p>
+        <p>Ketua Program Studi,</p>
+        <p style="margin:18pt 0 10pt;">&nbsp;</p>
+        <div class="name" id="outKaprodi">Fajar Ramadhan.S.Pd.,M.T</div>
+        <div class="nip" id="outNuptkKaprodi">NUPTK.8559777678130153</div>
+    </div>
+    <div>
+        <p>Disetujui</p>
+        <p>Pembimbing Akademik,</p>
+        <p style="margin:18pt 0 10pt;">&nbsp;</p>
+        <div class="name" id="outPembimbing">Fajar Ramadhan.S.Pd.,M.T</div>
+        <div class="nip" id="outNuptkPembimbing">NUPTK.8559777678130153</div>
+    </div>
+    <div>
+        <p id="outKota">Palopo, Februari 2026</p>
+        <p>Mahasiswa,</p>
+        <p style="margin:18pt 0 10pt;">&nbsp;</p>
+        <div class="name" id="outMhs"></div>
+        <div class="nip" id="outNimSig"></div>
+    </div>
+</div>
+
+</div> <!-- krs-content -->
+</div> <!-- WordSection1 -->
+
+<script>
+const dataMK = {
+    '1': [
+        { kode:'WU207', nama:'Pendidikan Agama', teori:1, praktikum:1, lapang:0 },
+        { kode:'WU226', nama:'Bahasa Indonesia', teori:1, praktikum:2, lapang:0 },
+        { kode:'WU229', nama:'Bahasa Inggris', teori:1, praktikum:2, lapang:0 },
+        { kode:'CA302', nama:'Etika Kerja', teori:1, praktikum:2, lapang:0 },
+        { kode:'CA308', nama:'Matematika Teknik', teori:1, praktikum:2, lapang:0 },
+        { kode:'CA311', nama:'Perangkat Lunak Aplikasi', teori:1, praktikum:2, lapang:0 },
+        { kode:'CA305', nama:'Standardisasi', teori:1, praktikum:2, lapang:0 }
+    ],
+    '2': [
+        { kode:'CA317', nama:'Aplikasi Komputer', teori:1, praktikum:2, lapang:0 },
+        { kode:'CA314', nama:'Keselamatan dan Kesehatan Kerja', teori:1, praktikum:2, lapang:0 },
+        { kode:'CA329', nama:'Data dan Sistem Informasi', teori:1, praktikum:2, lapang:0 },
+        { kode:'CA326', nama:'Menggambar Teknik', teori:1, praktikum:2, lapang:0 },
+        { kode:'CA323', nama:'Peralatan Teknik', teori:1, praktikum:2, lapang:0 },
+        { kode:'WU220', nama:'Pendidikan Kewarganegaraan', teori:2, praktikum:0, lapang:0 },
+        { kode:'CA320', nama:'Teknik Pengukuran', teori:1, praktikum:2, lapang:0 }
+    ],
+    '3i': [
+        { kode:'WU223', nama:'Pendidikan Pancasila', teori:2, praktikum:0, lapang:0 },
+        { kode:'PE307', nama:'Dasar Sistem Tenaga Listrik', teori:1, praktikum:2, lapang:0 },
+        { kode:'PE304', nama:'Elektronika Digital', teori:1, praktikum:2, lapang:0 },
+        { kode:'PE305', nama:'Mikrokontroler', teori:1, praktikum:2, lapang:0 },
+        { kode:'PE308', nama:'Perawatan dan Perbaikan', teori:1, praktikum:2, lapang:0 },
+        { kode:'PE303', nama:'Rangkaian Elektronika', teori:1, praktikum:2, lapang:0 },
+        { kode:'PE309', nama:'Programable Logic Control (PLC)', teori:1, praktikum:2, lapang:0 }
+    ],
+    '3t': [
+        { kode:'WU223', nama:'Pendidikan Pancasila', teori:2, praktikum:0, lapang:0 },
+        { kode:'PE310', nama:'Komunikasi Data dan Jaringan', teori:1, praktikum:2, lapang:0 },
+        { kode:'PE304', nama:'Elektronika Digital', teori:1, praktikum:2, lapang:0 },
+        { kode:'PE311', nama:'Antena dan Propagasi', teori:1, praktikum:2, lapang:0 },
+        { kode:'PE308', nama:'Perawatan dan Perbaikan', teori:1, praktikum:2, lapang:0 },
+        { kode:'PE312', nama:'Keamanan Siber', teori:1, praktikum:2, lapang:0 },
+        { kode:'PE309', nama:'Programable Logic Control (PLC)', teori:1, praktikum:2, lapang:0 }
+    ],
+    '4': [ { kode:'WA202', nama:'Praktik Dunia Kerja 1', teori:0, praktikum:0, lapang:20 } ],
+    '5': [ { kode:'WA205', nama:'Praktik Dunia Kerja 2', teori:0, praktikum:0, lapang:20 } ],
+    '6': [ { kode:'WA208', nama:'Praktik Dunia Kerja 3/Kewirausahaan', teori:0, praktikum:0, lapang:20 } ]
+};
+
+function tambahMk(kode='', nama='', sks=0) {
+    const container = document.getElementById('mkInputArea');
+    const rowId = 'row-'+Date.now()+'-'+Math.random().toString(36);
+    const div = document.createElement('div');
+    div.className = 'mk-input-row'; div.id = rowId;
+    div.innerHTML = `<input type="text" class="inKode" placeholder="Kode MK" value="${kode}" oninput="sinkron()">
+        <input type="text" class="inMk" placeholder="Mata Kuliah" value="${nama}" oninput="sinkron()">
+        <input type="number" class="inSks" value="${sks}" min="0" oninput="sinkron()">
+        <button class="btn-del" onclick="hapusRow('${rowId}')">Hapus</button>`;
+    container.appendChild(div); sinkron();
+}
+function hapusRow(id) { document.getElementById(id).remove(); sinkron(); }
+function muatMKSemester() {
+    const semester = document.getElementById('pilihSemester').value;
+    const mkList = dataMK[semester] || [];
+    document.getElementById('mkInputArea').innerHTML = '';
+    mkList.forEach(mk => tambahMk(mk.kode, mk.nama, mk.teori+mk.praktikum+mk.lapang));
+}
+function sinkron() {
+    const nama = document.getElementById('nama').value || '-';
+    const nim = document.getElementById('nim').value || '-';
+    const ipk = document.getElementById('ipk').value || '';
+    const sksPrev = document.getElementById('sksPrev').value || '';
+    const prodi = document.getElementById('prodi').value || 'Teknik Elektronika';
+    const semester = document.getElementById('semester').value || 'Genap';
+    const tahun = document.getElementById('tahun').value || '2024/2025';
+    const kota = document.getElementById('kota').value || 'Palopo, Februari 2026';
+    const kaprodi = document.getElementById('kaprodi').value || 'Fajar Ramadhan.S.Pd.,M.T';
+    const nuptkKaprodi = document.getElementById('nuptkKaprodi').value || '8559777678130153';
+    const pembimbing = document.getElementById('pembimbing').value || 'Fajar Ramadhan.S.Pd.,M.T';
+    const nuptkPembimbing = document.getElementById('nuptkPembimbing').value || '8559777678130153';
+
+    document.getElementById('outNim').innerText = nim;
+    document.getElementById('outIpk').innerText = ipk;
+    document.getElementById('outNama').innerText = nama;
+    document.getElementById('outSksPrev').innerText = sksPrev;
+    document.getElementById('outProdi').innerText = prodi;
+    document.getElementById('outSemester').innerText = semester;
+    document.getElementById('outTahun').innerText = tahun;
+    document.getElementById('outKota').innerText = kota;
+    document.getElementById('outKaprodi').innerText = kaprodi;
+    document.getElementById('outNuptkKaprodi').innerText = 'NUPTK.'+nuptkKaprodi;
+    document.getElementById('outPembimbing').innerText = pembimbing;
+    document.getElementById('outNuptkPembimbing').innerText = 'NUPTK.'+nuptkPembimbing;
+    document.getElementById('outMhs').innerText = nama;
+    document.getElementById('outNimSig').innerText = 'NIM.'+nim;
+
+    const kodeList = document.getElementsByClassName('inKode');
+    const mkList = document.getElementsByClassName('inMk');
+    const sksList = document.getElementsByClassName('inSks');
+    let tbody = ''; let total = 0;
+    for (let i=0; i<kodeList.length; i++) {
+        let s = parseInt(sksList[i].value) || 0;
+        tbody += `<tr><td>${i+1}.</td><td>${kodeList[i].value}</td><td>${mkList[i].value}</td><td>${s}</td></tr>`;
+        total += s;
+    }
+    for (let i=kodeList.length; i<7; i++) {
+        tbody += `<tr><td>${i+1}.</td><td></td><td></td><td></td></tr>`;
+    }
+    document.getElementById('tableBody').innerHTML = tbody;
+    document.getElementById('totalSks').innerText = total;
+    document.getElementById('outSksRencana').innerText = total;
+}
+
+// Fungsi untuk mengambil data user dari server
+async function loadUserData() {
+    try {
+        const response = await fetch('/api/current-user');
+        if (response.ok) {
+            const user = await response.json();
+            document.getElementById('nama').value = user.nama || '';
+            document.getElementById('nim').value = user.nim || '';
+            sinkron(); // perbarui tampilan setelah data diisi
+        } else {
+            console.error('Gagal mengambil data user');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+// Fungsi untuk menyimpan KRS
+async function simpanKRS() {
+    const nama = document.getElementById('nama').value;
+    const nim = document.getElementById('nim').value;
+    const semester = document.getElementById('semester').value;
+    const tahun = document.getElementById('tahun').value;
+
+    const kodeList = document.getElementsByClassName('inKode');
+    const mkList = document.getElementsByClassName('inMk');
+    const sksList = document.getElementsByClassName('inSks');
+    const courses = [];
+    for (let i = 0; i < kodeList.length; i++) {
+        if (kodeList[i].value && mkList[i].value && sksList[i].value) {
+            courses.push({
+                kode: kodeList[i].value,
+                nama: mkList[i].value,
+                sks: parseInt(sksList[i].value) || 0
+            });
+        }
+    }
+
+    if (courses.length === 0) {
+        alert('Tambahkan minimal satu mata kuliah.');
+        return;
+    }
+
+    const data = {
+        semester: semester + ' ' + tahun,
+        courses: courses
+    };
+
+    try {
+        const response = await fetch('/mahasiswa/krs', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        if (response.ok) {
+            const result = await response.json();
+            window.location.href = '/mahasiswa/krs/' + result.id;
+        } else {
+            const err = await response.text();
+            alert('Gagal menyimpan: ' + err);
+        }
+    } catch (error) {
+        console.error(error);
+        alert('Error: ' + error.message);
+    }
+}
+
+window.onload = function() { 
+    muatMKSemester(); 
+    loadUserData(); // panggil setelah inisialisasi
+    sinkron(); 
+};
+</script>
+
+</body>
+</html>

@@ -1,0 +1,187 @@
+<%- include('../partials/header-landing') %>
+
+<style>
+  .hero-aktivitas {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    padding: 4rem 0;
+    margin-bottom: 3rem;
+    color: white;
+  }
+  .hero-aktivitas h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+  .filter-btn {
+    border: 2px solid #dee2e6;
+    border-radius: 50px;
+    padding: 0.5rem 1.5rem;
+    margin: 0.25rem;
+    font-weight: 600;
+    transition: all 0.3s;
+    background: white;
+    color: #495057;
+  }
+  .filter-btn:hover,
+  .filter-btn.active {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+    border-color: transparent;
+  }
+  .card-aktivitas {
+    border: none;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    transition: transform 0.3s, box-shadow 0.3s;
+    height: 100%;
+  }
+  .card-aktivitas:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(33,147,176,0.15);
+  }
+  .card-img-wrapper {
+    height: 240px;
+    overflow: hidden;
+    position: relative;
+  }
+  .card-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s;
+  }
+  .card-aktivitas:hover .card-img-wrapper img {
+    transform: scale(1.1);
+  }
+  .kategori-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(255,255,255,0.95);
+    padding: 0.5rem 1.2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #2193b0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+  .card-body {
+    padding: 1.5rem;
+  }
+  .tanggal {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .card-title {
+    font-weight: 700;
+    font-size: 1.3rem;
+    margin-bottom: 0.75rem;
+    color: #1e293b;
+  }
+  .card-text {
+    color: #4a5568;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+  .btn-detail {
+    background: transparent;
+    border: 2px solid #2193b0;
+    color: #2193b0;
+    font-weight: 600;
+    padding: 0.5rem 1.5rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+  }
+  .btn-detail:hover {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border-color: transparent;
+    color: white;
+  }
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: #f8f9fa;
+    border-radius: 1rem;
+  }
+  .empty-state i {
+    font-size: 5rem;
+    color: #ced4da;
+    margin-bottom: 1rem;
+  }
+</style>
+
+<!-- Hero Section -->
+<section class="hero-aktivitas">
+  <div class="container text-center">
+    <h1>Aktivitas & Kegiatan</h1>
+    <p class="lead">Berbagai kegiatan akademik, non-akademik, prestasi, dan pengabdian mahasiswa Teknik Elektronika</p>
+  </div>
+</section>
+
+<!-- Filter Kategori -->
+<div class="container mb-5">
+  <div class="text-center">
+    <button class="filter-btn <%= kategoriAktif === 'semua' ? 'active' : '' %>" data-filter="semua">Semua</button>
+    <button class="filter-btn <%= kategoriAktif === 'akademik' ? 'active' : '' %>" data-filter="akademik">Akademik</button>
+    <button class="filter-btn <%= kategoriAktif === 'himpunan' ? 'active' : '' %>" data-filter="himpunan">Himpunan</button>
+    <button class="filter-btn <%= kategoriAktif === 'prestasi' ? 'active' : '' %>" data-filter="prestasi">Prestasi</button>
+    <button class="filter-btn <%= kategoriAktif === 'pengabdian' ? 'active' : '' %>" data-filter="pengabdian">Pengabdian</button>
+  </div>
+</div>
+
+<!-- Grid Aktivitas -->
+<div class="container mb-5">
+  <% if (aktivitas.length === 0) { %>
+    <div class="empty-state">
+      <i class="bi bi-calendar-x"></i>
+      <h4>Belum Ada Aktivitas</h4>
+      <p class="text-muted">Belum ada kegiatan yang tercatat untuk kategori ini.</p>
+    </div>
+  <% } else { %>
+    <div class="row g-4">
+      <% aktivitas.forEach(item => { %>
+        <div class="col-lg-4 col-md-6">
+          <div class="card-aktivitas">
+            <div class="card-img-wrapper">
+              <img src="<%= item.gambar || 'https://via.placeholder.com/600x400?text=Kegiatan' %>" alt="<%= item.judul %>">
+              <span class="kategori-badge">
+                <% if (item.kategori === 'akademik') { %>📚 Akademik<% } %>
+                <% if (item.kategori === 'himpunan') { %>👥 Himpunan<% } %>
+                <% if (item.kategori === 'prestasi') { %>🏆 Prestasi<% } %>
+                <% if (item.kategori === 'pengabdian') { %>🤝 Pengabdian<% } %>
+              </span>
+            </div>
+            <div class="card-body">
+              <div class="tanggal">
+                <i class="bi bi-calendar3"></i>
+                <%= new Date(item.tanggal).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) %>
+                <% if (item.lokasi) { %>
+                  <i class="bi bi-geo-alt ms-3"></i> <%= item.lokasi %>
+                <% } %>
+              </div>
+              <h5 class="card-title"><%= item.judul %></h5>
+              <p class="card-text"><%= item.deskripsi %></p>
+              <a href="/aktivitas/<%= item.id %>" class="btn btn-detail">Baca Selengkapnya →</a>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+</div>
+
+<script>
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const filter = this.dataset.filter;
+      window.location.href = filter === 'semua' ? '/aktivitas' : `/aktivitas?kategori=${filter}`;
+    });
+  });
+</script>
+
+<%- include('../partials/footer-landing') %>

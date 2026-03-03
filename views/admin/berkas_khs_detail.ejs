@@ -1,0 +1,25 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Detail KHS - <%= mahasiswa.nama %></h2>
+    <a href="javascript:history.back()" class="btn btn-outline-secondary">Kembali</a>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Informasi KHS</h5>
+      <p><strong>Semester:</strong> <%= khs.semester || '-' %></p>
+      <p><strong>IP Semester:</strong> <%= khs.ip || '-' %></p>
+      <p><strong>File KHS:</strong> 
+        <% if (khs.fileUrl) { %>
+          <a href="<%= khs.fileUrl %>" target="_blank">Lihat File</a>
+        <% } else { %>
+          -
+        <% } %>
+      </p>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

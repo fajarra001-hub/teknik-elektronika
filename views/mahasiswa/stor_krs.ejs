@@ -1,0 +1,199 @@
+<%- include('../../partials/header') %>
+
+<style>
+  .stor-header {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border-radius: 1rem;
+    padding: 2rem;
+    color: white;
+    margin-bottom: 2rem;
+  }
+  .stor-header h2 {
+    font-weight: 700;
+  }
+  .info-card {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    overflow: hidden;
+    margin-bottom: 2rem;
+  }
+  .info-card .card-header {
+    background: #f8f9fa;
+    font-weight: 600;
+    border-bottom: none;
+    padding: 1rem 1.5rem;
+  }
+  .btn-gradient {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border: none;
+    color: white;
+    font-weight: 500;
+    padding: 0.75rem 2rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+    border: none;
+  }
+  .btn-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(33,147,176,0.3);
+    color: white;
+  }
+  .btn-outline-gradient {
+    background: transparent;
+    border: 2px solid #2193b0;
+    color: #2193b0;
+    font-weight: 500;
+    padding: 0.75rem 2rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-outline-gradient:hover {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border-color: transparent;
+    color: white;
+  }
+  .form-control, .form-select {
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid #cbd5e1;
+    transition: all 0.3s;
+  }
+  .form-control:focus, .form-select:focus {
+    border-color: #2193b0;
+    box-shadow: 0 0 0 0.2rem rgba(33,147,176,0.25);
+  }
+  .preview-folder {
+    background: #f8f9fa;
+    border-radius: 1rem;
+    padding: 1rem;
+    font-family: monospace;
+    margin-bottom: 1rem;
+  }
+</style>
+
+<div class="container-fluid mt-4">
+  <!-- Header -->
+  <div class="stor-header">
+    <h2><i class="bi bi-cloud-upload-fill me-2"></i>Stor KRS</h2>
+    <p class="mb-0 opacity-75">Unggah file KRS yang sudah ditandatangani sebagai arsip digital prodi</p>
+  </div>
+
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <!-- Informasi Prodi -->
+      <div class="info-card">
+        <div class="card-header">
+          <i class="bi bi-info-circle me-2"></i>Informasi Arsip Digital
+        </div>
+        <div class="card-body">
+          <div class="alert alert-primary bg-opacity-10 border-0 d-flex align-items-center gap-3 p-3 mb-3">
+            <i class="bi bi-megaphone-fill fs-3 text-primary"></i>
+            <div class="flex-grow-1">
+              <strong class="text-primary">📢 Pengumuman Prodi</strong>
+              <p class="mb-0 text-muted">Harap stor KRS sesuai dengan semester yang sedang berjalan. Arsip ini akan menjadi bagian dari portofolio digital Anda. Terima kasih atas kerja samanya, sukses selalu!</p>
+            </div>
+          </div>
+
+          <!-- Langkah-langkah -->
+          <div class="row g-3 mb-4">
+            <div class="col-md-4">
+              <div class="d-flex flex-column align-items-center text-center p-3 bg-light rounded-4">
+                <div class="bg-primary bg-opacity-10 p-3 rounded-circle mb-2">
+                  <i class="bi bi-1-circle-fill fs-2 text-primary"></i>
+                </div>
+                <h6 class="fw-bold mb-1">Pilih Semester</h6>
+                <small class="text-muted">Semester 1 sampai 6</small>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="d-flex flex-column align-items-center text-center p-3 bg-light rounded-4">
+                <div class="bg-success bg-opacity-10 p-3 rounded-circle mb-2">
+                  <i class="bi bi-2-circle-fill fs-2 text-success"></i>
+                </div>
+                <h6 class="fw-bold mb-1">Unggah PDF</h6>
+                <small class="text-muted">File KRS yang sudah ditandatangani</small>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="d-flex flex-column align-items-center text-center p-3 bg-light rounded-4">
+                <div class="bg-warning bg-opacity-10 p-3 rounded-circle mb-2">
+                  <i class="bi bi-3-circle-fill fs-2 text-warning"></i>
+                </div>
+                <h6 class="fw-bold mb-1">Tersimpan Otomatis</h6>
+                <small class="text-muted">Di database prodi</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Preview Struktur Folder -->
+          <div class="preview-folder">
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <i class="bi bi-folder-symlink text-primary"></i>
+              <span class="fw-semibold">Struktur penyimpanan Anda:</span>
+            </div>
+            <div class="font-monospace small bg-white p-3 rounded-3 border">
+              <i class="bi bi-folder-fill text-warning me-2"></i>KRS Mahasiswa<br>
+              <span class="ms-4"><i class="bi bi-folder-fill text-warning me-2"></i>Angkatan <span id="angkatanPreview">20**</span></span><br>
+              <span class="ms-5"><i class="bi bi-folder-fill text-warning me-2"></i><span id="namaFolderPreview"><%= user.nama.replace(/\s+/g, '_') %></span></span><br>
+              <span class="ms-6"><i class="bi bi-file-earmark-pdf-fill text-danger me-2"></i><span id="filePreview">KRS_Semester_X.pdf</span></span>
+            </div>
+          </div>
+
+          <!-- Form Upload -->
+          <form method="POST" action="/mahasiswa/akademik/krs/stor" enctype="multipart/form-data" id="uploadForm">
+            <div class="mb-4">
+              <label class="form-label fw-semibold">📅 Pilih Semester</label>
+              <select class="form-select" id="semester" name="semester" required>
+                <option value="" disabled selected>-- Pilih Semester --</option>
+                <% for (let i = 1; i <= 6; i++) { %>
+                  <option value="<%= i %>">Semester <%= i %></option>
+                <% } %>
+              </select>
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label fw-semibold">📄 File KRS (PDF)</label>
+              <input type="file" class="form-control" id="file" name="file" accept=".pdf" required>
+              <small class="text-muted">Pastikan file berekstensi .pdf dan maksimal 5 MB</small>
+            </div>
+
+            <div class="d-flex justify-content-between">
+              <a href="/mahasiswa/dashboard" class="btn-outline-gradient">
+                <i class="bi bi-arrow-left me-2"></i>Kembali
+              </a>
+              <button type="submit" class="btn-gradient">
+                <i class="bi bi-cloud-upload-fill me-2"></i>Upload KRS
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Update preview saat semester dipilih
+  document.getElementById('semester').addEventListener('change', function() {
+    const semester = this.value;
+    const filePreview = document.getElementById('filePreview');
+    if (filePreview) {
+      filePreview.textContent = `KRS_Semester_${semester}.pdf`;
+    }
+  });
+
+  // Hitung angkatan dari NIM (data dari server)
+  <%
+    let angkatanPreview = '20xx';
+    if (user && user.nim && user.nim.length >= 2) {
+      angkatanPreview = '20' + user.nim.substring(0,2);
+    }
+  %>
+  document.getElementById('angkatanPreview').textContent = '<%= angkatanPreview %>';
+  document.getElementById('namaFolderPreview').textContent = '<%= user.nama.replace(/\s+/g, '_') %>';
+</script>
+
+<%- include('../../partials/footer') %>

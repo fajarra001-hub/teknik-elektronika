@@ -1,0 +1,132 @@
+<%- include('../../partials/header') %>
+
+<style>
+  .elearning-header {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border-radius: 1rem;
+    padding: 2rem;
+    color: white;
+    margin-bottom: 2rem;
+  }
+  .elearning-header h2 {
+    font-weight: 700;
+  }
+  .course-card {
+    border: none;
+    border-radius: 1rem;
+    overflow: hidden;
+    background: white;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    transition: transform 0.3s, box-shadow 0.3s;
+    height: 100%;
+  }
+  .course-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(33,147,176,0.15);
+  }
+  .course-image {
+    height: 140px;
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 3rem;
+  }
+  .course-body {
+    padding: 1.5rem;
+  }
+  .course-code {
+    color: #2193b0;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .course-name {
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: #1e293b;
+    margin: 0.5rem 0;
+  }
+  .course-detail {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
+  .btn-gradient {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border: none;
+    color: white;
+    font-weight: 500;
+    padding: 0.5rem 1.5rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(33,147,176,0.3);
+    color: white;
+  }
+  .empty-state {
+    background: white;
+    border-radius: 1rem;
+    padding: 3rem;
+    text-align: center;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+  }
+</style>
+
+<div class="container-fluid mt-4">
+  <!-- Header -->
+  <div class="elearning-header d-flex justify-content-between align-items-center">
+    <div>
+      <h2><i class="bi bi-laptop me-2"></i>ELK‑Learning</h2>
+      <p class="mb-0 opacity-75">Mata kuliah yang Anda ambil dan materi perkuliahan</p>
+    </div>
+    <a href="/mahasiswa/dashboard" class="btn btn-light">
+      <i class="bi bi-arrow-left me-2"></i>Kembali ke Dashboard
+    </a>
+  </div>
+
+  <!-- Daftar Mata Kuliah -->
+  <div class="row g-4">
+    <% if (mkList.length === 0) { %>
+      <div class="col-12">
+        <div class="empty-state">
+          <i class="bi bi-book fs-1 text-muted d-block mb-3"></i>
+          <h5 class="fw-bold">Belum Ada Mata Kuliah</h5>
+          <p class="text-muted">Anda belum terdaftar di mata kuliah manapun.</p>
+          <a href="/mahasiswa/akademik/krs" class="btn-gradient mt-3">
+            <i class="bi bi-pencil-square me-2"></i>Buat KRS
+          </a>
+        </div>
+      </div>
+    <% } else { %>
+      <% mkList.forEach(mk => { %>
+        <div class="col-md-4">
+          <div class="course-card">
+            <div class="course-image">
+              <i class="bi bi-journal-bookmark-fill"></i>
+            </div>
+            <div class="course-body">
+              <div class="course-code"><%= mk.kode %></div>
+              <div class="course-name"><%= mk.nama %></div>
+              <div class="course-detail">
+                <i class="bi bi-calendar me-1"></i> <%= mk.semester %><br>
+                <i class="bi bi-people me-1"></i> <%= mk.jumlahMahasiswa || 0 %> mahasiswa terdaftar
+              </div>
+              <a href="/mahasiswa/elearning/mk/<%= mk.id %>" class="btn-gradient w-100 text-center">
+                <i class="bi bi-eye me-2"></i>Lihat Detail
+              </a>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    <% } %>
+  </div>
+</div>
+
+<%- include('../../partials/footer') %>

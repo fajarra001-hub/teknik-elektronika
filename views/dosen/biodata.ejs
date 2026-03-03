@@ -1,0 +1,157 @@
+<%- include('../partials/header') %>
+
+<style>
+  .profile-header {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+  .profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 4px solid white;
+    object-fit: cover;
+    margin-bottom: 1rem;
+  }
+  .info-card {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    padding: 2rem;
+    margin-bottom: 2rem;
+  }
+  .btn-gradient {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border: none;
+    color: white;
+    font-weight: 500;
+    padding: 0.6rem 2rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+  }
+  .btn-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(33,147,176,0.3);
+    color: white;
+  }
+  .btn-outline-gradient {
+    background: transparent;
+    border: 2px solid #2193b0;
+    color: #2193b0;
+    font-weight: 500;
+    padding: 0.6rem 2rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+  }
+  .btn-outline-gradient:hover {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border-color: transparent;
+    color: white;
+  }
+</style>
+
+<div class="container mt-4">
+  <% if (typeof success !== 'undefined' && success === 'updated') { %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <i class="bi bi-check-circle-fill me-2"></i>Biodata berhasil diperbarui.
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% } %>
+
+  <% if (typeof reset !== 'undefined' && reset === 'email_sent') { %>
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+      <i class="bi bi-envelope-fill me-2"></i>Instruksi reset password telah dikirim ke email Anda.
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% } %>
+
+  <div class="profile-header">
+    <% 
+      // Fungsi untuk mengekstrak ID file dari URL Google Drive
+      const getFileIdFromUrl = (url) => {
+        if (!url) return null;
+        // Format: https://drive.google.com/uc?export=view&id=XXX
+        let match = url.match(/[?&]id=([^&]+)/);
+        if (match) return match[1];
+        // Format: https://drive.google.com/file/d/XXX/view
+        match = url.match(/\/d\/([^\/]+)/);
+        if (match) return match[1];
+        return null;
+      };
+
+      const fileId = dosen.foto ? getFileIdFromUrl(dosen.foto) : null;
+    %>
+
+    <% if (fileId) { %>
+      <img src="https://drive.google.com/thumbnail?id=<%= fileId %>&sz=w400" alt="foto" class="profile-avatar">
+    <% } else { %>
+      <div class="profile-avatar bg-white text-primary d-flex align-items-center justify-content-center" style="font-size: 3rem;">
+        <i class="bi bi-person-circle"></i>
+      </div>
+    <% } %>
+
+    <h3><%= dosen.nama %></h3>
+    <p class="mb-0 opacity-75"><%= dosen.nip || '-' %></p>
+  </div>
+
+  <div class="row">
+    <div class="col-md-8 mx-auto">
+      <div class="info-card">
+        <h5 class="fw-bold mb-4"><i class="bi bi-pencil-square me-2"></i>Edit Biodata</h5>
+        <form method="POST" action="/dosen/biodata/update" enctype="multipart/form-data">
+          <div class="mb-3">
+            <label for="nip" class="form-label fw-semibold">NIP</label>
+            <input type="text" class="form-control" id="nip" value="<%= dosen.nip || '' %>" readonly disabled>
+            <small class="text-muted">NIP tidak dapat diubah</small>
+          </div>
+          <div class="mb-3">
+            <label for="nama" class="form-label fw-semibold">Nama <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="nama" name="nama" value="<%= dosen.nama || '' %>" required>
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label fw-semibold">Email <span class="text-danger">*</span></label>
+            <input type="email" class="form-control" id="email" name="email" value="<%= dosen.email || '' %>" required>
+          </div>
+          <div class="mb-3">
+            <label for="kontak" class="form-label fw-semibold">Kontak (No. HP)</label>
+            <input type="text" class="form-control" id="kontak" name="kontak" value="<%= dosen.kontak || '' %>">
+          </div>
+          <div class="mb-4">
+            <label for="foto" class="form-label fw-semibold">Foto Profil</label>
+            <% if (fileId) { %>
+              <div class="mb-2">
+                <img src="https://drive.google.com/thumbnail?id=<%= fileId %>&sz=w200" alt="foto" style="max-width: 100px; border-radius: 8px;">
+              </div>
+            <% } %>
+            <input type="file" class="form-control" id="foto" name="foto" accept="image/*">
+            <small class="text-muted">Kosongkan jika tidak ingin mengubah foto</small>
+          </div>
+          <div class="d-flex justify-content-between">
+            <a href="/dosen/dashboard" class="btn-outline-gradient">
+              <i class="bi bi-arrow-left me-2"></i>Kembali
+            </a>
+            <button type="submit" class="btn-gradient">
+              <i class="bi bi-save me-2"></i>Simpan Perubahan
+            </button>
+          </div>
+        </form>
+
+        <hr class="my-4">
+
+        <h5 class="fw-bold mb-3"><i class="bi bi-key me-2"></i>Keamanan Akun</h5>
+        <p class="text-muted small">Klik tombol di bawah untuk mengirim email reset password ke alamat email Anda.</p>
+        <form method="POST" action="/dosen/biodata/ubah-password" onsubmit="return confirm('Kirim email reset password?')">
+          <button type="submit" class="btn btn-warning">
+            <i class="bi bi-key me-2"></i>Kirim Email Reset Password
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

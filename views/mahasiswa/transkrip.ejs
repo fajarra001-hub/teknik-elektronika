@@ -1,0 +1,186 @@
+<%- include('../partials/header') %>
+
+<style>
+  .transkrip-header {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border-radius: 1rem;
+    padding: 2rem;
+    color: white;
+    margin-bottom: 2rem;
+  }
+  .transkrip-header h2 {
+    font-weight: 700;
+  }
+  .ipk-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    margin-bottom: 2rem;
+    border-left: 5px solid #2193b0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .ipk-value {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #2193b0;
+    line-height: 1;
+  }
+  .ipk-label {
+    color: #64748b;
+    font-size: 1.1rem;
+  }
+  .transkrip-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #1e293b;
+    border-bottom: none;
+  }
+  .transkrip-table td {
+    vertical-align: middle;
+    padding: 1rem 0.75rem;
+  }
+  .btn-gradient {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border: none;
+    color: white;
+    font-weight: 500;
+    padding: 0.6rem 1.5rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(33,147,176,0.3);
+    color: white;
+  }
+  .btn-outline-gradient {
+    background: transparent;
+    border: 2px solid #2193b0;
+    color: #2193b0;
+    font-weight: 500;
+    padding: 0.6rem 1.5rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-outline-gradient:hover {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border-color: transparent;
+    color: white;
+  }
+  .card-table {
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    overflow: hidden;
+  }
+  .nilai-badge {
+    background: #e9ecef;
+    padding: 0.3rem 0.8rem;
+    border-radius: 50px;
+    font-weight: 600;
+  }
+  .nilai-a { background: #28a745; color: white; }
+  .nilai-b { background: #17a2b8; color: white; }
+  .nilai-c { background: #ffc107; color: #212529; }
+  .nilai-d { background: #fd7e14; color: white; }
+  .nilai-e { background: #dc3545; color: white; }
+</style>
+
+<div class="container-fluid mt-4">
+  <!-- Header -->
+  <div class="transkrip-header d-flex justify-content-between align-items-center">
+    <div>
+      <h2><i class="bi bi-bar-chart-line me-2"></i>Transkrip Nilai</h2>
+      <p class="mb-0 opacity-75">Rekapitulasi nilai dan IPK mahasiswa</p>
+    </div>
+    <a href="/mahasiswa/akademik" class="btn btn-light">
+      <i class="bi bi-arrow-left me-2"></i>Kembali
+    </a>
+  </div>
+
+  <!-- IPK Card -->
+  <div class="ipk-card">
+    <div>
+      <span class="ipk-label">Indeks Prestasi Kumulatif (IPK)</span>
+      <div class="ipk-value"><%= ipk %></div>
+    </div>
+    <div class="text-muted small">
+      <i class="bi bi-info-circle me-1"></i> IPK dihitung dari total nilai (A=4, B=3, C=2, D=1, E=0)
+    </div>
+  </div>
+
+  <!-- Tabel Transkrip -->
+  <div class="card-table">
+    <div class="table-responsive">
+      <table class="table transkrip-table mb-0">
+        <thead>
+          <tr>
+            <th>Semester</th>
+            <th>Kode MK</th>
+            <th>Mata Kuliah</th>
+            <th>SKS</th>
+            <th>Nilai</th>
+            <th>Bobot</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (grades.length === 0) { %>
+            <tr>
+              <td colspan="6" class="text-center py-5">
+                <i class="bi bi-inbox fs-1 text-muted d-block mb-3"></i>
+                <p class="text-muted">Belum ada nilai yang dimasukkan.</p>
+              </td>
+            </tr>
+          <% } %>
+          <% 
+            let totalSKS = 0, totalNilai = 0;
+            grades.forEach(g => {
+              totalSKS += g.sks;
+              totalNilai += g.sks * g.nilai;
+          %>
+            <tr>
+              <td><strong><%= g.semester %></strong></td>
+              <td><span class="badge bg-secondary"><%= g.kodeMk %></span></td>
+              <td><%= g.namaMk %></td>
+              <td class="text-center"><%= g.sks %></td>
+              <td>
+                <span class="nilai-badge 
+                  <% if (g.nilai >= 80) { %>nilai-a<% } 
+                  else if (g.nilai >= 70) { %>nilai-b<% } 
+                  else if (g.nilai >= 60) { %>nilai-c<% } 
+                  else if (g.nilai >= 50) { %>nilai-d<% } 
+                  else { %>nilai-e<% } %>">
+                  <%= g.nilai %>
+                </span>
+              </td>
+              <td><%= (g.nilai / 20).toFixed(1) %></td>
+            </tr>
+          <% }) %>
+          <% if (grades.length > 0) { %>
+            <tr class="table-light">
+              <td colspan="3" class="text-end fw-bold">Total</td>
+              <td class="text-center fw-bold"><%= totalSKS %></td>
+              <td colspan="2"></td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Tombol Cetak (opsional) -->
+  <div class="mt-4 text-end">
+    <button class="btn-outline-gradient" onclick="window.print()">
+      <i class="bi bi-printer me-2"></i>Cetak Transkrip
+    </button>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

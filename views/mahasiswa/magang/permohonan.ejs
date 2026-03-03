@@ -1,0 +1,206 @@
+<%- include('../../partials/header') %>
+
+<style>
+  .magang-header {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border-radius: 1rem;
+    padding: 2rem;
+    color: white;
+    margin-bottom: 2rem;
+  }
+  .magang-header h2 {
+    font-weight: 700;
+  }
+  .permohonan-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #1e293b;
+  }
+  .btn-gradient {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border: none;
+    color: white;
+    font-weight: 500;
+    padding: 0.6rem 1.5rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(33,147,176,0.3);
+    color: white;
+  }
+  .btn-outline-gradient {
+    background: transparent;
+    border: 2px solid #2193b0;
+    color: #2193b0;
+    font-weight: 500;
+    padding: 0.6rem 1.5rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-outline-gradient:hover {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border-color: transparent;
+    color: white;
+  }
+  .modal-header {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+  }
+  .badge-status {
+    padding: 0.4rem 1rem;
+    border-radius: 50px;
+    font-weight: 500;
+  }
+  .badge-pending { background: #ffc107; color: #212529; }
+  .badge-approved { background: #28a745; color: white; }
+  .badge-rejected { background: #dc3545; color: white; }
+</style>
+
+<div class="container-fluid mt-4">
+  <!-- Header -->
+  <div class="magang-header d-flex justify-content-between align-items-center">
+    <div>
+      <h2><i class="bi bi-briefcase me-2"></i>Permohonan Seminar Magang</h2>
+      <p class="mb-0 opacity-75">Ajukan seminar magang dan lihat status permohonan Anda</p>
+    </div>
+    <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#permohonanModal" onclick="resetModal()">
+      <i class="bi bi-plus-circle me-2"></i>Ajukan Baru
+    </button>
+  </div>
+
+  <!-- Tabel Permohonan -->
+  <div class="table-responsive">
+    <table class="table table-hover align-middle permohonan-table">
+      <thead>
+        <tr>
+          <th>Judul Seminar</th>
+          <th>Tanggal</th>
+          <th>Waktu</th>
+          <th>Tempat</th>
+          <th>Status</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (permohonan.length === 0) { %>
+          <tr>
+            <td colspan="6" class="text-center py-5">
+              <i class="bi bi-inbox fs-1 text-muted d-block mb-3"></i>
+              <p class="text-muted">Belum ada permohonan seminar.</p>
+            </td>
+          </tr>
+        <% } %>
+        <% permohonan.forEach(p => { %>
+          <tr>
+            <td><%= p.judul %></td>
+            <td><%= new Date(p.tanggal).toLocaleDateString('id-ID') %></td>
+            <td><%= p.waktu || '-' %></td>
+            <td><%= p.tempat || '-' %></td>
+            <td>
+              <% if (p.status === 'pending') { %>
+                <span class="badge-status badge-pending">Menunggu</span>
+              <% } else if (p.status === 'approved') { %>
+                <span class="badge-status badge-approved">Disetujui</span>
+              <% } else if (p.status === 'rejected') { %>
+                <span class="badge-status badge-rejected">Ditolak</span>
+              <% } %>
+            </td>
+            <td>
+              <% if (p.status === 'pending') { %>
+                <button class="btn btn-sm btn-warning" onclick="editPermohonan('<%= p.id %>')">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <form method="POST" action="/mahasiswa/magang/permohonan/<%= p.id %>/delete" style="display:inline;" onsubmit="return confirm('Yakin hapus permohonan ini?')">
+                  <button type="submit" class="btn btn-sm btn-danger">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </form>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal Tambah/Edit Permohonan -->
+<div class="modal fade" id="permohonanModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalTitle"><i class="bi bi-plus-circle me-2"></i>Ajukan Permohonan Seminar</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form method="POST" action="/mahasiswa/magang/permohonan" id="permohonanForm">
+        <input type="hidden" name="id" id="permohonanId">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="judul" class="form-label fw-semibold">Judul Seminar</label>
+            <input type="text" class="form-control" id="judul" name="judul" required>
+          </div>
+          <div class="mb-3">
+            <label for="deskripsi" class="form-label fw-semibold">Deskripsi</label>
+            <textarea class="form-control" id="deskripsi" name="deskripsi" rows="3" required></textarea>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="tanggal" class="form-label fw-semibold">Tanggal</label>
+              <input type="date" class="form-control" id="tanggal" name="tanggal" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="waktu" class="form-label fw-semibold">Waktu</label>
+              <input type="text" class="form-control" id="waktu" name="waktu" placeholder="09:00 - 12:00">
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="tempat" class="form-label fw-semibold">Tempat</label>
+            <input type="text" class="form-control" id="tempat" name="tempat">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-primary">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  function resetModal() {
+    document.getElementById('permohonanForm').action = '/mahasiswa/magang/permohonan';
+    document.getElementById('permohonanId').value = '';
+    document.getElementById('judul').value = '';
+    document.getElementById('deskripsi').value = '';
+    document.getElementById('tanggal').value = '';
+    document.getElementById('waktu').value = '';
+    document.getElementById('tempat').value = '';
+    document.getElementById('modalTitle').innerHTML = '<i class="bi bi-plus-circle me-2"></i>Ajukan Permohonan Seminar';
+  }
+
+  function editPermohonan(id) {
+    fetch(`/mahasiswa/magang/permohonan/${id}`)
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('permohonanForm').action = '/mahasiswa/magang/permohonan/update';
+        document.getElementById('permohonanId').value = id;
+        document.getElementById('judul').value = data.judul;
+        document.getElementById('deskripsi').value = data.deskripsi;
+        document.getElementById('tanggal').value = data.tanggal.split('T')[0];
+        document.getElementById('waktu').value = data.waktu || '';
+        document.getElementById('tempat').value = data.tempat || '';
+        document.getElementById('modalTitle').innerHTML = '<i class="bi bi-pencil me-2"></i>Edit Permohonan Seminar';
+        new bootstrap.Modal(document.getElementById('permohonanModal')).show();
+      })
+      .catch(err => alert('Gagal memuat data: ' + err.message));
+  }
+</script>
+
+<%- include('../../partials/footer') %>

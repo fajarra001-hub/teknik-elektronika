@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Export Logbook - <%= title %></title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    @media print {
+      .btn { display: none; }
+      body { font-size: 12pt; }
+      h2 { margin-top: 20px; }
+      .table thead tr { background-color: #f2f2f2; }
+    }
+    .print-btn {
+      margin-bottom: 20px;
+    }
+    .kop-surat {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .kop-surat h2 {
+      margin-bottom: 0;
+    }
+    .kop-surat p {
+      margin: 2px 0;
+      font-size: 11pt;
+    }
+  </style>
+</head>
+<body>
+  <div class="container mt-4">
+    <button onclick="window.print()" class="btn btn-primary print-btn">
+      <i class="bi bi-printer"></i> Print / Simpan PDF
+    </button>
+
+    <div class="kop-surat">
+      <h2>PROGRAM STUDI TEKNIK ELEKTRONIKA</h2>
+      <p>Politeknik Dewantara</p>
+      <p>JL. KH Ahmad Razak 2, No.7, Kota Palopo, Sulawesi Selatan</p>
+      <hr style="border: 1px solid black; margin: 10px 0;">
+    </div>
+
+    <h4 class="text-center">LAPORAN LOGBOOK MAGANG</h4>
+    <p class="text-center"><small><%= filterInfo %></small></p>
+    <p class="text-center"><small>Dicetak: <%= generatedAt %></small></p>
+
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>NIM</th>
+          <th>Nama</th>
+          <th>Mata Kuliah</th>
+          <th>Semester</th>
+          <th>Tanggal</th>
+          <th>Kegiatan</th>
+          <th>Durasi</th>
+          <th>Lokasi</th>
+          <th>Jml Gambar</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (data.length === 0) { %>
+          <tr>
+            <td colspan="10" class="text-center">Tidak ada data</td>
+          </tr>
+        <% } %>
+        <% data.forEach((item, index) => { %>
+          <tr>
+            <td class="text-center"><%= index + 1 %></td>
+            <td><%= item.nim %></td>
+            <td><%= item.nama %></td>
+            <td><%= item.mk %></td>
+            <td><%= item.semester %></td>
+            <td><%= item.tanggal %></td>
+            <td><%= item.kegiatan %></td>
+            <td><%= item.durasi %></td>
+            <td><%= item.lokasi %></td>
+            <td class="text-center"><%= item.gambar %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+
+    <div style="margin-top: 30px;">
+      <p>Mengetahui,</p>
+      <p>Ketua Program Studi</p>
+      <br><br>
+      <p>(______________________)</p>
+    </div>
+  </div>
+</body>
+</html>

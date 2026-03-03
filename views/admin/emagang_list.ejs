@@ -1,0 +1,237 @@
+<%- include('../partials/header') %>
+
+<style>
+  .emagang-header {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border-radius: 1rem;
+    padding: 2rem;
+    color: white;
+    margin-bottom: 2rem;
+  }
+  .emagang-table th {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    border: none;
+  }
+  .emagang-table td {
+    vertical-align: middle;
+    padding: 1rem 0.75rem;
+  }
+  .btn-action {
+    margin: 2px;
+    border-radius: 8px;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+  }
+  .btn-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+  }
+  .filter-card {
+    border-radius: 1rem;
+    border: none;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    background: white;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .table-responsive {
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+  }
+  .avatar-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.2rem;
+  }
+</style>
+
+<div class="container-fluid mt-4">
+  <div class="emagang-header">
+    <h2><i class="bi bi-journal-bookmark-fill me-2"></i>E-Magang - Logbook Mahasiswa</h2>
+    <p class="mb-0 opacity-75">Pantau aktivitas magang mahasiswa</p>
+  </div>
+
+  <!-- Filter Card -->
+  <div class="filter-card">
+    <form method="GET" class="row g-3 align-items-end">
+      <div class="col-md-2">
+        <label for="mahasiswaId" class="form-label fw-semibold">Mahasiswa</label>
+        <select class="form-select" id="mahasiswaId" name="mahasiswaId">
+          <option value="">Semua</option>
+          <% mahasiswaList.forEach(m => { %>
+            <option value="<%= m.id %>" <%= m.id === filters.mahasiswaId ? 'selected' : '' %>>
+              <%= m.nim %> - <%= m.nama %>
+            </option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label for="courseId" class="form-label fw-semibold">Mata Kuliah</label>
+        <select class="form-select" id="courseId" name="courseId">
+          <option value="">Semua PDK</option>
+          <% 
+            // Asumsikan Anda mengirim daftar semua MK PDK dari route
+            pdkCourses.forEach(c => { 
+          %>
+            <option value="<%= c.id %>" <%= c.id === filters.courseId ? 'selected' : '' %>><%= c.kode %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label for="semester" class="form-label fw-semibold">Semester</label>
+        <input type="text" class="form-control" id="semester" name="semester" placeholder="Ganjil 2025/2026" value="<%= filters.semester || '' %>">
+      </div>
+      <div class="col-md-2">
+        <label for="startDate" class="form-label fw-semibold">Tanggal Mulai</label>
+        <input type="date" class="form-control" id="startDate" name="startDate" value="<%= filters.startDate || '' %>">
+      </div>
+      <div class="col-md-2">
+        <label for="endDate" class="form-label fw-semibold">Tanggal Akhir</label>
+        <input type="date" class="form-control" id="endDate" name="endDate" value="<%= filters.endDate || '' %>">
+      </div>
+      <div class="col-md-2">
+        <label for="search" class="form-label fw-semibold">Cari Kegiatan</label>
+        <input type="text" class="form-control" id="search" name="search" placeholder="Kata kunci..." value="<%= filters.search || '' %>">
+      </div>
+      <div class="col-12 d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Filter</button>
+        <a href="/admin/emagang" class="btn btn-outline-secondary">Reset</a>
+      </div>
+    </form>
+  </div>
+
+  <!-- Export Button -->
+  <div class="mb-3 text-end">
+    <a href="/admin/emagang/print?<%= new URLSearchParams(filters).toString() %>" class="btn btn-info me-2" target="_blank">
+      <i class="bi bi-printer me-2"></i>Print
+    </a>
+    <a href="/admin/emagang/export?<%= new URLSearchParams(filters).toString() %>" class="btn btn-success" target="_blank">
+      <i class="bi bi-file-earmark-pdf me-2"></i>Export
+    </a>
+  </div>
+  
+  <!-- Tabel Logbook -->
+  <div class="table-responsive">
+    <table class="table emagang-table">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Mahasiswa</th>
+          <th>MK / Semester</th>
+          <th>Tanggal</th>
+          <th>Kegiatan</th>
+          <th>Gambar</th>
+          <th>Dibuat</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (logbookList.length === 0) { %>
+          <tr>
+            <td colspan="8" class="text-center py-5">
+              <i class="bi bi-inbox fs-1 text-muted d-block mb-3"></i>
+              <p class="text-muted">Belum ada data logbook.</p>
+            </td>
+          </tr>
+        <% } %>
+        <% logbookList.forEach((item, index) => { %>
+          <tr>
+            <td><%= index + 1 %></td>
+            <td>
+              <div class="d-flex align-items-center">
+                <% if (item.mahasiswa?.foto) { %>
+                  <img src="<%= item.mahasiswa.foto %>" alt="foto" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                <% } else { %>
+                  <div class="avatar-circle me-2"><%= (item.mahasiswa?.nama || '?').charAt(0).toUpperCase() %></div>
+                <% } %>
+                <div>
+                  <strong><%= item.mahasiswa?.nama || 'Unknown' %></strong><br>
+                  <small class="text-muted"><%= item.mahasiswa?.nim || '-' %></small>
+                </div>
+              </div>
+            </td>
+            <td>
+              <%= item.semester || '-' %><br>
+              <small class="text-muted"><%= item.courseName || '-' %></small>
+            </td>
+            <td><%= item.tanggalFormatted %></td>
+            <td><%= item.kegiatan %></td>
+            <td>
+              <% if (item.imageUrls && item.imageUrls.length > 0) { %>
+                <button class="btn btn-sm btn-info" onclick="lihatGambar(<%= JSON.stringify(item.imageUrls) %>)">
+                  <i class="bi bi-images"></i> <%= item.imageUrls.length %>
+                </button>
+              <% } else { %>
+                -
+              <% } %>
+            </td>
+            <td><small class="text-muted"><%= item.createdAt ? new Date(item.createdAt).toLocaleDateString('id-ID') : '-' %></small></td>
+            <td>
+              <a href="/admin/emagang/mahasiswa/<%= item.mahasiswa?.id %>" class="btn btn-sm btn-outline-info btn-action">
+                <i class="bi bi-eye"></i> Detail
+              </a>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Lightbox Modal (sama seperti di mahasiswa) -->
+<div class="modal fade lightbox-modal" id="galleryModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Dokumentasi</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div id="galleryCarousel" class="carousel slide" data-bs-ride="false">
+          <div class="carousel-inner" id="galleryCarouselInner"></div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#galleryCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#galleryCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function lihatGambar(imageUrls) {
+    const inner = document.getElementById('galleryCarouselInner');
+    inner.innerHTML = '';
+    imageUrls.forEach((url, index) => {
+      const activeClass = index === 0 ? 'active' : '';
+      const item = `
+        <div class="carousel-item ${activeClass}">
+          <img src="${url}" class="d-block w-100" alt="Dokumentasi">
+        </div>
+      `;
+      inner.innerHTML += item;
+    });
+    new bootstrap.Modal(document.getElementById('galleryModal')).show();
+  }
+</script>
+
+<%- include('../partials/footer') %>

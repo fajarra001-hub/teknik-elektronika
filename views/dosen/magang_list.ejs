@@ -1,0 +1,104 @@
+<%- include('../partials/header') %>
+
+<style>
+  .magang-table th {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    border: none;
+  }
+  .magang-table td {
+    vertical-align: middle;
+    padding: 1rem 0.75rem;
+  }
+  .table-responsive {
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+  }
+  .avatar-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.2rem;
+  }
+</style>
+
+<div class="container-fluid mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold">Monitoring Magang</h2>
+    <a href="/dosen/dashboard" class="btn btn-outline-primary">
+      <i class="bi bi-arrow-left me-2"></i>Kembali
+    </a>
+  </div>
+
+  <% if (message) { %>
+    <div class="alert alert-info"><%= message %></div>
+  <% } %>
+
+  <div class="table-responsive">
+    <table class="table magang-table">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Mahasiswa</th>
+          <th>Total Logbook</th>
+          <th>Pending</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (mahasiswaList.length === 0) { %>
+          <tr>
+            <td colspan="5" class="text-center py-5">
+              <i class="bi bi-inbox fs-1 text-muted d-block mb-3"></i>
+              <p class="text-muted">Tidak ada mahasiswa yang terdaftar di PDK yang Anda ampu.</p>
+            </td>
+          </tr>
+        <% } %>
+        <% mahasiswaList.forEach((m, index) => { %>
+          <tr>
+            <td class="text-center"><%= index + 1 %></td>
+            <td>
+              <div class="d-flex align-items-center">
+                <% if (m.foto) { %>
+                  <img src="<%= m.foto %>" alt="foto" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                <% } else { %>
+                  <div class="avatar-circle me-2"><%= (m.nama || '?').charAt(0).toUpperCase() %></div>
+                <% } %>
+                <div>
+                  <strong><%= m.nama %></strong><br>
+                  <small class="text-muted"><%= m.nim || '-' %></small>
+                </div>
+              </div>
+            </td>
+            <td class="text-center"><%= m.totalLogbook %></td>
+            <td class="text-center">
+              <% if (m.pendingCount > 0) { %>
+                <span class="badge bg-warning text-dark"><%= m.pendingCount %></span>
+              <% } else { %>
+                <span class="badge bg-secondary">0</span>
+              <% } %>
+            </td>
+            <td>
+              <a href="/dosen/magang/<%= m.id %>" class="btn btn-sm btn-outline-info">
+                <i class="bi bi-eye"></i> Lihat Logbook
+              </a>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

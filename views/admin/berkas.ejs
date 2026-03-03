@@ -1,0 +1,172 @@
+<%- include('../partials/header') %>
+
+<style>
+  .berkas-table th {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    border: none;
+  }
+  .berkas-table td {
+    vertical-align: middle;
+    padding: 1rem 0.75rem;
+  }
+  .btn-action {
+    margin: 2px;
+    border-radius: 8px;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+  }
+  .btn-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+  }
+  .avatar-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.2rem;
+  }
+  .filter-card {
+    border-radius: 1rem;
+    border: none;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    background: white;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .table-responsive {
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+  }
+  .foto-mahasiswa {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+  .badge-berkas {
+    background: #e9ecef;
+    color: #495057;
+    font-size: 0.8rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: 20px;
+    margin-right: 0.3rem;
+    display: inline-block;
+  }
+</style>
+
+<div class="container-fluid mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold">Berkas Akademik Mahasiswa</h2>
+    <a href="/admin/khs/list" class="btn btn-primary">
+      <i class="bi bi-upload me-2"></i>Upload KHS Baru
+    </a>
+  </div>
+
+  <!-- Filter Card -->
+  <div class="filter-card">
+    <form method="GET" class="row g-3 align-items-end">
+      <div class="col-md-3">
+        <label for="angkatan" class="form-label fw-semibold">Angkatan</label>
+        <select class="form-select" id="angkatan" name="angkatan">
+          <option value="">Semua Angkatan</option>
+          <% if (angkatanList && angkatanList.length) { %>
+            <% angkatanList.forEach(a => { %>
+              <option value="<%= a %>" <%= a === filterAngkatan ? 'selected' : '' %>><%= a %></option>
+            <% }) %>
+          <% } %>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label for="search" class="form-label fw-semibold">Cari Nama/NIM</label>
+        <input type="text" class="form-control" id="search" name="search" placeholder="Ketik nama atau NIM" value="<%= search || '' %>">
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">Filter</button>
+      </div>
+      <div class="col-md-2">
+        <a href="/admin/berkas" class="btn btn-outline-secondary w-100">Reset</a>
+      </div>
+    </form>
+  </div>
+
+  <!-- Tabel Mahasiswa -->
+  <div class="table-responsive">
+    <table class="table berkas-table">
+      <thead>
+        <tr>
+          <th>Foto</th>
+          <th>NIM</th>
+          <th>Nama</th>
+          <th>Angkatan</th>
+          <th>KRS</th>
+          <th>KHS</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (mahasiswaList.length === 0) { %>
+          <tr>
+            <td colspan="7" class="text-center py-5">
+              <i class="bi bi-inbox fs-1 text-muted d-block mb-3"></i>
+              <p class="text-muted">Tidak ada mahasiswa ditemukan.</p>
+            </td>
+          </tr>
+        <% } %>
+        <% mahasiswaList.forEach(m => { 
+          let angkatan = m.nim && m.nim.length >= 2 ? '20' + m.nim.substring(0,2) : '-';
+        %>
+        <tr>
+          <td>
+            <% if (m.foto) { %>
+              <img src="<%= m.foto %>" alt="foto" class="foto-mahasiswa">
+            <% } else { %>
+              <div class="avatar-circle"><%= (m.nama || '?').charAt(0).toUpperCase() %></div>
+            <% } %>
+          </td>
+          <td><span class="badge bg-secondary"><%= m.nim || '-' %></span></td>
+          <td><%= m.nama %></td>
+          <td><%= angkatan %></td>
+          <td>
+            <% if (m.krsCount && m.krsCount > 0) { %>
+              <span class="badge-berkas">
+                <i class="bi bi-file-pdf text-primary me-1"></i><%= m.krsCount %> file
+              </span>
+            <% } else { %>
+              <span class="text-muted">-</span>
+            <% } %>
+          </td>
+          <td>
+            <% if (m.khsCount && m.khsCount > 0) { %>
+              <span class="badge-berkas">
+                <i class="bi bi-file-pdf text-success me-1"></i><%= m.khsCount %> file
+              </span>
+            <% } else { %>
+              <span class="text-muted">-</span>
+            <% } %>
+          </td>
+          <td>
+            <a href="/admin/berkas/mahasiswa/<%= m.id %>" class="btn btn-sm btn-outline-primary btn-action">
+              <i class="bi bi-folder2-open"></i> Lihat Berkas
+            </a>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

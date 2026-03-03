@@ -1,0 +1,131 @@
+<%- include('../partials/header') %>
+
+<style>
+  .akademik-header {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border-radius: 1rem;
+    padding: 2rem;
+    color: white;
+    margin-bottom: 2rem;
+  }
+  .akademik-header h2 {
+    font-weight: 700;
+  }
+  .menu-card {
+    border: none;
+    border-radius: 1rem;
+    transition: all 0.3s;
+    overflow: hidden;
+    background: white;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    height: 100%;
+  }
+  .menu-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(33,147,176,0.15);
+  }
+  .menu-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    margin: 0 auto 1rem;
+  }
+  .menu-title {
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: #1e293b;
+  }
+  .menu-desc {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+  .btn-gradient {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border: none;
+    color: white;
+    font-weight: 500;
+    padding: 0.5rem 1.5rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(33,147,176,0.3);
+    color: white;
+  }
+</style>
+
+<div class="container-fluid mt-4">
+  <!-- Header -->
+  <div class="akademik-header">
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        <h2><i class="bi bi-journal-bookmark-fill me-2"></i>Akademik</h2>
+        <p class="mb-0 opacity-75">Kelola KRS, lihat KHS, transkrip, dan kalender akademik</p>
+      </div>
+      <a href="/mahasiswa/dashboard" class="btn btn-light">
+        <i class="bi bi-arrow-left me-2"></i>Kembali ke Dashboard
+      </a>
+    </div>
+  </div>
+
+  <!-- Grid Menu -->
+  <div class="row g-4">
+    <!-- KRS -->
+    <div class="col-md-6 col-lg-3">
+      <div class="menu-card p-4 text-center">
+        <div class="menu-icon bg-primary bg-opacity-10 text-primary mx-auto">
+          <i class="bi bi-pencil-square"></i>
+        </div>
+        <h5 class="menu-title">Kartu Rencana Studi</h5>
+        <p class="menu-desc">Buat KRS baru, lihat daftar KRS, dan unggah file KRS</p>
+        <a href="/mahasiswa/akademik/krs" class="btn-gradient">Kelola KRS</a>
+      </div>
+    </div>
+
+    <!-- KHS -->
+    <div class="col-md-6 col-lg-3">
+      <div class="menu-card p-4 text-center">
+        <div class="menu-icon bg-success bg-opacity-10 text-success mx-auto">
+          <i class="bi bi-file-earmark-text"></i>
+        </div>
+        <h5 class="menu-title">Kartu Hasil Studi</h5>
+        <p class="menu-desc">Lihat KHS per semester yang telah diupload</p>
+        <a href="/mahasiswa/akademik/khs" class="btn-gradient">Lihat KHS</a>
+      </div>
+    </div>
+
+    <!-- Transkrip -->
+    <div class="col-md-6 col-lg-3">
+      <div class="menu-card p-4 text-center">
+        <div class="menu-icon bg-warning bg-opacity-10 text-warning mx-auto">
+          <i class="bi bi-bar-chart-line"></i>
+        </div>
+        <h5 class="menu-title">Transkrip Nilai</h5>
+        <p class="menu-desc">Cetak transkrip nilai dan IPK kumulatif</p>
+        <a href="/mahasiswa/akademik/transkrip" class="btn-gradient">Lihat Transkrip</a>
+      </div>
+    </div>
+
+    <!-- Kalender Akademik -->
+    <div class="col-md-6 col-lg-3">
+      <div class="menu-card p-4 text-center">
+        <div class="menu-icon bg-info bg-opacity-10 text-info mx-auto">
+          <i class="bi bi-calendar-event"></i>
+        </div>
+        <h5 class="menu-title">Kalender Akademik</h5>
+        <p class="menu-desc">Jadwal penting, libur, dan kegiatan akademik</p>
+        <a href="/mahasiswa/akademik/kalender" class="btn-gradient">Lihat Kalender</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

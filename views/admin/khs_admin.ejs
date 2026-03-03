@@ -1,0 +1,179 @@
+<%- include('../partials/header') %>
+
+<style>
+  .khs-table th {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    border: none;
+  }
+  .khs-table td {
+    vertical-align: middle;
+    padding: 1rem 0.75rem;
+  }
+  .btn-action {
+    margin: 2px;
+    border-radius: 8px;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+  }
+  .btn-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+  }
+  .avatar-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.2rem;
+  }
+  .filter-card {
+    border-radius: 1rem;
+    border: none;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    background: white;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .table-responsive {
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+  }
+  .summary-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.2rem;
+    margin-bottom: 2rem;
+    border-left: 5px solid #2193b0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  }
+</style>
+
+<div class="container-fluid mt-4">
+  <h2 class="fw-bold mb-4">Data KHS Mahasiswa</h2>
+
+  <!-- Summary Card -->
+  <div class="summary-card d-flex justify-content-between align-items-center">
+    <div>
+      <i class="bi bi-files text-primary fs-4 me-2"></i>
+      <span class="fw-semibold">Total KHS Terupload:</span>
+      <span class="ms-2 badge bg-primary bg-opacity-10 text-primary fs-6"><%= khsList.length %></span>
+    </div>
+    <div>
+      <a href="/admin/khs/list" class="btn btn-sm btn-outline-primary">
+        <i class="bi bi-upload me-1"></i>Upload KHS Baru
+      </a>
+    </div>
+  </div>
+
+  <!-- Filter Card -->
+  <div class="filter-card">
+    <form method="GET" class="row g-3 align-items-end">
+      <div class="col-md-3">
+        <label for="angkatan" class="form-label fw-semibold">Angkatan</label>
+        <select class="form-select" id="angkatan" name="angkatan">
+          <option value="">Semua Angkatan</option>
+          <% 
+            const tahunList = ['2023','2024','2025','2026'];
+            tahunList.forEach(t => { 
+          %>
+          <option value="<%= t %>" <%= t === (filters?.angkatan || '') ? 'selected' : '' %>><%= t %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label for="mahasiswa" class="form-label fw-semibold">Cari Mahasiswa</label>
+        <input type="text" class="form-control" id="mahasiswa" name="mahasiswa" placeholder="Nama atau NIM" value="<%= filters?.mahasiswa || '' %>">
+      </div>
+      <div class="col-md-2">
+        <label for="semester" class="form-label fw-semibold">Semester</label>
+        <input type="text" class="form-control" id="semester" name="semester" placeholder="Contoh: Semester 1" value="<%= filters?.semester || '' %>">
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">Filter</button>
+      </div>
+      <div class="col-md-2">
+        <a href="/admin/khs" class="btn btn-outline-secondary w-100">Reset</a>
+      </div>
+    </form>
+  </div>
+
+  <!-- Notifikasi Sukses -->
+  <% if (typeof success !== 'undefined' && success === 'dihapus') { %>
+    <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+      <i class="bi bi-check-circle-fill me-2"></i>KHS berhasil dihapus.
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% } %>
+
+  <!-- Tabel KHS -->
+  <div class="table-responsive">
+    <table class="table khs-table">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Mahasiswa</th>
+          <th>Semester</th>
+          <th>File</th>
+          <th>Tanggal Upload</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (khsList.length === 0) { %>
+          <tr>
+            <td colspan="6" class="text-center py-5">
+              <i class="bi bi-inbox fs-1 text-muted d-block mb-3"></i>
+              <p class="text-muted">Belum ada KHS yang diupload.</p>
+            </td>
+          </tr>
+        <% } %>
+        <% khsList.forEach((item, index) => { %>
+        <tr>
+          <td class="fw-bold"><%= index + 1 %></td>
+          <td>
+            <div class="d-flex align-items-center">
+              <% if (item.mahasiswa?.foto) { %>
+                <img src="<%= item.mahasiswa.foto %>" alt="foto" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+              <% } else { %>
+                <div class="avatar-circle me-2"><%= (item.mahasiswa?.nama || '?').charAt(0).toUpperCase() %></div>
+              <% } %>
+              <div>
+                <strong><%= item.mahasiswa?.nama || 'Unknown' %></strong><br>
+                <small class="text-muted"><%= item.mahasiswa?.nim || '-' %></small>
+              </div>
+            </div>
+          </td>
+          <td><%= item.semester %></td>
+          <td>
+            <a href="<%= item.driveFileLink %>" target="_blank" class="btn btn-sm btn-outline-info btn-action">
+              <i class="bi bi-file-earmark-pdf me-1"></i> Lihat PDF
+            </a>
+          </td>
+          <td><small class="text-muted"><%= new Date(item.uploadedAt).toLocaleDateString('id-ID') %></small></td>
+          <td>
+            <form method="POST" action="/admin/khs/delete/<%= item.id %>" onsubmit="return confirm('Yakin hapus KHS ini? File di Drive juga akan dihapus.')">
+              <button type="submit" class="btn btn-sm btn-outline-danger btn-action">
+                <i class="bi bi-trash"></i> Hapus
+              </button>
+            </form>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

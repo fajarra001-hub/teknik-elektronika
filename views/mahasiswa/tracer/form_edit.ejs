@@ -1,0 +1,139 @@
+<%- include('../../partials/header') %>
+
+<style>
+  .form-card {
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    overflow: hidden;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  .form-header {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    padding: 1.5rem;
+    color: white;
+  }
+  .form-header h3 {
+    margin: 0;
+    font-weight: 600;
+  }
+  .form-body {
+    padding: 2rem;
+  }
+  .btn-gradient {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border: none;
+    color: white;
+    font-weight: 500;
+    padding: 0.6rem 2rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+  }
+  .btn-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(33,147,176,0.3);
+    color: white;
+  }
+  .btn-outline-gradient {
+    background: transparent;
+    border: 2px solid #2193b0;
+    color: #2193b0;
+    font-weight: 500;
+    padding: 0.6rem 2rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+    text-decoration: none;
+  }
+  .btn-outline-gradient:hover {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border-color: transparent;
+    color: white;
+  }
+  .form-label {
+    font-weight: 600;
+    color: #1e293b;
+  }
+  .form-control, .form-select {
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid #cbd5e1;
+  }
+  .form-control:focus, .form-select:focus {
+    border-color: #2193b0;
+    box-shadow: 0 0 0 0.2rem rgba(33,147,176,0.25);
+  }
+</style>
+
+<div class="container mt-4">
+  <div class="form-card">
+    <div class="form-header">
+      <h3><i class="bi bi-pencil me-2"></i>Edit Tracer Study</h3>
+    </div>
+    <div class="form-body">
+      <form method="POST" action="/mahasiswa/tracer/edit">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="statusPekerjaan" class="form-label">Status Pekerjaan *</label>
+            <select class="form-select" id="statusPekerjaan" name="statusPekerjaan" required>
+              <option value="">-- Pilih --</option>
+              <option value="bekerja" <%= data.statusPekerjaan === 'bekerja' ? 'selected' : '' %>>Bekerja</option>
+              <option value="wirausaha" <%= data.statusPekerjaan === 'wirausaha' ? 'selected' : '' %>>Wirausaha</option>
+              <option value="kuliah" <%= data.statusPekerjaan === 'kuliah' ? 'selected' : '' %>>Melanjutkan Studi</option>
+              <option value="belum bekerja" <%= data.statusPekerjaan === 'belum bekerja' ? 'selected' : '' %>>Belum Bekerja</option>
+            </select>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="pekerjaan" class="form-label">Pekerjaan / Jabatan *</label>
+            <input type="text" class="form-control" id="pekerjaan" name="pekerjaan" value="<%= data.pekerjaan %>" required>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="tempatKerja" class="form-label">Tempat Kerja / Nama Perusahaan *</label>
+            <input type="text" class="form-control" id="tempatKerja" name="tempatKerja" value="<%= data.tempatKerja %>" required>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="bidang" class="form-label">Bidang Pekerjaan</label>
+            <input type="text" class="form-control" id="bidang" name="bidang" value="<%= data.bidang || '' %>">
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="alamatKerja" class="form-label">Alamat Kerja</label>
+          <input type="text" class="form-control" id="alamatKerja" name="alamatKerja" value="<%= data.alamatKerja || '' %>">
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="gaji" class="form-label">Kisaran Gaji (Rp)</label>
+            <select class="form-select" id="gaji" name="gaji">
+              <option value="">-- Pilih --</option>
+              <option value="< 1 juta" <%= data.gaji === '< 1 juta' ? 'selected' : '' %>>Kurang dari 1 juta</option>
+              <option value="1-3 juta" <%= data.gaji === '1-3 juta' ? 'selected' : '' %>>1 - 3 juta</option>
+              <option value="3-5 juta" <%= data.gaji === '3-5 juta' ? 'selected' : '' %>>3 - 5 juta</option>
+              <option value="5-10 juta" <%= data.gaji === '5-10 juta' ? 'selected' : '' %>>5 - 10 juta</option>
+              <option value="> 10 juta" <%= data.gaji === '> 10 juta' ? 'selected' : '' %>>Lebih dari 10 juta</option>
+            </select>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="tanggalMulai" class="form-label">Tanggal Mulai Bekerja</label>
+            <input type="date" class="form-control" id="tanggalMulai" name="tanggalMulai" value="<%= data.tanggalMulai || '' %>">
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-between mt-4">
+          <a href="/mahasiswa/tracer" class="btn-outline-gradient">
+            <i class="bi bi-arrow-left me-2"></i>Kembali
+          </a>
+          <button type="submit" class="btn-gradient">
+            <i class="bi bi-save me-2"></i>Update Data
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<%- include('../../partials/footer') %>

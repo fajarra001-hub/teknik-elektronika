@@ -1,0 +1,977 @@
+<%- include('../partials/header-landing') %>
+
+<%
+  // Fungsi untuk mengekstrak file ID dari URL Google Drive
+  const getFileIdFromUrl = (url) => {
+    if (!url) return null;
+    let match = url.match(/[?&]id=([^&]+)/);
+    if (match) return match[1];
+    match = url.match(/\/d\/([^\/]+)/);
+    if (match) return match[1];
+    return null;
+  };
+%>
+
+<style>
+    /* ===== VARIABLES ===== */
+    :root {
+        --primary: #0d6efd;
+        --primary-dark: #0b5ed7;
+        --secondary: #0dcaf0;
+        --success: #198754;
+        --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
+        --shadow-sm: 0 0.5rem 1rem rgba(0,0,0,0.08);
+        --shadow-hover: 0 1rem 2rem rgba(0,0,0,0.12);
+        --border-radius: 1rem;
+        --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+        font-family: var(--font-sans);
+        scroll-behavior: smooth;
+    }
+
+    /* ===== TYPOGRAPHY ===== */
+    .section-title {
+        position: relative;
+        margin-bottom: 3rem;
+        font-weight: 700;
+        font-size: 2.2rem;
+        color: #1e293b;
+        text-align: center;
+    }
+    .section-title span {
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    .section-title:after {
+        content: '';
+        display: block;
+        width: 100px;
+        height: 5px;
+        background: var(--gradient);
+        margin: 0.8rem auto 0;
+        border-radius: 50px;
+    }
+
+    /* ===== HERO SECTION (RASIO 16:9 + ROUNDED CORNERS) ===== */
+    .hero-section {
+        margin-bottom: 3rem;
+        position: relative;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        overflow: hidden;
+        border-radius: var(--border-radius);
+    }
+    .hero-carousel,
+    .hero-carousel .carousel-inner,
+    .hero-carousel .carousel-item {
+        width: 100%;
+        height: 100%;
+    }
+    .hero-carousel .carousel-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: brightness(0.85);
+        transition: transform 6s ease;
+    }
+    .hero-carousel .carousel-item.active img {
+        transform: scale(1.05);
+    }
+    .hero-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(13,110,253,0.3) 0%, rgba(13,202,240,0.2) 100%);
+        z-index: 5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: white;
+    }
+    .hero-content {
+        max-width: 800px;
+        padding: 2rem;
+        animation: fadeInUp 1.2s ease;
+    }
+    .hero-content h1 {
+        font-size: clamp(1.8rem, 4vw, 3.5rem);
+        font-weight: 800;
+        text-shadow: 2px 4px 15px rgba(0,0,0,0.7);
+        margin-bottom: 1rem;
+    }
+    .hero-content p {
+        font-size: clamp(0.9rem, 2vw, 1.3rem);
+        margin-bottom: 1.5rem;
+        opacity: 0.95;
+        text-shadow: 1px 2px 8px rgba(0,0,0,0.6);
+    }
+    .hero-buttons .btn {
+        padding: 0.6rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        margin: 0.3rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        transition: all 0.3s;
+        font-size: clamp(0.8rem, 1.5vw, 1rem);
+    }
+    .hero-buttons .btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    }
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* ===== STATISTICS CARDS ===== */
+    .stat-card {
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 2rem 1rem;
+        text-align: center;
+        box-shadow: var(--shadow-sm);
+        transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        border: 1px solid rgba(255,255,255,0.2);
+        backdrop-filter: blur(2px);
+        position: relative;
+        overflow: hidden;
+    }
+    .stat-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: var(--shadow-hover);
+    }
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(13,110,253,0.1) 0%, transparent 70%);
+        opacity: 0;
+        transition: opacity 0.5s;
+    }
+    .stat-card:hover::before {
+        opacity: 1;
+    }
+    .stat-icon {
+        font-size: 3rem;
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 1rem;
+    }
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #1e293b;
+        line-height: 1.2;
+    }
+    .stat-label {
+        color: #64748b;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 0.9rem;
+    }
+
+    /* ===== VISI MISI SECTION ===== */
+    .visi-misi-card {
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 2rem;
+        box-shadow: var(--shadow-sm);
+        transition: all 0.3s;
+        height: 100%;
+        border: 1px solid #f1f5f9;
+    }
+    .visi-misi-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-hover);
+    }
+    .visi-misi-icon {
+        font-size: 2.5rem;
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 1rem;
+    }
+    .visi-misi-card h4 {
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 1rem;
+        position: relative;
+        display: inline-block;
+    }
+    .visi-misi-card h4:after {
+        content: '';
+        display: block;
+        width: 50px;
+        height: 3px;
+        background: var(--gradient);
+        margin-top: 0.3rem;
+        border-radius: 50px;
+    }
+    .visi-misi-card p {
+        color: #475569;
+        line-height: 1.7;
+        margin-bottom: 0.5rem;
+    }
+    .visi-misi-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .visi-misi-list li {
+        padding: 0.5rem 0;
+        border-bottom: 1px dashed #e2e8f0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .visi-misi-list li:last-child {
+        border-bottom: none;
+    }
+    .visi-misi-list i {
+        color: var(--primary);
+        font-size: 1.2rem;
+    }
+
+    /* ===== CHART CARD ===== */
+    .chart-card {
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        box-shadow: var(--shadow-sm);
+        transition: box-shadow 0.3s;
+    }
+    .chart-card:hover {
+        box-shadow: var(--shadow-hover);
+    }
+
+    /* ===== NEWS CARDS ===== */
+    .news-card {
+        border: none;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        transition: all 0.3s;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    .news-card:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-hover);
+    }
+    .news-card .card-img-wrapper {
+        height: 220px;
+        overflow: hidden;
+    }
+    .news-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s;
+    }
+    .news-card:hover img {
+        transform: scale(1.05);
+    }
+    .news-card .card-body {
+        padding: 1.5rem;
+        flex-grow: 1;
+    }
+    .news-card .card-title {
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: #1e293b;
+    }
+    .news-card .card-text {
+        color: #475569;
+        margin-bottom: 1rem;
+    }
+    .news-card .btn-outline-primary {
+        border-radius: 50px;
+        padding: 0.5rem 1.2rem;
+        font-weight: 600;
+        border-width: 2px;
+        transition: all 0.3s;
+    }
+    .news-card .btn-outline-primary:hover {
+        background: var(--gradient);
+        border-color: transparent;
+        color: white;
+    }
+
+    /* ===== TABLE STYLING ===== */
+    .table-schedule {
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+    }
+    .table-schedule thead {
+        background: var(--gradient);
+        color: white;
+    }
+    .table-schedule th {
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border: none;
+    }
+    .table-schedule td {
+        vertical-align: middle;
+        border-color: #f1f5f9;
+    }
+    .table-schedule tbody tr:hover {
+        background-color: #f8fafc;
+    }
+    .badge-schedule {
+        background: linear-gradient(135deg, #0d6efd, #0dcaf0);
+        color: white;
+        padding: 0.4rem 0.8rem;
+        border-radius: 50px;
+        font-weight: 500;
+        font-size: 0.8rem;
+    }
+
+    /* ===== ID CARD STYLE (DOSEN) ===== */
+    .id-card {
+        background: white;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        transition: all 0.3s;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #f1f5f9;
+    }
+    .id-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: var(--shadow-hover);
+    }
+    .id-card-img-wrapper {
+        position: relative;
+        overflow: hidden;
+        aspect-ratio: 3/4;
+        background: #f1f5f9;
+    }
+    .id-card-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s;
+    }
+    .id-card:hover .id-card-img {
+        transform: scale(1.05);
+    }
+    .id-card-social {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+        padding: 1rem 0.5rem 0.5rem;
+        display: flex;
+        justify-content: center;
+        gap: 0.8rem;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+    .id-card:hover .id-card-social {
+        opacity: 1;
+    }
+    .id-card-social a {
+        color: white;
+        font-size: 1.2rem;
+        transition: transform 0.2s;
+    }
+    .id-card-social a:hover {
+        transform: scale(1.2);
+        color: var(--secondary);
+    }
+    .id-card-body {
+        padding: 1.2rem;
+        text-align: center;
+        background: white;
+    }
+    .id-card-body h5 {
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+        font-size: 1.1rem;
+        color: #1e293b;
+    }
+    .id-card-body p {
+        color: #64748b;
+        font-size: 0.9rem;
+        margin-bottom: 0;
+        font-weight: 500;
+    }
+
+    /* ===== MITRA SECTION ===== */
+    .mitra-item {
+        background: white;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        text-align: center;
+        box-shadow: var(--shadow-sm);
+        transition: all 0.3s;
+        height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .mitra-item:hover {
+        transform: scale(1.05);
+        box-shadow: var(--shadow-hover);
+    }
+    .mitra-item img {
+        max-width: 100%;
+        max-height: 60px;
+        filter: grayscale(100%);
+        opacity: 0.7;
+        transition: all 0.3s;
+    }
+    .mitra-item:hover img {
+        filter: grayscale(0);
+        opacity: 1;
+    }
+
+    /* ===== TESTIMONI CAROUSEL ===== */
+    .testimonial-card {
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 2rem;
+        box-shadow: var(--shadow-sm);
+        margin: 1rem;
+        text-align: center;
+        position: relative;
+    }
+    .testimonial-card i {
+        font-size: 3rem;
+        color: var(--primary);
+        opacity: 0.2;
+        position: absolute;
+        top: 10px;
+        right: 20px;
+    }
+    .testimonial-img {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin: 0 auto 1rem;
+        border: 3px solid var(--primary);
+    }
+    .testimonial-name {
+        font-weight: 700;
+        color: #1e293b;
+    }
+    .testimonial-role {
+        color: #64748b;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+    .testimonial-text {
+        font-style: italic;
+        color: #334155;
+    }
+    .carousel-control-prev,
+    .carousel-control-next {
+        width: 5%;
+        color: var(--primary);
+    }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0px); }
+    }
+    .float-animation {
+        animation: float 3s ease-in-out infinite;
+    }
+
+    /* Custom untuk carousel dosen */
+    #dosenCarousel .carousel-control-prev,
+    #dosenCarousel .carousel-control-next {
+        width: 5%;
+        opacity: 1;
+    }
+    #dosenCarousel .carousel-control-prev-icon,
+    #dosenCarousel .carousel-control-next-icon {
+        background-color: var(--primary);
+        border-radius: 50%;
+        padding: 1rem;
+        background-size: 50%;
+    }
+    #dosenCarousel .carousel-indicators {
+        position: relative;
+        margin-top: 1rem;
+        bottom: 0;
+    }
+    #dosenCarousel .carousel-indicators button {
+        background-color: var(--primary);
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+    }
+</style>
+
+<!-- HERO SECTION (RASIO 16:9 + ROUNDED CORNERS) -->
+<section class="hero-section">
+    <div id="heroCarousel" class="carousel slide hero-carousel carousel-fade" data-bs-ride="carousel" data-bs-interval="5000">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="/images/slide1.jpg" alt="Slide 1" onerror="this.src='https://via.placeholder.com/1920x1080?text=Elektronika'">
+            </div>
+            <div class="carousel-item">
+                <img src="/images/slide2.jpg" alt="Slide 2" onerror="this.src='https://via.placeholder.com/1920x1080?text=Praktikum'">
+            </div>
+            <div class="carousel-item">
+                <img src="/images/slide3.jpg" alt="Slide 3" onerror="this.src='https://via.placeholder.com/1920x1080?text=Robotik'">
+            </div>
+            <div class="carousel-item">
+                <img src="/images/slide4.jpg" alt="Slide 4" onerror="this.src='https://via.placeholder.com/1920x1080?text=Industri'">
+            </div>
+        </div>
+    </div>
+    <div class="hero-overlay">
+        <div class="hero-content">
+            <h1>Selamat Datang di <span style="color: white;">Teknik Elektronika</span></h1>
+            <p>Mencetak insinyur dan teknisi handal di bidang elektronika industri, telekomunikasi, dan instrumentasi.</p>
+            <div class="hero-buttons">
+                <a href="#berita" class="btn btn-light">Jelajahi Prodi</a>
+                <a href="/auth/login" class="btn btn-outline-light">Portal Mahasiswa</a>
+            </div>
+        </div>
+    </div>
+    <!-- Carousel controls -->
+    <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+    <div class="carousel-indicators">
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="3" aria-label="Slide 4"></button>
+    </div>
+</section>
+
+<div class="container">
+    <!-- STATISTIK PRODI -->
+    <section id="statistik" class="mb-5">
+        <h2 class="section-title">Statistik <span>Prodi</span></h2>
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="bi bi-people-fill"></i></div>
+                    <div class="stat-number"><%= statistik.mahasiswaAktif || 0 %></div>
+                    <div class="stat-label">Mahasiswa Aktif</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="bi bi-briefcase-fill"></i></div>
+                    <div class="stat-number"><%= statistik.mahasiswaMagang || 0 %></div>
+                    <div class="stat-label">Mahasiswa Magang</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="bi bi-graph-up-arrow"></i></div>
+                    <div class="stat-number">
+                        <% 
+                            let total = 0;
+                            if (statistik.angkatan && Array.isArray(statistik.angkatan)) {
+                                total = statistik.angkatan.reduce((sum, a) => sum + (Number(a.jumlah) || 0), 0);
+                            }
+                        %>
+                        <%= total %>
+                    </div>
+                    <div class="stat-label">Total Mahasiswa</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="bi bi-calendar-event"></i></div>
+                    <div class="stat-number"><%= seminar.length %></div>
+                    <div class="stat-label">Seminar Mendatang</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- VISI MISI (di bawah statistik) -->
+    <section class="mb-5">
+        <h2 class="section-title">Visi & <span>Misi</span></h2>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="visi-misi-card">
+                    <div class="visi-misi-icon"><i class="bi bi-eye-fill"></i></div>
+                    <h4>Visi</h4>
+                    <p>Menjadi program studi unggulan dalam pengembangan ilmu pengetahuan dan teknologi di bidang elektronika yang berwawasan global dan berlandaskan nilai-nilai kewirausahaan pada tahun 2030.</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="visi-misi-card">
+                    <div class="visi-misi-icon"><i class="bi bi-bullseye"></i></div>
+                    <h4>Misi</h4>
+                    <ul class="visi-misi-list">
+                        <li><i class="bi bi-check-circle-fill"></i> Melaksanakan pendidikan vokasi dalam bidang Teknik Elektronika berbasis teknologi dan industri.</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Menghasilkan inovasi melalui penelitian dan pengabdian kepada masyarakat.</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Menjalin kerjasama dalam pengembangan dan diseminasi teknologi dengan industri dan dunia kerja.</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Membentuk kompetensi lulusan yang siap kerja.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- GRAFIK ANGKATAN -->
+    <section class="mb-5">
+        <h2 class="section-title">Sebaran <span>Mahasiswa</span> per Angkatan</h2>
+        <div class="chart-card">
+            <% const punyaData = statistik.angkatan && Array.isArray(statistik.angkatan) && statistik.angkatan.length > 0; %>
+            <% if (punyaData) { %>
+                <canvas id="angkatanChart" style="max-height: 400px; width: 100%;"></canvas>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        if (typeof Chart === 'undefined') {
+                            console.error('Chart.js tidak dimuat!');
+                            return;
+                        }
+                        const ctx = document.getElementById('angkatanChart');
+                        if (!ctx) return;
+                        try {
+                            const angkatanData = <%- JSON.stringify(statistik.angkatan) %>;
+                            const validData = angkatanData.filter(a => a && a.tahun && typeof a.jumlah !== 'undefined');
+                            const labels = validData.map(a => a.tahun);
+                            const data = validData.map(a => Number(a.jumlah) || 0);
+
+                            new Chart(ctx, {
+                                type: 'bar',
+                                data: {
+                                    labels: labels,
+                                    datasets: [{
+                                        label: 'Jumlah Mahasiswa',
+                                        data: data,
+                                        backgroundColor: 'rgba(13, 110, 253, 0.7)',
+                                        borderColor: '#0d6efd',
+                                        borderWidth: 2,
+                                        borderRadius: 8,
+                                        barPercentage: 0.7,
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: true,
+                                    plugins: { 
+                                        legend: { display: false },
+                                        tooltip: { backgroundColor: '#0d6efd' }
+                                    },
+                                    scales: {
+                                        y: { 
+                                            beginAtZero: true, 
+                                            grid: { color: 'rgba(0,0,0,0.05)' },
+                                            ticks: { stepSize: 1 }
+                                        },
+                                        x: { grid: { display: false } }
+                                    }
+                                }
+                            });
+                        } catch (e) {
+                            console.error(e);
+                            ctx.parentElement.innerHTML = '<p class="text-center text-danger">Gagal memuat grafik.</p>';
+                        }
+                    });
+                </script>
+            <% } else { %>
+                <p class="text-center text-muted py-4">Belum ada data angkatan. Silakan isi melalui menu admin.</p>
+            <% } %>
+        </div>
+    </section>
+
+    <!-- BERITA TERBARU -->
+    <section id="berita" class="mb-5">
+        <h2 class="section-title">Berita <span>Terbaru</span></h2>
+        <div class="row g-4">
+            <% if (!berita || berita.length === 0) { %>
+                <div class="col-12"><div class="alert alert-info text-center">Belum ada berita.</div></div>
+            <% } else { %>
+                <% berita.forEach(item => { %>
+                    <div class="col-md-4">
+                        <div class="news-card">
+                            <div class="card-img-wrapper">
+                                <% if (item.gambar) { %>
+                                    <img src="<%= item.gambar %>" alt="<%= item.judul %>" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x200?text=No+Image';">
+                                <% } else { %>
+                                    <img src="https://via.placeholder.com/400x200?text=Elektronika" alt="Default">
+                                <% } %>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="badge-schedule"><i class="bi bi-calendar"></i> 
+                                        <%= item.tanggal ? new Date(item.tanggal).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '-' %>
+                                    </span>
+                                </div>
+                                <h5 class="card-title"><%= item.judul %></h5>
+                                <p class="card-text"><%= (item.isi || '').replace(/<[^>]*>?/gm, '').substring(0, 80) %>...</p>
+                                <a href="/berita/<%= item.id %>" class="btn btn-outline-primary btn-sm mt-2">Baca Selengkapnya <i class="bi bi-arrow-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            <% } %>
+        </div>
+    </section>
+
+    <!-- JADWAL PENTING -->
+    <section id="seminar" class="mb-5">
+        <h2 class="section-title">Jadwal <span>Penting</span></h2>
+        <div class="table-responsive table-schedule">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Judul</th>
+                        <th>Tanggal</th>
+                        <th>Waktu</th>
+                        <th>Tempat</th>
+                        <th>Pemateri</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (!seminar || seminar.length === 0) { %>
+                        <tr><td colspan="5" class="text-center py-4">Belum ada jadwal seminar.</td></tr>
+                    <% } else { %>
+                        <% seminar.forEach(s => { %>
+                            <tr>
+                                <td><strong><%= s.judul || '-' %></strong></td>
+                                <td><%= s.tanggal ? new Date(s.tanggal).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-' %></td>
+                                <td><%= s.waktu || '-' %></td>
+                                <td><%= s.tempat || '-' %></td>
+                                <td><%= s.pemateri || '-' %></td>
+                            </tr>
+                        <% }) %>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- DOSEN PROGRAM STUDI (dengan carousel) -->
+    <section class="mb-5">
+        <h2 class="section-title">Dosen <span>Program Studi</span></h2>
+        <div id="dosenCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                <!-- Slide 1: 3 dosen pertama -->
+                <div class="carousel-item active">
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <div class="id-card">
+                                <div class="id-card-img-wrapper">
+                                    <img src="https://i.ibb.co.com/pjGLDjZc/ID.png" class="id-card-img" alt="Fajar Ramadhan">
+                                    <div class="id-card-social">
+                                        <a href="#"><i class="bi bi-envelope"></i></a>
+                                        <a href="#"><i class="bi bi-linkedin"></i></a>
+                                        <a href="#"><i class="bi bi-twitter"></i></a>
+                                    </div>
+                                </div>
+                                <div class="id-card-body">
+                                    <h5>Fajar Ramadhan, S.Pd., M.T</h5>
+                                    <p>Kaprodi Elektronika</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="id-card">
+                                <div class="id-card-img-wrapper">
+                                    <img src="https://i.ibb.co.com/B2yS6Ry4/SUARDI.png" class="id-card-img" alt="Suardi">
+                                    <div class="id-card-social">
+                                        <a href="#"><i class="bi bi-envelope"></i></a>
+                                        <a href="#"><i class="bi bi-linkedin"></i></a>
+                                    </div>
+                                </div>
+                                <div class="id-card-body">
+                                    <h5>Suardi, S.Pd., M.Pd.</h5>
+                                    <p>Dosen Umum</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="id-card">
+                                <div class="id-card-img-wrapper">
+                                    <img src="https://i.ibb.co.com/m73P8nx/ARIANI.png" class="id-card-img" alt="Ariani Amri">
+                                    <div class="id-card-social">
+                                        <a href="#"><i class="bi bi-envelope"></i></a>
+                                        <a href="#"><i class="bi bi-linkedin"></i></a>
+                                    </div>
+                                </div>
+                                <div class="id-card-body">
+                                    <h5>Ariani Amri, S.Pd., M.Pd.</h5>
+                                    <p>Dosen Energi</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Slide 2: 3 dosen berikutnya -->
+                <div class="carousel-item">
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <div class="id-card">
+                                <div class="id-card-img-wrapper">
+                                    <img src="https://i.ibb.co.com/5XfTGCqb/GUNAWAN.png" class="id-card-img" alt="Gunawan Tari">
+                                    <div class="id-card-social">
+                                        <a href="#"><i class="bi bi-envelope"></i></a>
+                                        <a href="#"><i class="bi bi-linkedin"></i></a>
+                                    </div>
+                                </div>
+                                <div class="id-card-body">
+                                    <h5>Gunawan Tari, S.T., M.T</h5>
+                                    <p>Dosen Telekomunikasi</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="id-card">
+                                <div class="id-card-img-wrapper">
+                                    <img src="https://i.ibb.co.com/PGm8NTcQ/MIFTAH.png" class="id-card-img" alt="Miftahul Hairia">
+                                    <div class="id-card-social">
+                                        <a href="#"><i class="bi bi-envelope"></i></a>
+                                        <a href="#"><i class="bi bi-linkedin"></i></a>
+                                    </div>
+                                </div>
+                                <div class="id-card-body">
+                                    <h5>Miftahul Hairia, S.Pd., M.Pd.</h5>
+                                    <p>Dosen Kendali</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="id-card">
+                                <div class="id-card-img-wrapper">
+                                    <img src="https://i.ibb.co.com/S7xrMCb8/RAHMAN-SYAM.png" class="id-card-img" alt="Rahman Syam">
+                                    <div class="id-card-social">
+                                        <a href="#"><i class="bi bi-envelope"></i></a>
+                                        <a href="#"><i class="bi bi-linkedin"></i></a>
+                                    </div>
+                                </div>
+                                <div class="id-card-body">
+                                    <h5>Rahman Syam, S.Pd., M.Si.</h5>
+                                    <p>Dosen Instrumentasi</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Tombol navigasi carousel -->
+            <button class="carousel-control-prev" type="button" data-bs-target="#dosenCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#dosenCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+            <!-- Indikator -->
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#dosenCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#dosenCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+            </div>
+        </div>
+    </section>
+
+    <!-- MITRA INDUSTRI (TAMBAHAN) -->
+    <section class="mb-5">
+        <h2 class="section-title">Mitra <span>Industri</span></h2>
+        <div class="row g-4 align-items-center">
+            <div class="col-6 col-md-2">
+                <div class="mitra-item"><img src="https://i.ibb.co.com/SDJ2YCbN/image.png" alt="Mitra"></div>
+            </div>
+            <div class="col-6 col-md-2">
+                <div class="mitra-item"><img src="https://image.indonetwork.co.id/companies/thumbs/400x300/2020/06/25/764823d5-147c-4a45-85ed-5123b5e766d8.jpeg" alt="Mitra"></div>
+            </div>
+            <div class="col-6 col-md-2">
+                <div class="mitra-item"><img src="https://via.placeholder.com/150x50?text=Samsung" alt="Mitra"></div>
+            </div>
+            <div class="col-6 col-md-2">
+                <div class="mitra-item"><img src="https://via.placeholder.com/150x50?text=Telkom" alt="Mitra"></div>
+            </div>
+            <div class="col-6 col-md-2">
+                <div class="mitra-item"><img src="https://via.placeholder.com/150x50?text=Siemens" alt="Mitra"></div>
+            </div>
+            <div class="col-6 col-md-2">
+                <div class="mitra-item"><img src="https://via.placeholder.com/150x50?text=Schneider" alt="Mitra"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TESTIMONI ALUMNI (TAMBAHAN) -->
+    <section class="mb-5">
+        <h2 class="section-title">Apa Kata <span>Alumni?</span></h2>
+        <div id="testimoniCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <div class="testimonial-card">
+                        <i class="bi bi-quote"></i>
+                        <img src="https://i.ibb.co.com/6xf2WTj/Untitled-design.png" class="testimonial-img" alt="Alumni">
+                        <h5 class="testimonial-name">Nana</h5>
+                        <p class="testimonial-role">Bekerja di Dokter Finance (Lulusan 2020)</p>
+                        <p class="testimonial-text">"Pendidikan di Teknik Elektronika sangat aplikatif dan dosen-dosennya berpengalaman. Saya langsung siap kerja setelah lulus."</p>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="testimonial-card">
+                        <i class="bi bi-quote"></i>
+                        <img src="https://i.ibb.co.com/6c2MJzg9/image.png" class="testimonial-img" alt="Alumni">
+                        <h5 class="testimonial-name">Muhammad Dani</h5>
+                        <p class="testimonial-role">Engineer di PT. Sari Roti (Lulusan 2021)</p>
+                        <p class="testimonial-text">"Dosennya Intelektual dan sering ada pelatihan dari industri. Sangat membantu karir saya."</p>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="testimonial-card">
+                        <i class="bi bi-quote"></i>
+                        <img src="https://i.ibb.co.com/4g3rv2ZQ/image.png" class="testimonial-img" alt="Alumni">
+                        <h5 class="testimonial-name">Asmunandar</h5>
+                        <p class="testimonial-role">Wirausaha (Lulusan 2022)</p>
+                        <p class="testimonial-text">"Ilmu yang didapat sangat mendukung saya dalam memulai bisnis di bidang elektronik."</p>
+                    </div>
+                </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#testimoniCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#testimoniCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </section>
+</div>
+
+<%- include('../partials/footer-landing') %>

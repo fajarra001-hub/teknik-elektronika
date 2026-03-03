@@ -1,0 +1,98 @@
+<%- include('../partials/header') %>
+
+<style>
+  .upload-card {
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    overflow: hidden;
+  }
+  .upload-header {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    padding: 2rem;
+    color: white;
+  }
+  .upload-header h2 {
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+  .upload-body {
+    padding: 2rem;
+  }
+  .form-label {
+    font-weight: 600;
+    color: #1e293b;
+  }
+  .btn-gradient {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border: none;
+    color: white;
+    font-weight: 600;
+    padding: 0.6rem 2rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+  }
+  .btn-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(33,147,176,0.3);
+    color: white;
+  }
+</style>
+
+<div class="container-fluid mt-4">
+  <div class="upload-card">
+    <div class="upload-header">
+      <h2>Upload KHS</h2>
+      <p class="mb-0">Unggah file KHS mahasiswa per semester</p>
+    </div>
+    <div class="upload-body">
+      <% if (typeof error !== 'undefined' && error) { %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i><%= error %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      <% } %>
+
+      <form method="POST" action="/admin/khs/upload" enctype="multipart/form-data">
+        <div class="mb-3">
+          <label for="userId" class="form-label">Mahasiswa <span class="text-danger">*</span></label>
+          <select class="form-select" id="userId" name="userId" required>
+            <option value="">-- Pilih Mahasiswa --</option>
+            <% mahasiswaList.forEach(m => { %>
+              <option value="<%= m.id %>"><%= m.nim %> - <%= m.nama %></option>
+            <% }) %>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="semester" class="form-label">Semester <span class="text-danger">*</span></label>
+          <select class="form-select" id="semester" name="semester" required>
+            <option value="">-- Pilih Semester --</option>
+            <% semesterOptions.forEach(s => { %>
+              <option value="<%= s %>"><%= s %></option>
+            <% }) %>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="ip" class="form-label">IP Semester <span class="text-danger">*</span></label>
+          <input type="number" step="0.01" min="0" max="4" class="form-control" id="ip" name="ip" required>
+          <small class="text-muted">Nilai antara 0.00 - 4.00</small>
+        </div>
+
+        <div class="mb-4">
+          <label for="file" class="form-label">File KHS (PDF) <span class="text-danger">*</span></label>
+          <input type="file" class="form-control" id="file" name="file" accept=".pdf" required>
+          <small class="text-muted">Format PDF, maksimal 5 MB</small>
+        </div>
+
+        <div class="d-flex gap-3">
+          <button type="submit" class="btn-gradient"><i class="bi bi-cloud-upload me-2"></i>Upload</button>
+          <a href="/admin/khs/list" class="btn btn-outline-secondary">Batal</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

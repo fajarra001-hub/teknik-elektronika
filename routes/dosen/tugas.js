@@ -1,0 +1,217 @@
+/**
+ * routes/dosen/tugas.js
+ * Kelola tugas untuk dosen (CRUD tugas)
+ */
+
+const express = require('express');
+const router = express.Router();
+const { verifyToken, isDosen } = require('../../middleware/auth');
+const { db } = require('../../config/firebaseAdmin');
+const drive = require('../../config/googleDrive');
+const { Readable } = require('stream');
+const multer = require('multer');
+const upload = multer({ storage: multer.memoryStorage() });
+
+router.use(verifyToken);
+router.use(isDosen);
+
+// ============================================================================
+// DAFTAR TUGAS
+// ============================================================================
+router.get('/', async (req, res) => {
+  try {
+    const snapshot = await db.collection('tugas')
+      .where('dosenId', '==', req.dosen.id)
+      .orderBy('deadline', 'desc')
+      .get();
+
+    const tugasList = [];
+    for (const doc of snapshot.docs) {
+      const data = doc.data();
+      // Ambil kode MK
+      let mkKode = '';
+      if (data.mkId) {
+        const mkDoc = await db.collection('mataKuliah').doc(data.mkId).get();
+        if (mkDoc.exists) mkKode = mkDoc.data().kode;
+      }
+      tugasList.push({
+        id: doc.id,
+        ...data,
+        mkKode
+      });
+    }
+
+    res.render('dosen/tugas_list', {
+      title: 'Daftar Tugas',
+      tugasList
+    });
+  } catch (error) {
+    console.error('Error ambil tugas:', error);
+    res.status(500).render('error', { title: 'Error', message: 'Gagal mengambil daftar tugas' });
+  }
+});
+
+// ============================================================================
+// FORM BUAT TUGAS BARU
+// ============================================================================
+router.get('/create', async (req, res) => {
+  try {
+    // Ambil daftar mata kuliah yang diampu dosen ini
+    const mkSnapshot = await db.collection('mataKuliah')
+      .where('dosenIds', 'array-contains', req.dosen.id)
+      .get();
+    const mkList = mkSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    res.render('dosen/tugas_form', {
+      title: 'Buat Tugas Baru',
+      mkList,
+      tugas: null
+    });
+  } catch (error) {
+    console.error('Error load form tugas:', error);
+    res.status(500).render('error', { title: 'Error', message: 'Gagal memuat form' });
+  }
+});
+
+// ============================================================================
+// SIMPAN TUGAS BARU
+// ============================================================================
+router.post('/', upload.single('file'), async (req, res) => {
+  try {
+    const { mkId, judul, deskripsi, deadline, tipe } = req.body;
+    const file = req.file;
+
+    if (!mkId || !judul || !deadline) {
+      return res.status(400).send('MK, judul, dan deadline wajib diisi');
+    }
+
+    let fileUrl = null, fileId = null;
+    if (file) {
+      // Upload ke Drive (gunakan folder tugas yang sudah ada)
+      const folderId = process.env.TUGAS_FOLDER_ID; // atau buat fungsi helper
+      if (!folderId) throw new Error('TUGAS_FOLDER_ID tidak diatur');
+      const fileName = `${Date.now()}_${file.originalname}`;
+      const fileMetadata = { name: fileName, parents: [folderId] };
+      const media = { mimeType: file.mimetype, body: Readable.from(file.buffer) };
+      const response = await drive.files.create({
+        resource: fileMetadata,
+        media,
+        fields: 'id, webViewLink'
+      });
+      // Set publik
+      await drive.permissions.create({
+        fileId: response.data.id,
+        requestBody: { role: 'reader', type: 'anyone' }
+      });
+      fileUrl = `https://drive.google.com/uc?export=view&id=${response.data.id}`;
+      fileId = response.data.id;
+    }
+
+    await db.collection('tugas').add({
+      dosenId: req.dosen.id,
+      mkId,
+      judul,
+      deskripsi: deskripsi || '',
+      deadline: new Date(deadline).toISOString(),
+      tipe: tipe || 'tugas',
+      fileUrl,
+      fileId,
+      createdAt: new Date().toISOString()
+    });
+
+    res.redirect('/dosen/tugas');
+  } catch (error) {
+    console.error('Error buat tugas:', error);
+    res.status(500).send('Gagal membuat tugas: ' + error.message);
+  }
+});
+
+// ============================================================================
+// DETAIL TUGAS
+// ============================================================================
+router.get('/:id', async (req, res) => {
+  try {
+    const tugasDoc = await db.collection('tugas').doc(req.params.id).get();
+    if (!tugasDoc.exists) {
+      return res.status(404).render('error', { title: 'Tidak Ditemukan', message: 'Tugas tidak ditemukan' });
+    }
+    const tugas = { id: tugasDoc.id, ...tugasDoc.data() };
+
+    // Pastikan tugas ini milik dosen yang login
+    if (tugas.dosenId !== req.dosen.id) {
+      return res.status(403).render('error', { title: 'Akses Ditolak', message: 'Anda tidak berhak mengakses tugas ini' });
+    }
+
+    // Ambil data MK
+    let mkKode = '', mkNama = '';
+    if (tugas.mkId) {
+      const mkDoc = await db.collection('mataKuliah').doc(tugas.mkId).get();
+      if (mkDoc.exists) {
+        mkKode = mkDoc.data().kode;
+        mkNama = mkDoc.data().nama;
+      }
+    }
+    tugas.mkKode = mkKode;
+    tugas.mkNama = mkNama;
+
+    // Ambil daftar mahasiswa yang terdaftar di MK ini
+    const enrollmentSnapshot = await db.collection('enrollment')
+      .where('mkId', '==', tugas.mkId)
+      .where('status', '==', 'active')
+      .get();
+    const mahasiswaIds = enrollmentSnapshot.docs.map(d => d.data().userId);
+
+    const mahasiswaList = [];
+    for (const uid of mahasiswaIds) {
+      const userDoc = await db.collection('users').doc(uid).get();
+      if (userDoc.exists) {
+        const userData = userDoc.data();
+        // Cek pengumpulan
+        const pengumpulanSnapshot = await db.collection('pengumpulan')
+          .where('tugasId', '==', tugas.id)
+          .where('mahasiswaId', '==', uid)
+          .get();
+        const pengumpulan = pengumpulanSnapshot.empty ? null : { id: pengumpulanSnapshot.docs[0].id, ...pengumpulanSnapshot.docs[0].data() };
+        mahasiswaList.push({
+          id: uid,
+          nim: userData.nim,
+          nama: userData.nama,
+          pengumpulan
+        });
+      }
+    }
+
+    res.render('dosen/tugas_detail', {
+      title: `Tugas: ${tugas.judul}`,
+      tugas,
+      mahasiswaList
+    });
+  } catch (error) {
+    console.error('Error detail tugas:', error);
+    res.status(500).render('error', { title: 'Error', message: 'Gagal memuat detail tugas' });
+  }
+});
+
+// ============================================================================
+// BERI NILAI (POST)
+// ============================================================================
+router.post('/pengumpulan/nilai', async (req, res) => {
+  try {
+    const { pengumpulanId, nilai, komentar } = req.body;
+    if (!pengumpulanId || !nilai) {
+      return res.status(400).send('Data tidak lengkap');
+    }
+    await db.collection('pengumpulan').doc(pengumpulanId).update({
+      nilai: parseFloat(nilai),
+      komentar: komentar || '',
+      status: 'dinilai',
+      dinilaiPada: new Date().toISOString()
+    });
+    res.redirect('back');
+  } catch (error) {
+    console.error('Error nilai:', error);
+    res.status(500).send('Gagal memberi nilai');
+  }
+});
+
+module.exports = router;

@@ -1,0 +1,97 @@
+<%- include('../../partials/header') %>
+
+<style>
+  .seminar-header {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border-radius: 1rem;
+    padding: 2rem;
+    color: white;
+    margin-bottom: 2rem;
+  }
+  .seminar-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+  }
+  .btn-gradient {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border: none;
+    color: white;
+    font-weight: 500;
+    padding: 0.6rem 1.5rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+  }
+  .btn-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(33,147,176,0.3);
+    color: white;
+  }
+  .badge-pending { background: #ffc107; color: #212529; }
+  .badge-approved { background: #28a745; color: white; }
+  .badge-rejected { background: #dc3545; color: white; }
+  .badge-dibatalkan { background: #6c757d; color: white; }
+</style>
+
+<div class="container-fluid mt-4">
+  <div class="seminar-header d-flex justify-content-between align-items-center">
+    <div>
+      <h2><i class="bi bi-calendar-event me-2"></i>Permohonan Seminar Magang</h2>
+      <p class="mb-0 opacity-75">Ajukan jadwal seminar dan lihat status permohonan</p>
+    </div>
+    <a href="/mahasiswa/magang/seminar/baru" class="btn btn-light">
+      <i class="bi bi-plus-circle me-2"></i>Ajukan Baru
+    </a>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-hover align-middle seminar-table">
+      <thead>
+        <tr>
+          <th>Judul</th>
+          <th>Tanggal</th>
+          <th>Waktu</th>
+          <th>Tempat</th>
+          <th>Status</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (permohonan.length === 0) { %>
+          <tr><td colspan="6" class="text-center py-5">
+            <i class="bi bi-inbox fs-1 text-muted d-block mb-3"></i>
+            <p class="text-muted">Belum ada permohonan seminar.</p>
+          </td></tr>
+        <% } %>
+        <% permohonan.forEach(p => { %>
+          <tr>
+            <td><%= p.judul %></td>
+            <td><%= new Date(p.tanggal).toLocaleDateString('id-ID') %></td>
+            <td><%= p.waktu || '-' %></td>
+            <td><%= p.tempat %></td>
+            <td>
+              <% if (p.status === 'pending') { %>
+                <span class="badge bg-warning text-dark">Pending</span>
+              <% } else if (p.status === 'approved') { %>
+                <span class="badge bg-success">Disetujui</span>
+              <% } else if (p.status === 'rejected') { %>
+                <span class="badge bg-danger">Ditolak</span>
+              <% } else if (p.status === 'dibatalkan') { %>
+                <span class="badge bg-secondary">Dibatalkan</span>
+              <% } %>
+            </td>
+            <td>
+              <a href="/mahasiswa/magang/seminar/<%= p.id %>" class="btn btn-sm btn-outline-primary">Detail</a>
+              <% if (p.status === 'pending') { %>
+                <form method="POST" action="/mahasiswa/magang/seminar/<%= p.id %>/batal" style="display:inline;" onsubmit="return confirm('Batalkan pengajuan ini?')">
+                  <button class="btn btn-sm btn-outline-danger">Batalkan</button>
+                </form>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../../partials/footer') %>

@@ -1,0 +1,175 @@
+<%- include('../partials/header') %>
+
+<style>
+  .magang-table th {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    border: none;
+  }
+  .magang-table td {
+    vertical-align: middle;
+    padding: 1rem 0.75rem;
+  }
+  .badge-status {
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-weight: 500;
+    font-size: 0.8rem;
+  }
+  .badge-pending { background: #ffc107; color: #212529; }
+  .badge-approved { background: #28a745; color: white; }
+  .badge-rejected { background: #dc3545; color: white; }
+  .btn-action {
+    margin: 2px;
+    border-radius: 8px;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+  }
+  .btn-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+  }
+  .avatar-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.2rem;
+  }
+  .filter-card {
+    border-radius: 1rem;
+    border: none;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    background: white;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .table-responsive {
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+  }
+</style>
+
+<div class="container-fluid mt-4">
+  <h2 class="fw-bold mb-4">Daftar Permohonan Magang</h2>
+
+  <!-- Filter Card (opsional) -->
+  <div class="filter-card">
+    <form method="GET" class="row g-3 align-items-end">
+      <div class="col-md-3">
+        <label for="status" class="form-label fw-semibold">Filter Status</label>
+        <select class="form-select" id="status" name="status">
+          <option value="">Semua Status</option>
+          <option value="pending" <%= filters?.status === 'pending' ? 'selected' : '' %>>Pending</option>
+          <option value="approved" <%= filters?.status === 'approved' ? 'selected' : '' %>>Approved</option>
+          <option value="rejected" <%= filters?.status === 'rejected' ? 'selected' : '' %>>Rejected</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">Filter</button>
+      </div>
+      <div class="col-md-2">
+        <a href="/admin/magang" class="btn btn-outline-secondary w-100">Reset</a>
+      </div>
+    </form>
+  </div>
+
+  <!-- Notifikasi Sukses (opsional) -->
+  <% if (typeof success !== 'undefined' && success === 'approved') { %>
+    <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+      <i class="bi bi-check-circle-fill me-2"></i>Permohonan magang berhasil disetujui.
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% } %>
+  <% if (typeof success !== 'undefined' && success === 'rejected') { %>
+    <div class="alert alert-warning alert-dismissible fade show mb-4" role="alert">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>Permohonan magang ditolak.
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% } %>
+
+  <!-- Tabel Permohonan -->
+  <div class="table-responsive">
+    <table class="table magang-table">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Mahasiswa</th>
+          <th>Judul</th>
+          <th>Tempat</th>
+          <th>Tanggal</th>
+          <th>Status</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (requests.length === 0) { %>
+          <tr>
+            <td colspan="7" class="text-center py-5">
+              <i class="bi bi-inbox fs-1 text-muted d-block mb-3"></i>
+              <p class="text-muted">Belum ada permohonan magang.</p>
+            </td>
+          </tr>
+        <% } %>
+        <% requests.forEach((r, index) => { %>
+        <tr>
+          <td class="fw-bold"><%= index + 1 %></td>
+          <td>
+            <div class="d-flex align-items-center">
+              <% if (r.mahasiswa?.foto) { %>
+                <img src="<%= r.mahasiswa.foto %>" alt="foto" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+              <% } else { %>
+                <div class="avatar-circle me-2"><%= (r.mahasiswa?.nama || '?').charAt(0).toUpperCase() %></div>
+              <% } %>
+              <div>
+                <strong><%= r.mahasiswa?.nama || 'Unknown' %></strong><br>
+                <small class="text-muted"><%= r.mahasiswa?.nim || '-' %></small>
+              </div>
+            </div>
+          </td>
+          <td><%= r.judul %></td>
+          <td><%= r.tempat %></td>
+          <td><%= new Date(r.tanggalMulai).toLocaleDateString('id-ID') %> - <%= new Date(r.tanggalSelesai).toLocaleDateString('id-ID') %></td>
+          <td>
+            <span class="badge-status 
+              <%= r.status === 'pending' ? 'badge-pending' : '' %>
+              <%= r.status === 'approved' ? 'badge-approved' : '' %>
+              <%= r.status === 'rejected' ? 'badge-rejected' : '' %>">
+              <%= r.status %>
+            </span>
+          </td>
+          <td>
+            <% if (r.status === 'pending') { %>
+              <form method="POST" action="/admin/magang/<%= r.id %>/approve" style="display:inline;">
+                <button class="btn btn-sm btn-success btn-action" title="Setujui">
+                  <i class="bi bi-check-lg"></i> Setujui
+                </button>
+              </form>
+              <form method="POST" action="/admin/magang/<%= r.id %>/reject" style="display:inline;">
+                <button class="btn btn-sm btn-danger btn-action" title="Tolak">
+                  <i class="bi bi-x-lg"></i> Tolak
+                </button>
+              </form>
+            <% } else { %>
+              <span class="text-muted small">Selesai</span>
+            <% } %>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

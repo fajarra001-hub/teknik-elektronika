@@ -1,0 +1,197 @@
+<%- include('../partials/header') %>
+
+<style>
+  .khs-table th {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    border: none;
+  }
+  .khs-table td {
+    vertical-align: middle;
+    padding: 1rem 0.75rem;
+  }
+  .badge-ip {
+    background: #28a745;
+    color: white;
+    font-weight: 600;
+    padding: 0.4rem 0.8rem;
+    border-radius: 50px;
+  }
+  .btn-action {
+    margin: 2px;
+    border-radius: 8px;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+  }
+  .btn-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+  }
+  .avatar-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.2rem;
+  }
+  .filter-card {
+    border-radius: 1rem;
+    border: none;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    background: white;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .table-responsive {
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+  }
+  .foto-mahasiswa {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+</style>
+
+<div class="container-fluid mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold">Daftar KHS</h2>
+    <a href="/admin/khs/upload" class="btn btn-primary">
+      <i class="bi bi-upload me-2"></i>Upload KHS Baru
+    </a>
+  </div>
+
+  <!-- Notifikasi -->
+  <% if (typeof success !== 'undefined' && success === 'uploaded') { %>
+    <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+      <i class="bi bi-check-circle-fill me-2"></i>KHS berhasil diupload.
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% } %>
+  <% if (typeof success !== 'undefined' && success === 'deleted') { %>
+    <div class="alert alert-info alert-dismissible fade show mb-4" role="alert">
+      <i class="bi bi-trash-fill me-2"></i>KHS berhasil dihapus.
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% } %>
+
+  <!-- Filter Card -->
+  <div class="filter-card">
+    <form method="GET" class="row g-3 align-items-end">
+      <div class="col-md-4">
+        <label for="semester" class="form-label fw-semibold">Filter Semester</label>
+        <select class="form-select" id="semester" name="semester">
+          <option value="">Semua Semester</option>
+          <% if (semesterList && semesterList.length) { %>
+            <% semesterList.forEach(s => { %>
+              <option value="<%= s %>" <%= filters?.semester === s ? 'selected' : '' %>><%= s %></option>
+            <% }) %>
+          <% } %>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label for="angkatan" class="form-label fw-semibold">Filter Angkatan</label>
+        <select class="form-select" id="angkatan" name="angkatan">
+          <option value="">Semua Angkatan</option>
+          <% if (angkatanList && angkatanList.length) { %>
+            <% angkatanList.forEach(a => { %>
+              <option value="<%= a %>" <%= filters?.angkatan === a ? 'selected' : '' %>><%= a %></option>
+            <% }) %>
+          <% } %>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">Filter</button>
+      </div>
+      <div class="col-md-2">
+        <a href="/admin/khs/list" class="btn btn-outline-secondary w-100">Reset</a>
+      </div>
+    </form>
+  </div>
+
+  <!-- Tabel KHS -->
+  <div class="table-responsive">
+    <table class="table khs-table">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Mahasiswa</th>
+          <th>Semester</th>
+          <th>IP</th>
+          <th>File</th>
+          <th>Tanggal Upload</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (khsList.length === 0) { %>
+          <tr>
+            <td colspan="7" class="text-center py-5">
+              <i class="bi bi-inbox fs-1 text-muted d-block mb-3"></i>
+              <p class="text-muted">Belum ada KHS.</p>
+            </td>
+          </tr>
+        <% } else { %>
+          <% khsList.forEach((khs, index) => { %>
+          <tr>
+            <td class="fw-bold"><%= index + 1 %></td>
+            <td>
+              <div class="d-flex align-items-center">
+                <% if (khs.mahasiswa?.foto) { %>
+                  <img src="<%= khs.mahasiswa.foto %>" alt="foto" class="foto-mahasiswa me-2">
+                <% } else { %>
+                  <div class="avatar-circle me-2"><%= (khs.mahasiswa?.nama || '?').charAt(0).toUpperCase() %></div>
+                <% } %>
+                <div>
+                  <strong><%= khs.mahasiswa?.nama || 'Unknown' %></strong><br>
+                  <small class="text-muted"><%= khs.mahasiswa?.nim || '-' %></small>
+                </div>
+              </div>
+            </td>
+            <td><%= khs.semester || '-' %></td>
+            <td>
+              <span class="badge-ip"><%= khs.ip ? khs.ip.toFixed(2) : '-' %></span>
+            </td>
+            <td>
+              <% if (khs.fileUrl) { %>
+                <a href="<%= khs.fileUrl %>" target="_blank" class="btn btn-sm btn-outline-info">
+                  <i class="bi bi-file-earmark-pdf"></i> Lihat
+                </a>
+              <% } else { %>
+                <span class="badge bg-secondary">No file</span>
+              <% } %>
+            </td>
+            <td><%= khs.createdAt ? new Date(khs.createdAt).toLocaleDateString('id-ID') : '-' %></td>
+            <td>
+              <div class="d-flex gap-1">
+                <a href="/admin/khs/<%= khs.id %>" class="btn btn-sm btn-outline-primary btn-action" title="Detail">
+                  <i class="bi bi-eye"></i>
+                </a>
+                <form method="POST" action="/admin/khs/delete/<%= khs.id %>" style="display:inline;" onsubmit="return confirm('Hapus KHS ini? File di Drive juga akan dihapus.')">
+                  <button class="btn btn-sm btn-outline-danger btn-action" title="Hapus">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          <% }) %>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

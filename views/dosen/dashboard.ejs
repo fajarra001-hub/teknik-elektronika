@@ -1,0 +1,394 @@
+<%- include('../partials/header') %>
+
+<%
+  // Set default values for optional variables to prevent undefined errors
+  if (typeof events === 'undefined') events = [];
+  if (typeof berita === 'undefined') berita = [];
+%>
+
+<style>
+  .stat-card {
+    border: none;
+    border-radius: 1rem;
+    transition: transform 0.3s, box-shadow 0.3s;
+    overflow: hidden;
+  }
+  .stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(33,147,176,0.15) !important;
+  }
+  .stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+  }
+  .stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+  .stat-label {
+    color: #6c757d;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .welcome-card {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border-radius: 1rem;
+    padding: 2rem;
+    color: white;
+    margin-bottom: 2rem;
+  }
+  .mk-card {
+    border: none;
+    border-radius: 1rem;
+    transition: all 0.3s;
+    overflow: hidden;
+    background: white;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    height: 100%;
+  }
+  .mk-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(33,147,176,0.15);
+  }
+  .btn-gradient {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border: none;
+    color: white;
+    font-weight: 500;
+    padding: 0.6rem 1.5rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+  }
+  .btn-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(33,147,176,0.3);
+    color: white;
+  }
+  .profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid white;
+    object-fit: cover;
+  }
+  .event-card {
+    background: #f8f9fa;
+    border-left: 4px solid #2193b0;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 0.5rem;
+  }
+  .event-date {
+    font-size: 0.8rem;
+    color: #6c757d;
+  }
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: #1e293b;
+  }
+  .quick-action-row {
+    margin-bottom: 2rem;
+  }
+</style>
+
+<div class="container-fluid mt-4">
+  <!-- Welcome Card -->
+  <div class="welcome-card">
+    <div class="d-flex align-items-center">
+      <div class="flex-shrink-0">
+        <%
+          const getFileIdFromUrl = (url) => {
+            if (!url) return null;
+            let match = url.match(/[?&]id=([^&]+)/);
+            if (match) return match[1];
+            match = url.match(/\/d\/([^\/]+)/);
+            if (match) return match[1];
+            return null;
+          };
+          const fileId = dosen && dosen.foto ? getFileIdFromUrl(dosen.foto) : null;
+        %>
+        <% if (fileId) { %>
+          <img src="https://drive.google.com/thumbnail?id=<%= fileId %>&sz=w200" alt="foto" class="profile-avatar">
+        <% } else { %>
+          <div class="profile-avatar bg-white text-primary d-flex align-items-center justify-content-center" style="font-size: 2.5rem;">
+            <i class="bi bi-person-circle"></i>
+          </div>
+        <% } %>
+      </div>
+      <div class="flex-grow-1 ms-3">
+        <h2 class="fw-bold">Selamat Datang, <%= dosen.nama %></h2>
+        <p class="mb-0 opacity-75"><%= dosen.nip || '-' %> | <%= dosen.email %></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistik Cards (baris pertama) -->
+  <div class="row g-4 mb-5">
+    <div class="col-md-3">
+      <div class="stat-card card shadow-sm">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="stat-icon bg-primary bg-opacity-10 text-primary me-3">
+              <i class="bi bi-book"></i>
+            </div>
+            <div>
+              <div class="stat-value"><%= mkCount || 0 %></div>
+              <div class="stat-label">Mata Kuliah Diampu</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stat-card card shadow-sm">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="stat-icon bg-success bg-opacity-10 text-success me-3">
+              <i class="bi bi-people"></i>
+            </div>
+            <div>
+              <div class="stat-value"><%= totalMahasiswa || 0 %></div>
+              <div class="stat-label">Mahasiswa Bimbingan</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <a href="/dosen/tugas" class="text-decoration-none">
+        <div class="stat-card card shadow-sm">
+          <div class="card-body">
+            <div class="d-flex align-items-center">
+              <div class="stat-icon bg-warning bg-opacity-10 text-warning me-3">
+                <i class="bi bi-file-earmark-text"></i>
+              </div>
+              <div>
+                <div class="stat-value"><%= tugasAktif || 0 %></div>
+                <div class="stat-label">Tugas Aktif</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-3">
+      <a href="/dosen/nilai" class="text-decoration-none">
+        <div class="stat-card card shadow-sm">
+          <div class="card-body">
+            <div class="d-flex align-items-center">
+              <div class="stat-icon bg-danger bg-opacity-10 text-danger me-3">
+                <i class="bi bi-clock-history"></i>
+              </div>
+              <div>
+                <div class="stat-value"><%= pengumpulanBelumDinilai || 0 %></div>
+                <div class="stat-label">Belum Dinilai</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Aksi Cepat (baris pertama: 4 menu) -->
+  <h4 class="fw-bold mb-3">Aksi Cepat</h4>
+  <div class="row g-4 quick-action-row">
+    <div class="col-md-3">
+      <a href="/dosen/tugas/create" class="text-decoration-none">
+        <div class="mk-card p-3">
+          <div class="text-center">
+            <div class="stat-icon bg-primary bg-opacity-10 text-primary mx-auto mb-3">
+              <i class="bi bi-plus-circle"></i>
+            </div>
+            <h6 class="fw-bold">Buat Tugas</h6>
+            <p class="text-muted small">Buat tugas baru</p>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-3">
+      <a href="/dosen/nilai" class="text-decoration-none">
+        <div class="mk-card p-3">
+          <div class="text-center">
+            <div class="stat-icon bg-success bg-opacity-10 text-success mx-auto mb-3">
+              <i class="bi bi-bar-chart"></i>
+            </div>
+            <h6 class="fw-bold">Input Nilai</h6>
+            <p class="text-muted small">Rekap nilai</p>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-3">
+      <a href="/dosen/mk" class="text-decoration-none">
+        <div class="mk-card p-3">
+          <div class="text-center">
+            <div class="stat-icon bg-info bg-opacity-10 text-info mx-auto mb-3">
+              <i class="bi bi-book"></i>
+            </div>
+            <h6 class="fw-bold">Mata Kuliah</h6>
+            <p class="text-muted small">Lihat progress</p>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-3">
+      <a href="/dosen/biodata" class="text-decoration-none">
+        <div class="mk-card p-3">
+          <div class="text-center">
+            <div class="stat-icon bg-secondary bg-opacity-10 text-secondary mx-auto mb-3">
+              <i class="bi bi-person"></i>
+            </div>
+            <h6 class="fw-bold">Biodata</h6>
+            <p class="text-muted small">Edit profil</p>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Aksi Cepat (baris kedua: 4 menu tambahan) -->
+  <div class="row g-4 quick-action-row">
+    <div class="col-md-3">
+      <a href="/dosen/magang" class="text-decoration-none">
+        <div class="mk-card p-3">
+          <div class="text-center">
+            <div class="stat-icon bg-info bg-opacity-10 text-info mx-auto mb-3">
+              <i class="bi bi-journal-bookmark-fill"></i>
+            </div>
+            <h6 class="fw-bold">Monitoring Magang</h6>
+            <p class="text-muted small">Lihat logbook mahasiswa</p>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-3">
+      <a href="/dosen/kalender" class="text-decoration-none">
+        <div class="mk-card p-3">
+          <div class="text-center">
+            <div class="stat-icon bg-warning bg-opacity-10 text-warning mx-auto mb-3">
+              <i class="bi bi-calendar-event"></i>
+            </div>
+            <h6 class="fw-bold">Kalender Akademik</h6>
+            <p class="text-muted small">Jadwal penting</p>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-3">
+      <a href="/dosen/rps" class="text-decoration-none">
+        <div class="mk-card p-3">
+          <div class="text-center">
+            <div class="stat-icon bg-success bg-opacity-10 text-success mx-auto mb-3">
+              <i class="bi bi-file-text"></i>
+            </div>
+            <h6 class="fw-bold">MyRPS</h6>
+            <p class="text-muted small">RPS mata kuliah</p>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-3">
+      <a href="/dosen/tugas" class="text-decoration-none">
+        <div class="mk-card p-3">
+          <div class="text-center">
+            <div class="stat-icon bg-primary bg-opacity-10 text-primary mx-auto mb-3">
+              <i class="bi bi-list-task"></i>
+            </div>
+            <h6 class="fw-bold">Daftar Tugas</h6>
+            <p class="text-muted small">Lihat semua tugas</p>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Daftar Mata Kuliah Diampu -->
+  <h4 class="fw-bold mb-3">Mata Kuliah Diampu</h4>
+  <div class="row g-4 mb-5">
+    <% if (mkList && mkList.length > 0) { %>
+      <% mkList.forEach(mk => { %>
+        <div class="col-md-4">
+          <div class="mk-card">
+            <div class="card-body">
+              <h5 class="card-title fw-bold"><%= mk.kode %></h5>
+              <p class="card-text"><%= mk.nama %></p>
+              <p class="small text-muted">
+                <i class="bi bi-calendar"></i> Semester <%= mk.semester || '-' %> |
+                <i class="bi bi-clock"></i> <%= mk.sks %> SKS
+              </p>
+              <a href="/dosen/mk/<%= mk.id %>" class="btn btn-sm btn-outline-primary w-100">
+                <i class="bi bi-eye"></i> Detail
+              </a>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    <% } else { %>
+      <div class="col-12">
+        <div class="alert alert-info">Anda belum mengampu mata kuliah apapun.</div>
+      </div>
+    <% } %>
+  </div>
+
+  <!-- Bagian Kalender Singkat (jika ada data event) -->
+  <% if (events.length > 0) { %>
+    <h4 class="fw-bold mb-3">Acara Mendatang</h4>
+    <div class="row g-4 mb-5">
+      <% events.slice(0, 4).forEach(ev => { %>
+        <div class="col-md-3">
+          <div class="event-card">
+            <div class="event-date"><%= new Date(ev.tanggal).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) %></div>
+            <strong><%= ev.judul %></strong>
+            <p class="small text-muted mb-0"><%= ev.deskripsi ? ev.deskripsi.substring(0, 40) + '...' : '' %></p>
+          </div>
+        </div>
+      <% }) %>
+      <div class="col-12 text-end">
+        <a href="/dosen/kalender" class="btn btn-sm btn-outline-primary">Lihat Semua</a>
+      </div>
+    </div>
+  <% } %>
+    <div class="col-md-3">
+  <a href="/dosen/laporan-magang" class="text-decoration-none">
+    <div class="mk-card p-3">
+      <div class="text-center">
+        <div class="stat-icon bg-info bg-opacity-10 text-info mx-auto mb-3">
+          <i class="bi bi-file-earmark-pdf"></i>
+        </div>
+        <h6 class="fw-bold">Laporan Magang</h6>
+        <p class="text-muted small">Lihat laporan mahasiswa</p>
+      </div>
+    </div>
+  </a>
+</div>
+  <!-- Pengumuman atau Berita (opsional) -->
+  <% if (berita.length > 0) { %>
+    <h4 class="fw-bold mb-3">Pengumuman</h4>
+    <div class="row g-4 mb-5">
+      <% berita.slice(0, 3).forEach(b => { %>
+        <div class="col-md-4">
+          <div class="mk-card">
+            <div class="card-body">
+              <h5 class="fw-bold"><%= b.judul %></h5>
+              <p class="small text-muted"><%= new Date(b.tanggal).toLocaleDateString('id-ID') %></p>
+              <p><%= b.isi.substring(0, 80) %>...</p>
+              <a href="/berita/<%= b.id %>" class="btn btn-sm btn-outline-primary">Baca</a>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+</div>
+
+<%- include('../partials/footer') %>

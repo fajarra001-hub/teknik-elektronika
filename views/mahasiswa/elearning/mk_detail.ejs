@@ -1,0 +1,230 @@
+<%- include('../../partials/header') %>
+
+<style>
+  .mk-detail-header {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border-radius: 1rem;
+    padding: 2rem;
+    color: white;
+    margin-bottom: 2rem;
+  }
+  .mk-detail-header h2 {
+    font-weight: 700;
+  }
+  .jadwal-card {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .materi-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #1e293b;
+  }
+  .badge-status {
+    padding: 0.4rem 1rem;
+    border-radius: 50px;
+    font-weight: 500;
+  }
+  .badge-belum { background: #ffc107; color: #212529; }
+  .badge-selesai { background: #28a745; color: white; }
+  .tugas-item {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.2rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    transition: transform 0.2s;
+  }
+  .tugas-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 5px 15px rgba(33,147,176,0.15);
+  }
+  .btn-gradient {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border: none;
+    color: white;
+    font-weight: 500;
+    padding: 0.5rem 1.5rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(33,147,176,0.3);
+    color: white;
+  }
+  .btn-outline-gradient {
+    background: transparent;
+    border: 2px solid #2193b0;
+    color: #2193b0;
+    font-weight: 500;
+    padding: 0.5rem 1.5rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+    text-decoration: none;
+  }
+  .btn-outline-gradient:hover {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border-color: transparent;
+    color: white;
+  }
+  .dosen-badge {
+    background: #e9ecef;
+    color: #495057;
+    padding: 0.4rem 1rem;
+    border-radius: 50px;
+    display: inline-block;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .progress-lg {
+    height: 1.5rem;
+    border-radius: 1rem;
+  }
+</style>
+
+<div class="container-fluid mt-4">
+  <!-- Header MK -->
+  <div class="mk-detail-header d-flex justify-content-between align-items-center">
+    <div>
+      <h2><%= mk.kode %> - <%= mk.nama %></h2>
+      <p class="mb-0 opacity-75">
+        <i class="bi bi-book me-2"></i><%= mk.sks %> SKS |
+        <i class="bi bi-calendar me-2"></i>Semester <%= mk.semester || '-' %> |
+        <i class="bi bi-people me-2"></i><%= jumlahMahasiswa || 0 %> mahasiswa terdaftar
+      </p>
+    </div>
+    <a href="/mahasiswa/elearning" class="btn btn-light">
+      <i class="bi bi-arrow-left me-2"></i>Kembali
+    </a>
+  </div>
+
+  <!-- Jadwal & Dosen -->
+  <div class="jadwal-card">
+    <div class="row">
+      <div class="col-md-6">
+        <h5 class="fw-bold mb-3"><i class="bi bi-clock me-2"></i>Jadwal Kuliah</h5>
+        <p><%= jadwal %></p>
+      </div>
+      <div class="col-md-6">
+        <h5 class="fw-bold mb-3"><i class="bi bi-people me-2"></i>Dosen Pengampu</h5>
+        <% if (dosenList && dosenList.length > 0) { %>
+          <div>
+            <% dosenList.forEach(d => { %>
+              <span class="dosen-badge"><%= d.nama %></span>
+            <% }) %>
+          </div>
+        <% } else { %>
+          <p class="text-muted">-</p>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress Perkuliahan -->
+  <div class="jadwal-card">
+    <h5 class="fw-bold mb-3"><i class="bi bi-bar-chart-steps me-2"></i>Progress Perkuliahan</h5>
+    <%
+      const totalPertemuan = 16;
+      const selesaiCount = materi ? materi.filter(m => m.status === 'selesai').length : 0;
+      const persentase = totalPertemuan > 0 ? (selesaiCount / totalPertemuan * 100) : 0;
+    %>
+    <div class="progress progress-lg mb-2">
+      <div class="progress-bar" role="progressbar" style="width: <%= persentase %>%; background: linear-gradient(90deg, #2193b0, #6dd5ed);" 
+           aria-valuenow="<%= persentase %>" aria-valuemin="0" aria-valuemax="100">
+        <%= Math.round(persentase) %>%
+      </div>
+    </div>
+    <p class="text-muted"><%= selesaiCount %> dari <%= totalPertemuan %> pertemuan telah dilaksanakan.</p>
+  </div>
+
+  <!-- Materi per Pertemuan -->
+  <div class="jadwal-card">
+    <h5 class="fw-bold mb-3"><i class="bi bi-list-task me-2"></i>Materi Perkuliahan (16 Pertemuan)</h5>
+    <div class="table-responsive">
+      <table class="table table-bordered materi-table">
+        <thead>
+          <tr>
+            <th>Pertemuan</th>
+            <th>Topik</th>
+            <th>Tanggal</th>
+            <th>Status</th>
+            <th>Materi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (!materi || materi.length === 0) { %>
+            <tr><td colspan="5" class="text-center">Belum ada materi yang diinput dosen.</td></tr>
+          <% } else { %>
+            <% materi.forEach(m => { %>
+              <tr class="<%= m.status === 'selesai' ? 'table-success' : '' %>">
+                <td class="text-center fw-bold"><%= m.pertemuan %></td>
+                <td><%= m.topik %></td>
+                <td><%= m.tanggal ? new Date(m.tanggal).toLocaleDateString('id-ID') : '-' %></td>
+                <td>
+                  <span class="badge-status <%= m.status === 'selesai' ? 'badge-selesai' : 'badge-belum' %>">
+                    <%= m.status %>
+                  </span>
+                </td>
+                <td>
+                  <% if (m.fileUrl) { %>
+                    <a href="<%= m.fileUrl %>" target="_blank" class="btn btn-sm btn-outline-info">
+                      <i class="bi bi-download"></i> Unduh
+                    </a>
+                  <% } else { %>
+                    <span class="text-muted">-</span>
+                  <% } %>
+                </td>
+              </tr>
+            <% }) %>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Daftar Tugas -->
+  <div class="jadwal-card">
+    <h5 class="fw-bold mb-3"><i class="bi bi-file-earmark-text me-2"></i>Tugas & Deadline</h5>
+    <% if (!tugasList || tugasList.length === 0) { %>
+      <p class="text-muted">Belum ada tugas untuk mata kuliah ini.</p>
+    <% } else { %>
+      <% tugasList.forEach(t => { %>
+        <div class="tugas-item d-flex justify-content-between align-items-center flex-wrap">
+          <div style="flex: 1;">
+            <h6 class="fw-bold mb-1"><%= t.judul %></h6>
+            <p class="text-muted small mb-1"><%= t.deskripsi || 'Tidak ada deskripsi' %></p>
+            <div class="d-flex flex-wrap gap-3">
+              <small class="text-muted">
+                <i class="bi bi-calendar me-1"></i> Deadline: <%= new Date(t.deadline).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) %>
+              </small>
+              <small class="text-muted">
+                <i class="bi bi-tag me-1"></i> <%= t.tipe %>
+              </small>
+            </div>
+          </div>
+          <div class="mt-2 mt-sm-0 d-flex align-items-center gap-2">
+            <a href="/mahasiswa/elearning/tugas/<%= t.id %>" class="btn-gradient btn-sm">
+              <i class="bi bi-eye me-1"></i>Detail
+            </a>
+            <% if (t.pengumpulan) { %>
+              <span class="badge bg-success">Sudah dikumpul</span>
+              <% if (t.pengumpulan.nilai) { %>
+                <span class="badge bg-primary">Nilai: <%= t.pengumpulan.nilai %></span>
+              <% } %>
+            <% } else { %>
+              <span class="badge bg-warning text-dark">Belum dikumpul</span>
+            <% } %>
+          </div>
+        </div>
+      <% }) %>
+    <% } %>
+  </div>
+</div>
+
+<%- include('../../partials/footer') %>

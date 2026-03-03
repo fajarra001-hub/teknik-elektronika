@@ -1,0 +1,71 @@
+<%- include('../partials/header') %>
+
+<style>
+  .mk-table th {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    border: none;
+  }
+  .mk-table td {
+    vertical-align: middle;
+    padding: 1rem 0.75rem;
+  }
+  .table-responsive {
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+  }
+  .btn-action {
+    margin: 2px;
+    border-radius: 8px;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.85rem;
+  }
+</style>
+
+<div class="container-fluid mt-4">
+  <h2 class="fw-bold mb-4">Rekap Nilai per Mata Kuliah</h2>
+
+  <div class="table-responsive">
+    <table class="table mk-table">
+      <thead>
+        <tr>
+          <th>Kode</th>
+          <th>Nama Mata Kuliah</th>
+          <th>SKS</th>
+          <th>Semester</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (mkList.length === 0) { %>
+          <tr>
+            <td colspan="5" class="text-center py-5">
+              <i class="bi bi-inbox fs-1 text-muted d-block mb-3"></i>
+              <p class="text-muted">Belum ada mata kuliah.</p>
+            </td>
+          </tr>
+        <% } %>
+        <% mkList.forEach(mk => { %>
+          <tr>
+            <td><span class="badge bg-primary bg-opacity-10 text-primary"><%= mk.kode %></span></td>
+            <td><strong><%= mk.nama %></strong></td>
+            <td class="text-center"><%= mk.sks %></td>
+            <td class="text-center"><%= mk.semester || '-' %></td>
+            <td>
+              <a href="/admin/nilai/<%= mk.id %>" class="btn btn-sm btn-outline-primary btn-action">
+                <i class="bi bi-eye"></i> Lihat Nilai
+              </a>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

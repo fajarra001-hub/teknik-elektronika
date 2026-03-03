@@ -1,0 +1,27 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-4">
+  <h2 class="mb-4">Berkas Akademik - Pilih Angkatan</h2>
+  <div class="row">
+    <% if (angkatanList && angkatanList.length > 0) { %>
+      <% angkatanList.forEach(angkatan => { %>
+        <div class="col-md-3 mb-3">
+          <a href="/admin/berkas/angkatan/<%= angkatan %>" class="text-decoration-none">
+            <div class="card text-center">
+              <div class="card-body">
+                <h3 class="display-4"><%= angkatan %></h3>
+                <p class="text-muted">Angkatan</p>
+              </div>
+            </div>
+          </a>
+        </div>
+      <% }) %>
+    <% } else { %>
+      <div class="col-12">
+        <div class="alert alert-info">Belum ada data mahasiswa.</div>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

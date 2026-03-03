@@ -1,0 +1,203 @@
+<%- include('../partials/header') %>
+
+<style>
+  .user-card {
+    border: none;
+    border-radius: 1rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+    overflow: hidden;
+  }
+  .user-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(33,147,176,0.15) !important;
+  }
+  .avatar-circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    font-weight: 600;
+  }
+  .badge-role {
+    padding: 0.35rem 1rem;
+    border-radius: 50px;
+    font-weight: 500;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+  }
+  .badge-admin { background: #dc3545; color: white; }
+  .badge-mahasiswa { background: #28a745; color: white; }
+  .badge-dosen { background: #ffc107; color: #212529; }
+</style>
+
+<div class="container-fluid mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Kelola Pengguna</h2>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
+      <i class="bi bi-plus-circle me-2"></i>Tambah Pengguna
+    </button>
+  </div>
+
+  <!-- Tab navigasi untuk filter peran -->
+  <ul class="nav nav-tabs mb-4">
+    <li class="nav-item">
+      <a class="nav-link <%= !role || role === 'all' ? 'active' : '' %>" href="?role=all">Semua</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link <%= role === 'admin' ? 'active' : '' %>" href="?role=admin">Admin</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link <%= role === 'mahasiswa' ? 'active' : '' %>" href="?role=mahasiswa">Mahasiswa</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link <%= role === 'dosen' ? 'active' : '' %>" href="?role=dosen">Dosen</a>
+    </li>
+  </ul>
+
+  <!-- Daftar Pengguna (tampilan card) -->
+  <div class="row g-4">
+    <% if (users.length === 0) { %>
+      <div class="col-12">
+        <div class="alert alert-info">Tidak ada pengguna untuk ditampilkan.</div>
+      </div>
+    <% } %>
+    <% users.forEach(u => { %>
+      <div class="col-md-4">
+        <div class="card user-card h-100">
+          <div class="card-body">
+            <div class="d-flex align-items-center mb-3">
+              <div class="avatar-circle me-3">
+                <%= u.nama ? u.nama.charAt(0).toUpperCase() : '?' %>
+              </div>
+              <div>
+                <h5 class="card-title mb-1"><%= u.nama || 'Belum diisi' %></h5>
+                <p class="text-muted small mb-0">
+                  <i class="bi bi-envelope"></i> <%= u.email %>
+                </p>
+                <p class="text-muted small mb-0">
+                  <i class="bi bi-hash"></i> <%= u.nim || (u.nip || '-') %>
+                </p>
+              </div>
+            </div>
+            <div class="mb-2">
+              <span class="badge-role 
+                <% if (u.role === 'admin') { %>badge-admin<% } 
+                else if (u.role === 'mahasiswa') { %>badge-mahasiswa<% } 
+                else if (u.role === 'dosen') { %>badge-dosen<% } %>">
+                <%= u.role || 'unknown' %>
+              </span>
+            </div>
+            <p class="card-text small text-muted">
+              Terdaftar: <%= u.createdAt ? new Date(u.createdAt).toLocaleDateString('id-ID') : '-' %>
+            </p>
+            <div class="d-flex justify-content-between mt-3">
+              <button class="btn btn-sm btn-outline-primary" onclick="editUser('<%= u.id %>')">
+                <i class="bi bi-pencil"></i> Edit
+              </button>
+              <button class="btn btn-sm btn-outline-secondary" onclick="resetPassword('<%= u.email %>')">
+                <i class="bi bi-key"></i> Reset
+              </button>
+              <button class="btn btn-sm btn-outline-danger" onclick="deleteUser('<%= u.id %>', '<%= u.role %>')">
+                <i class="bi bi-trash"></i> Hapus
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+</div>
+
+<!-- Modal Tambah Pengguna -->
+<div class="modal fade" id="addUserModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Tambah Pengguna Baru</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form method="POST" action="/admin/users">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="role" class="form-label">Peran</label>
+            <select class="form-select" id="role" name="role" required>
+              <option value="mahasiswa">Mahasiswa</option>
+              <option value="admin">Admin</option>
+              <option value="dosen">Dosen</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="nama" class="form-label">Nama Lengkap</label>
+            <input type="text" class="form-control" id="nama" name="nama" required>
+          </div>
+          <div class="mb-3" id="nimField">
+            <label for="nim" class="form-label">NIM (untuk mahasiswa)</label>
+            <input type="text" class="form-control" id="nim" name="nim">
+          </div>
+          <div class="mb-3" id="nipField" style="display:none;">
+            <label for="nip" class="form-label">NIP (untuk dosen)</label>
+            <input type="text" class="form-control" id="nip" name="nip">
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-primary">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Toggle field NIM/NIP berdasarkan role
+  document.getElementById('role').addEventListener('change', function() {
+    const role = this.value;
+    document.getElementById('nimField').style.display = role === 'mahasiswa' ? 'block' : 'none';
+    document.getElementById('nipField').style.display = role === 'dosen' ? 'block' : 'none';
+  });
+
+  // Fungsi edit (dummy, akan redirect ke form edit terpisah)
+  function editUser(userId) {
+    window.location.href = `/admin/users/edit/${userId}`;
+  }
+
+  // Reset password (dummy, bisa pakai modal)
+  function resetPassword(email) {
+    if (confirm(`Kirim email reset password ke ${email}?`)) {
+      fetch('/admin/users/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      }).then(res => {
+        if (res.ok) alert('Email reset telah dikirim.');
+        else alert('Gagal mengirim email.');
+      });
+    }
+  }
+
+  // Hapus user
+  function deleteUser(userId, role) {
+    if (confirm(`Hapus pengguna ini? (${role})`)) {
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = `/admin/users/${userId}/delete`;
+      document.body.appendChild(form);
+      form.submit();
+    }
+  }
+</script>
+
+<%- include('../partials/footer') %>

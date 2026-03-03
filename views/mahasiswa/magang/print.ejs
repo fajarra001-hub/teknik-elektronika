@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cetak Logbook - <%= mahasiswa.nama %></title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* Gaya umum */
+    body {
+      margin: 0.5cm;
+      font-family: Arial, sans-serif;
+    }
+    .print-btn {
+      margin-bottom: 20px;
+    }
+
+    /* Kop surat dengan logo kiri, teks kanan rata kiri */
+    .kop-surat {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #0d6efd;
+      padding-bottom: 10px;
+    }
+    .logo-kop {
+      width: 100px;
+      height: auto;
+    }
+    .teks-kop {
+      flex: 1;
+      text-align: left;
+    }
+    .teks-kop .nama-kampus {
+      font-size: 28px;
+      font-weight: bold;
+      margin: 0;
+      color: #212529;
+      letter-spacing: 1px;
+    }
+    .teks-kop .prodi {
+      font-size: 22px;
+      font-weight: 600;
+      margin: 0;
+      color: #0d6efd;
+      text-transform: uppercase;
+    }
+    .teks-kop .alamat {
+      font-size: 11pt;
+      margin: 2px 0;
+      color: #6c757d;
+    }
+
+    /* Thumbnail gambar dokumentasi */
+    .thumbnail {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin: 2px;
+      border: 1px solid #ddd;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .gallery {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* Tabel */
+    .table {
+      font-size: 10pt;
+    }
+    .table th {
+      background-color: #f2f2f2;
+    }
+
+    /* Bagian tanda tangan */
+    .tanda-tangan {
+      margin-top: 40px;
+    }
+    .tiga-kolom {
+      display: flex;
+      justify-content: space-between;
+      text-align: center;
+    }
+    .kolom-tanda {
+      width: 30%;
+    }
+    .kolom-tanda p {
+      margin: 5px 0;
+    }
+    .kaprodi {
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    /* Gaya untuk garis hr */
+    hr {
+      border: none;
+      border-top: 1px solid black;
+      margin: 10px 0;
+    }
+    .hr-kaprodi {
+      width: 200px;
+      margin: 10px auto;
+      border-top: 1px solid black;
+    }
+
+    /* Gaya cetak */
+    @media print {
+      .btn { display: none; }
+      body {
+        margin: 0.3cm;
+        font-size: 11pt;
+      }
+      .thumbnail {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .gallery {
+        display: flex !important;
+        gap: 4px;
+      }
+      .kop-surat {
+        border-bottom: 2px solid #0d6efd;
+      }
+      .table th {
+        background-color: #f2f2f2 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container-fluid px-2">
+    <button onclick="window.print()" class="btn btn-primary print-btn">
+      <i class="bi bi-printer"></i> Print / Simpan PDF
+    </button>
+
+    <!-- Kop Surat -->
+    <div class="kop-surat">
+      <img src="https://polidewa.ac.id/wp-content/uploads/2025/11/Desain-tanpa-judul-1.png" 
+           alt="Logo Politeknik Dewantara" class="logo-kop">
+      <div class="teks-kop">
+        <h2 class="nama-kampus">POLITEKNIK DEWANTARA</h2>
+        <h3 class="prodi">PROGRAM STUDI TEKNIK ELEKTRONIKA</h3>
+        <p class="alamat">JL. KH Ahmad Razak 2, No.7, Kota Palopo, Sulawesi Selatan</p>
+      </div>
+    </div>
+
+    <h4 class="text-center">LOGBOOK MAGANG</h4>
+    <p class="text-center"><strong><%= mahasiswa.nama %></strong> (NIM: <%= mahasiswa.nim %>)</p>
+    <p class="text-center"><small>Dicetak: <%= generatedAt %></small></p>
+
+    <!-- Tabel Logbook -->
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Tanggal</th>
+          <th>Kegiatan</th>
+          <th>Lokasi</th>
+          <th>Durasi (jam)</th>
+          <th>Dokumentasi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (logbook.length === 0) { %>
+          <tr><td colspan="6" class="text-center">Belum ada entri logbook.</td></tr>
+        <% } %>
+        <% logbook.forEach((item, index) => { %>
+          <tr>
+            <td class="text-center"><%= index + 1 %></td>
+            <td><%= new Date(item.tanggal).toLocaleDateString('id-ID') %></td>
+            <td><%= item.kegiatan %></td>
+            <td><%= item.lokasi || '-' %></td>
+            <td class="text-center"><%= item.durasi || '-' %></td>
+            <td>
+              <% if (item.imageUrls && item.imageUrls.length > 0) { %>
+                <div class="gallery">
+                  <% item.imageUrls.forEach(url => { 
+                    let fileId = '';
+                    if (url.includes('id=')) {
+                      fileId = url.split('id=')[1].split('&')[0];
+                    } else if (url.includes('/d/')) {
+                      fileId = url.split('/d/')[1].split('/')[0];
+                    } else {
+                      fileId = url.split('/').pop();
+                    }
+                  %>
+                    <a href="<%= url %>" target="_blank">
+                      <img src="https://drive.google.com/thumbnail?id=<%= fileId %>&sz=w600" 
+                           class="thumbnail" alt="dokumentasi"
+                           onerror="this.onerror=null; this.src='https://drive.google.com/uc?export=view&id=<%= fileId %>';">
+                    </a>
+                  <% }) %>
+                </div>
+              <% } else { %>
+                -
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+      <tfoot>
+        <tr>
+          <th colspan="4" class="text-end">Total</th>
+          <th class="text-center"><%= totalDurasi.toFixed(1) %></th>
+          <th class="text-center"><%= totalEntries %> entri</th>
+        </tr>
+      </tfoot>
+    </table>
+
+    <!-- Tanda Tangan -->
+
+    <!-- Tanda Tangan -->
+      <style>
+        .tanda-tangan {
+          margin-top: 60px;
+        }
+
+        .tiga-kolom {
+          display: flex;
+          justify-content: space-between;
+          text-align: center;
+          margin-bottom: 80px;
+        }
+
+        .kolom-tanda {
+          width: 30%;
+        }
+
+        .area-ttd {
+          height: 80px; /* ruang kosong untuk tanda tangan */
+        }
+
+        .kaprodi {
+          text-align: center;
+          margin-top: 40px;
+        }
+      </style>
+
+      <div class="tanda-tangan">
+        
+        <div class="tiga-kolom">
+          <div class="kolom-tanda">
+            <p>Dosen Pembimbing 1</p>
+            <div class="area-ttd"></div>
+            <p>(______________________)</p>
+          </div>
+
+          <div class="kolom-tanda">
+            <p>Dosen Pembimbing 2</p>
+            <div class="area-ttd"></div>
+            <p>(______________________)</p>
+          </div>
+
+          <div class="kolom-tanda">
+            <p>Pembimbing Lapangan</p>
+            <div class="area-ttd"></div>
+            <p>(______________________)</p>
+          </div>
+        </div>
+
+        <div class="kaprodi">
+          <p>Ketua Program Studi</p>
+          <div class="area-ttd"></div>
+          <p><strong>Fajar Ramadhan, S.Pd., M.T</strong></p>
+          <p>NUPTK. 8559777678130153</p>
+        </div>
+</body>
+</html>

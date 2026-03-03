@@ -1,0 +1,209 @@
+<%- include('../partials/header') %>
+
+<style>
+  .form-card {
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    overflow: hidden;
+  }
+  .form-header {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    padding: 1.5rem;
+    color: white;
+  }
+  .form-header h3 {
+    margin: 0;
+    font-weight: 600;
+  }
+  .form-body {
+    padding: 2rem;
+  }
+  .table-nilai th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #1e293b;
+  }
+  .btn-gradient {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border: none;
+    color: white;
+    font-weight: 500;
+    padding: 0.6rem 1.5rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+  }
+  .btn-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(33,147,176,0.3);
+    color: white;
+  }
+  .btn-outline-gradient {
+    background: transparent;
+    border: 2px solid #2193b0;
+    color: #2193b0;
+    font-weight: 500;
+    padding: 0.6rem 1.5rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+  }
+  .btn-outline-gradient:hover {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border-color: transparent;
+    color: white;
+  }
+  .info-mahasiswa {
+    background: #f8f9fa;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .avatar-circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    font-weight: 600;
+  }
+</style>
+
+<div class="container-fluid mt-4">
+  <!-- Informasi Mahasiswa -->
+  <div class="info-mahasiswa">
+    <div class="avatar-circle">
+      <%= (mahasiswa.nama || '?').charAt(0).toUpperCase() %>
+    </div>
+    <div>
+      <h4 class="fw-bold mb-1"><%= mahasiswa.nama %></h4>
+      <p class="text-muted mb-0">
+        <i class="bi bi-qr-code me-2"></i>NIM: <%= mahasiswa.nim %> 
+        <span class="mx-3">|</span>
+        <i class="bi bi-envelope me-2"></i><%= mahasiswa.email %>
+      </p>
+    </div>
+  </div>
+
+  <!-- Form Input Nilai -->
+  <div class="form-card">
+    <div class="form-header">
+      <h3><i class="bi bi-pencil-square me-2"></i>Tambah Nilai Baru</h3>
+    </div>
+    <div class="form-body">
+      <form method="POST" action="/admin/nilai" id="formNilai">
+        <input type="hidden" name="userId" value="<%= mahasiswa.id %>">
+
+        <div class="row g-4">
+          <div class="col-md-3">
+            <label for="kodeMk" class="form-label fw-semibold">Pilih Mata Kuliah</label>
+            <select class="form-select" id="kodeMk" name="kodeMk" required>
+              <option value="">-- Pilih MK --</option>
+              <% courses.forEach(c => { %>
+                <option value="<%= c.kode %>" data-nama="<%= c.nama %>" data-sks="<%= c.sks %>">
+                  <%= c.kode %> - <%= c.nama %>
+                </option>
+              <% }) %>
+            </select>
+          </div>
+
+          <div class="col-md-3">
+            <label for="namaMk" class="form-label fw-semibold">Nama MK</label>
+            <input type="text" class="form-control" id="namaMk" name="namaMk" readonly placeholder="Otomatis terisi">
+          </div>
+
+          <div class="col-md-1">
+            <label for="sks" class="form-label fw-semibold">SKS</label>
+            <input type="number" class="form-control" id="sks" name="sks" readonly>
+          </div>
+
+          <div class="col-md-2">
+            <label for="nilai" class="form-label fw-semibold">Nilai (0-100)</label>
+            <input type="number" step="0.01" min="0" max="100" class="form-control" id="nilai" name="nilai" required>
+          </div>
+
+          <div class="col-md-2">
+            <label for="semester" class="form-label fw-semibold">Semester</label>
+            <input type="text" class="form-control" id="semester" name="semester" placeholder="Contoh: Ganjil 2025" required>
+          </div>
+
+          <div class="col-md-1 d-flex align-items-end">
+            <button type="submit" class="btn-gradient w-100">
+              <i class="bi bi-plus-lg me-1"></i>Tambah
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Daftar Nilai yang Sudah Dimasukkan -->
+  <div class="form-card mt-4">
+    <div class="form-header">
+      <h3><i class="bi bi-list-ul me-2"></i>Riwayat Nilai</h3>
+    </div>
+    <div class="form-body">
+      <% if (grades.length === 0) { %>
+        <div class="text-center py-4">
+          <i class="bi bi-inbox fs-1 text-muted d-block mb-3"></i>
+          <p class="text-muted">Belum ada nilai yang dimasukkan untuk mahasiswa ini.</p>
+        </div>
+      <% } else { %>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Semester</th>
+                <th>Kode MK</th>
+                <th>Mata Kuliah</th>
+                <th>SKS</th>
+                <th>Nilai</th>
+                <th>Tanggal Input</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% grades.forEach(g => { %>
+                <tr>
+                  <td><%= g.semester %></td>
+                  <td><span class="badge bg-primary bg-opacity-10 text-primary"><%= g.kodeMk %></span></td>
+                  <td><%= g.namaMk %></td>
+                  <td class="text-center"><%= g.sks %></td>
+                  <td class="fw-bold <%= g.nilai >= 80 ? 'text-success' : (g.nilai >= 60 ? 'text-warning' : 'text-danger') %>">
+                    <%= g.nilai %>
+                  </td>
+                  <td><small class="text-muted"><%= new Date(g.createdAt).toLocaleDateString('id-ID') %></small></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- Tombol Kembali -->
+  <div class="mt-4">
+    <a href="/admin/nilai/list" class="btn-outline-gradient">
+      <i class="bi bi-arrow-left me-2"></i>Kembali ke Daftar Mahasiswa
+    </a>
+  </div>
+</div>
+
+<script>
+  // Mengisi otomatis nama MK dan SKS saat memilih kode MK
+  document.getElementById('kodeMk').addEventListener('change', function() {
+    const selected = this.options[this.selectedIndex];
+    const namaMk = selected.getAttribute('data-nama') || '';
+    const sks = selected.getAttribute('data-sks') || '';
+    document.getElementById('namaMk').value = namaMk;
+    document.getElementById('sks').value = sks;
+  });
+</script>
+
+<%- include('../partials/footer') %>

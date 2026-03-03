@@ -1,0 +1,53 @@
+<%- include('../partials/header') %>
+
+<style>
+  .group-card {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+</style>
+
+<div class="container-fluid mt-4">
+  <h2 class="fw-bold mb-4">Laporan Magang Mahasiswa</h2>
+
+  <% if (groupedList.length === 0) { %>
+    <div class="alert alert-info">Belum ada laporan yang diupload.</div>
+  <% } %>
+
+  <% groupedList.forEach(group => { %>
+    <div class="group-card">
+      <div class="d-flex align-items-center mb-3">
+        <div>
+          <h5 class="fw-bold mb-1"><%= group.mahasiswa.nama %></h5>
+          <p class="text-muted mb-0"><%= group.mahasiswa.nim || '-' %></p>
+        </div>
+        <div class="ms-auto">
+          <a href="/dosen/laporan-magang/mahasiswa/<%= group.mahasiswa.id %>" class="btn btn-outline-primary btn-sm">
+            Lihat Detail Laporan
+          </a>
+        </div>
+      </div>
+      <div class="d-flex gap-3 flex-wrap">
+        <% for (let i = 1; i <= 3; i++) { 
+          const laporan = group.laporan.find(l => l.laporanKe === i);
+        %>
+          <div class="border rounded p-2" style="min-width: 120px;">
+            <div class="fw-bold">Lap <%= i %></div>
+            <% if (laporan) { %>
+              <span class="badge bg-<%= laporan.status === 'submitted' ? 'warning' : (laporan.status === 'approved' ? 'success' : 'danger') %>">
+                <%= laporan.status === 'submitted' ? 'Menunggu' : (laporan.status === 'approved' ? 'Disetujui' : 'Ditolak') %>
+              </span>
+            <% } else { %>
+              <span class="text-muted">-</span>
+            <% } %>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  <% }) %>
+</div>
+
+<%- include('../partials/footer') %>

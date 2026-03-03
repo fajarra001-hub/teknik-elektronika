@@ -1,0 +1,126 @@
+<%- include('../../partials/header') %>
+
+<style>
+  .surat-table th {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    border: none;
+  }
+  .surat-table td {
+    vertical-align: middle;
+    padding: 1rem 0.75rem;
+  }
+  .badge-status {
+    padding: 0.4rem 1rem;
+    border-radius: 50px;
+    font-weight: 500;
+  }
+  .badge-pending { background: #ffc107; color: #212529; }
+  .badge-approved { background: #28a745; color: white; }
+  .badge-rejected { background: #dc3545; color: white; }
+  .badge-cancelled { background: #6c757d; color: white; }
+  .badge-completed { background: #17a2b8; color: white; }
+  .filter-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  }
+  .table-responsive {
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+  }
+</style>
+
+<div class="container-fluid mt-4">
+  <h2 class="fw-bold mb-4">Manajemen Surat Mahasiswa</h2>
+
+  <!-- Filter -->
+  <div class="filter-card">
+    <form method="GET" class="row g-3 align-items-end">
+      <div class="col-md-3">
+        <label for="status" class="form-label fw-semibold">Filter Status</label>
+        <select class="form-select" id="status" name="status">
+          <option value="">Semua</option>
+          <option value="pending" <%= filters.status === 'pending' ? 'selected' : '' %>>Pending</option>
+          <option value="completed" <%= filters.status === 'completed' ? 'selected' : '' %>>Selesai</option>
+          <option value="rejected" <%= filters.status === 'rejected' ? 'selected' : '' %>>Ditolak</option>
+          <option value="cancelled" <%= filters.status === 'cancelled' ? 'selected' : '' %>>Dibatalkan</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label for="search" class="form-label fw-semibold">Cari Mahasiswa / Keperluan</label>
+        <input type="text" class="form-control" id="search" name="search" value="<%= filters.search || '' %>">
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">Filter</button>
+      </div>
+      <div class="col-md-2">
+        <a href="/admin/surat" class="btn btn-outline-secondary w-100">Reset</a>
+      </div>
+    </form>
+  </div>
+
+  <!-- Tabel -->
+  <div class="table-responsive">
+    <table class="table surat-table">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Mahasiswa</th>
+          <th>Jenis Surat</th>
+          <th>Keperluan</th>
+          <th>Tanggal Pengajuan</th>
+          <th>Status</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (suratList.length === 0) { %>
+          <tr>
+            <td colspan="7" class="text-center py-5">
+              <i class="bi bi-inbox fs-1 text-muted d-block mb-3"></i>
+              <p class="text-muted">Tidak ada surat.</p>
+            </td>
+          </tr>
+        <% } %>
+        <% suratList.forEach((surat, index) => { %>
+          <tr>
+            <td class="text-center"><%= index + 1 %></td>
+            <td>
+              <strong><%= surat.mahasiswa.nama %></strong><br>
+              <small class="text-muted"><%= surat.mahasiswa.nim %></small>
+            </td>
+            <td><%= surat.jenis %></td>
+            <td><%= surat.keperluan.substring(0, 50) %><%= surat.keperluan.length > 50 ? '...' : '' %></td>
+            <td><%= new Date(surat.createdAt).toLocaleDateString('id-ID') %></td>
+            <td>
+              <% if (surat.status === 'pending') { %>
+                <span class="badge-status badge-pending">Pending</span>
+              <% } else if (surat.status === 'completed') { %>
+                <span class="badge-status badge-completed">Selesai</span>
+              <% } else if (surat.status === 'rejected') { %>
+                <span class="badge-status badge-rejected">Ditolak</span>
+              <% } else if (surat.status === 'cancelled') { %>
+                <span class="badge-status badge-cancelled">Dibatalkan</span>
+              <% } %>
+            </td>
+            <td>
+              <a href="/admin/surat/<%= surat.id %>" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-eye"></i> Detail
+              </a>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../../partials/footer') %>

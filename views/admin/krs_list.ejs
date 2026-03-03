@@ -1,0 +1,218 @@
+<%- include('../partials/header') %>
+
+<style>
+  .krs-table th {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    border: none;
+  }
+  .krs-table td {
+    vertical-align: middle;
+    padding: 1rem 0.75rem;
+  }
+  .badge-status {
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-weight: 500;
+    font-size: 0.8rem;
+  }
+  .badge-pending { background: #ffc107; color: #212529; }
+  .badge-approved { background: #28a745; color: white; }
+  .badge-rejected { background: #dc3545; color: white; }
+  .badge-stored { background: #17a2b8; color: white; }
+  .btn-action {
+    margin: 2px;
+    border-radius: 8px;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+  }
+  .btn-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+  }
+  .avatar-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.2rem;
+  }
+  .filter-card {
+    border-radius: 1rem;
+    border: none;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    background: white;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .table-responsive {
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+  }
+</style>
+
+<div class="container-fluid mt-4">
+  <h2 class="fw-bold mb-4">Daftar KRS Mahasiswa</h2>
+
+  <!-- Notifikasi Sukses -->
+  <% if (typeof success !== 'undefined' && success === 'approved') { %>
+    <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+      <i class="bi bi-check-circle-fill me-2"></i>KRS berhasil disetujui.
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% } %>
+  <% if (typeof success !== 'undefined' && success === 'rejected') { %>
+    <div class="alert alert-warning alert-dismissible fade show mb-4" role="alert">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>KRS ditolak.
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% } %>
+  <% if (typeof success !== 'undefined' && success === 'deleted') { %>
+    <div class="alert alert-info alert-dismissible fade show mb-4" role="alert">
+      <i class="bi bi-trash-fill me-2"></i>KRS berhasil dihapus.
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% } %>
+
+  <!-- Filter Card -->
+  <div class="filter-card">
+    <form method="GET" class="row g-3 align-items-end">
+      <div class="col-md-3">
+        <label for="semester" class="form-label fw-semibold">Filter Semester</label>
+        <select class="form-select" id="semester" name="semester">
+          <option value="">Semua Semester</option>
+          <% 
+            const semesters = ['Ganjil 2024/2025', 'Genap 2024/2025', 'Ganjil 2025/2026'];
+            semesters.forEach(s => { 
+          %>
+          <option value="<%= s %>" <%= filters && filters.semester === s ? 'selected' : '' %>><%= s %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label for="status" class="form-label fw-semibold">Filter Status</label>
+        <select class="form-select" id="status" name="status">
+          <option value="">Semua Status</option>
+          <option value="pending" <%= filters && filters.status === 'pending' ? 'selected' : '' %>>Pending</option>
+          <option value="approved" <%= filters && filters.status === 'approved' ? 'selected' : '' %>>Approved</option>
+          <option value="rejected" <%= filters && filters.status === 'rejected' ? 'selected' : '' %>>Rejected</option>
+          <option value="stored" <%= filters && filters.status === 'stored' ? 'selected' : '' %>>Stored</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">Filter</button>
+      </div>
+      <div class="col-md-2">
+        <a href="/admin/krs" class="btn btn-outline-secondary w-100">Reset</a>
+      </div>
+    </form>
+  </div>
+
+  <!-- Tabel KRS -->
+  <div class="table-responsive">
+    <table class="table krs-table">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Mahasiswa</th>
+          <th>Semester</th>
+          <th>Mata Kuliah</th>
+          <th>File</th>
+          <th>Status</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (krsList.length === 0) { %>
+          <tr>
+            <td colspan="7" class="text-center py-5">
+              <i class="bi bi-inbox fs-1 text-muted d-block mb-3"></i>
+              <p class="text-muted">Belum ada KRS yang diajukan.</p>
+            </td>
+          </tr>
+        <% } else { %>
+          <% krsList.forEach((krs, index) => { %>
+          <tr>
+            <td class="fw-bold"><%= index + 1 %></td>
+            <td>
+              <div class="d-flex align-items-center">
+                <% if (krs.mahasiswa?.foto) { %>
+                  <img src="<%= krs.mahasiswa.foto %>" alt="foto" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                <% } else { %>
+                  <div class="avatar-circle me-2"><%= (krs.mahasiswa?.nama || '?').charAt(0).toUpperCase() %></div>
+                <% } %>
+                <div>
+                  <strong><%= krs.mahasiswa?.nama || 'Unknown' %></strong><br>
+                  <small class="text-muted"><%= krs.mahasiswa?.nim || '-' %></small>
+                </div>
+              </div>
+            </td>
+            <td><%= krs.semester || '-' %></td>
+            <td>
+              <% if (krs.courses && krs.courses.length > 0) { %>
+                <ul class="list-unstyled mb-0 small">
+                  <% krs.courses.slice(0, 2).forEach(c => { %>
+                    <li><span class="badge bg-primary bg-opacity-10 text-primary"><%= c.kode %></span> <%= c.nama %></li>
+                  <% }) %>
+                  <% if (krs.courseCount > 2) { %>
+                    <li class="text-muted">+ <%= krs.courseCount - 2 %> lainnya</li>
+                  <% } %>
+                </ul>
+              <% } else { %>
+                <span class="text-muted">-</span>
+              <% } %>
+            </td>
+            <td>
+              <% if (krs.driveFileLink) { %>
+                <a href="<%= krs.driveFileLink %>" target="_blank" class="btn btn-sm btn-outline-info">
+                  <i class="bi bi-file-earmark-pdf"></i> Lihat
+                </a>
+              <% } else { %>
+                <span class="badge bg-secondary">Belum upload</span>
+              <% } %>
+            </td>
+            <td>
+              <span class="badge-status 
+                <%= krs.status === 'pending' ? 'badge-pending' : '' %>
+                <%= krs.status === 'approved' ? 'badge-approved' : '' %>
+                <%= krs.status === 'rejected' ? 'badge-rejected' : '' %>
+                <%= krs.status === 'stored' ? 'badge-stored' : '' %>">
+                <%= krs.status %>
+              </span>
+            </td>
+            <td>
+              <div class="d-flex flex-wrap gap-1">
+                <% if (krs.status === 'pending') { %>
+                  <form method="POST" action="/admin/krs/<%= krs.id %>/approve" style="display:inline;">
+                    <button class="btn btn-sm btn-success btn-action" title="Setujui"><i class="bi bi-check-lg"></i></button>
+                  </form>
+                  <form method="POST" action="/admin/krs/<%= krs.id %>/reject" style="display:inline;">
+                    <button class="btn btn-sm btn-danger btn-action" title="Tolak"><i class="bi bi-x-lg"></i></button>
+                  </form>
+                <% } %>
+                <a href="/admin/krs/<%= krs.id %>" class="btn btn-sm btn-outline-primary btn-action" title="Detail"><i class="bi bi-eye"></i></a>
+                <form method="POST" action="/admin/krs/delete/<%= krs.id %>" style="display:inline;" onsubmit="return confirm('Hapus KRS ini? File di Drive juga akan dihapus.')">
+                  <button class="btn btn-sm btn-outline-danger btn-action" title="Hapus"><i class="bi bi-trash"></i></button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          <% }) %>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

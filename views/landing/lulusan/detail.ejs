@@ -1,0 +1,155 @@
+<%- include('../partials/header-landing') %>
+
+<style>
+  .hero-detail {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    padding: 3rem 0;
+    color: white;
+    margin-bottom: 2rem;
+  }
+  .hero-detail h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+  }
+  .profile-card {
+    background: white;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    margin-bottom: 2rem;
+  }
+  .profile-img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+  }
+  .profile-info {
+    padding: 2rem;
+  }
+  .info-item {
+    margin-bottom: 1rem;
+    display: flex;
+    gap: 1rem;
+  }
+  .info-icon {
+    width: 40px;
+    height: 40px;
+    background: #f1f5f9;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #2193b0;
+  }
+  .btn-back {
+    background: transparent;
+    border: 2px solid #2193b0;
+    color: #2193b0;
+    font-weight: 600;
+    padding: 0.5rem 1.5rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+  }
+  .btn-back:hover {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+    border-color: transparent;
+  }
+</style>
+
+<section class="hero-detail">
+  <div class="container">
+    <h1>Profil Alumni</h1>
+    <p class="lead"><%= lulusan.nama %></p>
+  </div>
+</section>
+
+<div class="container mb-5">
+  <div class="row">
+    <div class="col-lg-4">
+      <div class="profile-card">
+        <img src="<%= lulusan.foto || 'https://via.placeholder.com/400x400?text=Alumni' %>" alt="<%= lulusan.nama %>" class="profile-img">
+        <div class="profile-info text-center">
+          <h3><%= lulusan.nama %></h3>
+          <p class="text-muted"><%= lulusan.nim %></p>
+          <span class="badge bg-info fs-6">Angkatan <%= lulusan.tahunLulus %></span>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-8">
+      <div class="profile-card">
+        <div class="profile-info">
+          <h4 class="mb-4">Informasi Pekerjaan</h4>
+          
+          <div class="info-item">
+            <div class="info-icon"><i class="bi bi-briefcase"></i></div>
+            <div>
+              <strong>Status</strong><br>
+              <% if (lulusan.status === 'bekerja') { %>💼 Bekerja<% } %>
+              <% if (lulusan.status === 'wirausaha') { %>🏪 Wirausaha<% } %>
+              <% if (lulusan.status === 'kuliah') { %>📚 Studi Lanjut<% } %>
+            </div>
+          </div>
+
+          <% if (lulusan.pekerjaan) { %>
+          <div class="info-item">
+            <div class="info-icon"><i class="bi bi-person-workspace"></i></div>
+            <div>
+              <strong>Pekerjaan</strong><br>
+              <%= lulusan.pekerjaan %>
+            </div>
+          </div>
+          <% } %>
+
+          <% if (lulusan.tempatKerja) { %>
+          <div class="info-item">
+            <div class="info-icon"><i class="bi bi-building"></i></div>
+            <div>
+              <strong>Tempat Kerja</strong><br>
+              <%= lulusan.tempatKerja %>
+            </div>
+          </div>
+          <% } %>
+
+          <% if (lulusan.alamatKerja) { %>
+          <div class="info-item">
+            <div class="info-icon"><i class="bi bi-geo-alt"></i></div>
+            <div>
+              <strong>Alamat</strong><br>
+              <%= lulusan.alamatKerja %>
+            </div>
+          </div>
+          <% } %>
+
+          <% if (lulusan.gaji) { %>
+          <div class="info-item">
+            <div class="info-icon"><i class="bi bi-cash-stack"></i></div>
+            <div>
+              <strong>Kisaran Gaji</strong><br>
+              <%= lulusan.gaji %>
+            </div>
+          </div>
+          <% } %>
+
+          <% if (lulusan.testimoni) { %>
+          <div class="info-item">
+            <div class="info-icon"><i class="bi bi-chat-quote"></i></div>
+            <div>
+              <strong>Testimoni</strong><br>
+              <em><%= lulusan.testimoni %></em>
+            </div>
+          </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-4 text-center">
+    <a href="/lulusan" class="btn-back">
+      <i class="bi bi-arrow-left me-2"></i>Kembali ke Daftar Alumni
+    </a>
+  </div>
+</div>
+
+<%- include('../partials/footer-landing') %>

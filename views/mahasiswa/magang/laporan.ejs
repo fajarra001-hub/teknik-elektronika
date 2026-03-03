@@ -1,0 +1,85 @@
+<%- include('../../partials/header') %>
+
+<style>
+  .laporan-header {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border-radius: 1rem;
+    padding: 2rem;
+    color: white;
+    margin-bottom: 2rem;
+  }
+  .card-laporan {
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    transition: all 0.3s;
+  }
+  .card-laporan:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(33,147,176,0.15);
+  }
+  .btn-gradient {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border: none;
+    color: white;
+    font-weight: 500;
+    padding: 0.5rem 1.5rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+  }
+  .btn-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(33,147,176,0.3);
+    color: white;
+  }
+</style>
+
+<div class="container-fluid mt-4">
+  <div class="laporan-header d-flex justify-content-between align-items-center">
+    <div>
+      <h2><i class="bi bi-file-earmark-pdf me-2"></i>Laporan Magang</h2>
+      <p class="mb-0 opacity-75">Unggah laporan magang 1, 2, dan 3</p>
+    </div>
+    <a href="/mahasiswa/magang" class="btn btn-light">
+      <i class="bi bi-arrow-left me-2"></i>Kembali
+    </a>
+  </div>
+
+  <div class="row g-4">
+    <% for (let i = 1; i <= 3; i++) { 
+      const item = laporanList[i-1];
+    %>
+      <div class="col-md-4">
+        <div class="card card-laporan h-100">
+          <div class="card-body">
+            <h5 class="card-title fw-bold">Laporan Magang <%= i %></h5>
+            <% if (item.exists) { %>
+              <p><strong>File:</strong> <a href="<%= item.data.fileUrl %>" target="_blank"><%= item.data.fileName %></a></p>
+              <p><strong>Status:</strong> 
+                <% if (item.data.status === 'submitted') { %>
+                  <span class="badge bg-warning text-dark">Menunggu</span>
+                <% } else if (item.data.status === 'approved') { %>
+                  <span class="badge bg-success">Disetujui</span>
+                <% } else if (item.data.status === 'rejected') { %>
+                  <span class="badge bg-danger">Ditolak</span>
+                <% } %>
+              </p>
+              <p><small class="text-muted">Diunggah: <%= new Date(item.data.uploadedAt).toLocaleDateString('id-ID') %></small></p>
+            <% } else { %>
+              <p class="text-muted">Belum ada laporan.</p>
+              <form method="POST" action="/mahasiswa/magang/laporan/upload" enctype="multipart/form-data">
+                <input type="hidden" name="laporanKe" value="<%= i %>">
+                <div class="mb-2">
+                  <input type="file" class="form-control form-control-sm" name="file" accept=".pdf" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-sm">Upload</button>
+              </form>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<%- include('../../partials/footer') %>

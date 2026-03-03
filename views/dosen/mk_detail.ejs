@@ -1,0 +1,281 @@
+<%- include('../partials/header') %>
+
+<style>
+  .detail-header {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    margin-bottom: 2rem;
+  }
+  .detail-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+  }
+  .info-card {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .progress-lg {
+    height: 1.5rem;
+    border-radius: 1rem;
+  }
+  .pertemuan-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+  }
+  .badge-status {
+    padding: 0.4rem 1rem;
+    border-radius: 50px;
+    font-weight: 500;
+  }
+  .btn-edit-pertemuan {
+    background: transparent;
+    border: 1px solid #2193b0;
+    color: #2193b0;
+    border-radius: 50px;
+    padding: 0.25rem 1rem;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+  }
+  .btn-edit-pertemuan:hover {
+    background: #2193b0;
+    color: white;
+  }
+  .upload-form {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  .upload-form input[type="file"] {
+    width: 120px;
+    height: 30px;
+    font-size: 0.8rem;
+  }
+  .btn-upload {
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 0.2rem 0.6rem;
+    font-size: 0.8rem;
+  }
+  .btn-upload:hover {
+    background: #218838;
+  }
+</style>
+
+<div class="container-fluid mt-4">
+  <!-- Header -->
+  <div class="detail-header">
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        <h1><%= mk.kode %> - <%= mk.nama %></h1>
+        <p class="mb-0 opacity-75"><i class="bi bi-book me-2"></i><%= mk.sks %> SKS | <i class="bi bi-calendar me-2"></i><%= mk.semester || 'Semester ?' %> | <i class="bi bi-clock me-2"></i><%= mk.jadwal || 'Jadwal belum diatur' %></p>
+      </div>
+      <div>
+        <a href="/dosen/mk" class="btn btn-light">
+          <i class="bi bi-arrow-left me-2"></i>Kembali
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info Dosen & Progress -->
+  <div class="row g-4 mb-4">
+    <div class="col-md-6">
+      <div class="info-card">
+        <h5 class="fw-bold mb-3"><i class="bi bi-people me-2"></i>Dosen Pengampu</h5>
+        <% if (dosenList && dosenList.length > 0) { %>
+          <div class="d-flex flex-wrap gap-2">
+            <% dosenList.forEach(d => { %>
+              <span class="badge bg-primary bg-opacity-10 text-primary p-2"><%= d %></span>
+            <% }) %>
+          </div>
+        <% } else { %>
+          <p class="text-muted">Belum ada dosen tetap</p>
+        <% } %>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="info-card">
+        <h5 class="fw-bold mb-3"><i class="bi bi-bar-chart-steps me-2"></i>Progress Perkuliahan</h5>
+        <div class="progress progress-lg mb-2">
+          <div class="progress-bar" role="progressbar" style="width: <%= persentase %>%; background: linear-gradient(90deg, #2193b0, #6dd5ed);" 
+               aria-valuenow="<%= persentase %>" aria-valuemin="0" aria-valuemax="100">
+            <%= persentase %>%
+          </div>
+        </div>
+        <p class="text-muted"><%= terlaksana %> dari 16 pertemuan telah dilaksanakan</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Daftar Mahasiswa (Short) -->
+  <div class="info-card mb-4">
+    <h5 class="fw-bold mb-3"><i class="bi bi-people-fill me-2"></i>Mahasiswa Terdaftar</h5>
+    <ul class="list-group">
+      <% mahasiswaList.slice(0, 5).forEach(m => { %>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <div>
+            <strong><%= m.nama %></strong><br>
+            <small class="text-muted"><%= m.nim %></small>
+          </div>
+          <span class="badge bg-primary bg-opacity-10 text-primary">Aktif</span>
+        </li>
+      <% }) %>
+    </ul>
+    <a href="/dosen/mahasiswa?mk=<%= mk.id %>" class="btn btn-link mt-2">Lihat semua mahasiswa</a>
+  </div>
+
+  <!-- Tabel Pertemuan dengan Upload Materi -->
+  <div class="info-card">
+    <h5 class="fw-bold mb-3"><i class="bi bi-list-task me-2"></i>Rencana Perkuliahan (16 Pertemuan)</h5>
+    <div class="table-responsive">
+      <table class="table table-bordered pertemuan-table">
+        <thead>
+          <tr>
+            <th>Pertemuan</th>
+            <th>Topik</th>
+            <th>Tanggal</th>
+            <th>Status</th>
+            <th>Materi</th>
+            <th>Catatan</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% pertemuanList.forEach(p => { %>
+            <tr class="<%= p.status === 'selesai' ? 'table-success' : '' %>">
+              <td class="text-center fw-bold"><%= p.pertemuan %></td>
+              <td>
+                <span class="topik-text-<%= p.pertemuan %>"><%= p.topik %></span>
+                <input type="text" class="form-control form-control-sm edit-input-<%= p.pertemuan %>" value="<%= p.topik %>" style="display: none;">
+              </td>
+              <td>
+                <span class="tanggal-text-<%= p.pertemuan %>"><%= p.tanggal ? new Date(p.tanggal).toLocaleDateString('id-ID') : '-' %></span>
+                <input type="date" class="form-control form-control-sm edit-input-<%= p.pertemuan %>" value="<%= p.tanggal ? p.tanggal.split('T')[0] : '' %>" style="display: none;">
+              </td>
+              <td>
+                <span class="badge-status bg-<%= p.status === 'selesai' ? 'success' : 'warning' %> text-white">
+                  <%= p.status %>
+                </span>
+              </td>
+              <td>
+                <% if (p.fileUrl) { %>
+                  <a href="<%= p.fileUrl %>" target="_blank" class="btn btn-sm btn-outline-info mb-1">Lihat</a><br>
+                <% } %>
+                <!-- Form upload file -->
+                <form method="POST" action="/dosen/mk/<%= mk.id %>/pertemuan/<%= p.pertemuan %>" enctype="multipart/form-data" class="upload-form">
+                  <input type="file" name="file" class="form-control form-control-sm" accept=".pdf,.doc,.docx,.ppt,.pptx,.jpg,.png">
+                  <button type="submit" class="btn btn-upload"><i class="bi bi-upload"></i> Upload</button>
+                </form>
+              </td>
+              <td>
+                <span class="catatan-text-<%= p.pertemuan %>"><%= p.catatan || '-' %></span>
+                <input type="text" class="form-control form-control-sm edit-input-<%= p.pertemuan %>" value="<%= p.catatan || '' %>" style="display: none;">
+              </td>
+              <td>
+                <button class="btn btn-sm btn-outline-primary" onclick="editPertemuan(<%= p.pertemuan %>)">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-success" onclick="submitEdit(<%= p.pertemuan %>)" style="display: none;" id="save-<%= p.pertemuan %>">
+                  <i class="bi bi-check-lg"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-secondary" onclick="cancelEdit(<%= p.pertemuan %>)" style="display: none;" id="cancel-<%= p.pertemuan %>">
+                  <i class="bi bi-x-lg"></i>
+                </button>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Tugas Terkait -->
+  <% if (tugasList && tugasList.length > 0) { %>
+    <div class="info-card mt-4">
+      <h5 class="fw-bold mb-3"><i class="bi bi-file-earmark-text me-2"></i>Tugas Aktif</h5>
+      <ul class="list-group">
+        <% tugasList.slice(0, 5).forEach(t => { %>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+              <strong><%= t.judul %></strong><br>
+              <small class="text-muted">Deadline: <%= new Date(t.deadline).toLocaleDateString('id-ID') %></small>
+            </div>
+            <span class="badge bg-primary"><%= t.tipe %></span>
+          </li>
+        <% }) %>
+      </ul>
+    </div>
+  <% } %>
+</div>
+
+<script>
+  function editPertemuan(pertemuan) {
+    // Hide text
+    document.querySelector(`.topik-text-${pertemuan}`).style.display = 'none';
+    document.querySelector(`.tanggal-text-${pertemuan}`).style.display = 'none';
+    document.querySelector(`.catatan-text-${pertemuan}`).style.display = 'none';
+    
+    // Show inputs
+    document.querySelectorAll(`.edit-input-${pertemuan}`).forEach(el => el.style.display = 'block');
+    
+    // Show buttons
+    document.getElementById(`save-${pertemuan}`).style.display = 'inline-block';
+    document.getElementById(`cancel-${pertemuan}`).style.display = 'inline-block';
+  }
+
+  function cancelEdit(pertemuan) {
+    // Show text
+    document.querySelector(`.topik-text-${pertemuan}`).style.display = 'inline';
+    document.querySelector(`.tanggal-text-${pertemuan}`).style.display = 'inline';
+    document.querySelector(`.catatan-text-${pertemuan}`).style.display = 'inline';
+    
+    // Hide inputs
+    document.querySelectorAll(`.edit-input-${pertemuan}`).forEach(el => el.style.display = 'none');
+    
+    // Hide buttons
+    document.getElementById(`save-${pertemuan}`).style.display = 'none';
+    document.getElementById(`cancel-${pertemuan}`).style.display = 'none';
+  }
+
+  function submitEdit(pertemuan) {
+    const topik = document.querySelectorAll(`.edit-input-${pertemuan}`)[0].value;
+    const tanggal = document.querySelectorAll(`.edit-input-${pertemuan}`)[1].value;
+    const catatan = document.querySelectorAll(`.edit-input-${pertemuan}`)[2].value;
+    
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `/dosen/mk/<%= mk.id %>/pertemuan/${pertemuan}`;
+    form.enctype = 'multipart/form-data'; // penting jika ada file, tapi di sini hanya teks
+    
+    const inputTopik = document.createElement('input');
+    inputTopik.type = 'hidden';
+    inputTopik.name = 'topik';
+    inputTopik.value = topik;
+    form.appendChild(inputTopik);
+    
+    const inputTanggal = document.createElement('input');
+    inputTanggal.type = 'hidden';
+    inputTanggal.name = 'tanggal';
+    inputTanggal.value = tanggal;
+    form.appendChild(inputTanggal);
+    
+    const inputCatatan = document.createElement('input');
+    inputCatatan.type = 'hidden';
+    inputCatatan.name = 'catatan';
+    inputCatatan.value = catatan;
+    form.appendChild(inputCatatan);
+    
+    document.body.appendChild(form);
+    form.submit();
+  }
+</script>
+
+<%- include('../partials/footer') %>

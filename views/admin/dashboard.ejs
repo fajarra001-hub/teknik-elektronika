@@ -1,0 +1,450 @@
+<%- include('../partials/header') %>
+
+<style>
+    /* ===== VARIABLES ===== */
+    :root {
+        --primary: #0d6efd;
+        --primary-dark: #0b5ed7;
+        --secondary: #0dcaf0;
+        --success: #198754;
+        --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
+        --shadow-sm: 0 0.5rem 1rem rgba(0,0,0,0.08);
+        --shadow-hover: 0 1rem 2rem rgba(0,0,0,0.12);
+        --border-radius: 1rem;
+        --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+        font-family: var(--font-sans);
+        background-color: #f8fafc;
+    }
+
+    /* ===== TYPOGRAPHY ===== */
+    .section-title {
+        position: relative;
+        margin-bottom: 2rem;
+        font-weight: 700;
+        font-size: 1.8rem;
+        color: #1e293b;
+    }
+    .section-title span {
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    .section-title:after {
+        content: '';
+        display: block;
+        width: 60px;
+        height: 4px;
+        background: var(--gradient);
+        margin-top: 0.3rem;
+        border-radius: 50px;
+    }
+
+    /* ===== STATISTICS CARDS ===== */
+    .stat-card {
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        box-shadow: var(--shadow-sm);
+        transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        border: 1px solid #f1f5f9;
+        height: 100%;
+    }
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-hover);
+    }
+    .stat-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        background: rgba(13, 110, 253, 0.1);
+        color: var(--primary);
+        transition: all 0.3s;
+    }
+    .stat-card:hover .stat-icon {
+        background: var(--gradient);
+        color: white;
+    }
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1e293b;
+        line-height: 1.2;
+        margin-bottom: 0;
+    }
+    .stat-label {
+        color: #64748b;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 0.8rem;
+    }
+    .stat-link {
+        margin-top: 1rem;
+        display: inline-block;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--primary);
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+    .stat-link:hover {
+        color: var(--primary-dark);
+        transform: translateX(5px);
+    }
+
+    /* ===== MENU CARDS ===== */
+    .menu-card {
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        box-shadow: var(--shadow-sm);
+        transition: all 0.3s;
+        border: 1px solid #f1f5f9;
+        height: 100%;
+        position: relative;
+        text-decoration: none;
+        color: inherit;
+        display: block;
+    }
+    .menu-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-hover);
+    }
+    .menu-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        background: rgba(13, 110, 253, 0.1);
+        color: var(--primary);
+        margin-bottom: 1rem;
+        transition: all 0.3s;
+    }
+    .menu-card:hover .menu-icon {
+        background: var(--gradient);
+        color: white;
+    }
+    .menu-title {
+        font-weight: 700;
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+        color: #1e293b;
+    }
+    .menu-desc {
+        font-size: 0.9rem;
+        color: #64748b;
+        margin-bottom: 0;
+    }
+    .badge-new {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: linear-gradient(135deg, #dc3545, #ff6b6b);
+        color: white;
+        font-size: 0.7rem;
+        font-weight: 600;
+        padding: 0.3rem 0.6rem;
+        border-radius: 50px;
+        box-shadow: 0 4px 10px rgba(220, 53, 69, 0.3);
+    }
+
+    /* ===== PROFILE CARD ===== */
+    .profile-card {
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid #f1f5f9;
+    }
+    .profile-avatar {
+        width: 64px;
+        height: 64px;
+        border-radius: 20px;
+        background: var(--gradient);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2rem;
+    }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    .fadeInUp {
+        animation: fadeInUp 0.5s ease;
+    }
+</style>
+
+<div class="container-fluid mt-4">
+    <!-- Profile Card -->
+    <div class="row mb-4 fadeInUp">
+        <div class="col-12">
+            <div class="profile-card d-flex align-items-center">
+                <div class="profile-avatar me-3">
+                    <i class="bi bi-person-badge"></i>
+                </div>
+                <div>
+                    <h5 class="mb-1">Selamat Datang, <strong><%= user.nama || user.email %></strong></h5>
+                    <p class="mb-0 text-muted">Dosen Program Studi Teknik Elektronika</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistik Cards -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="stat-icon me-3">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+                    <div>
+                        <p class="stat-value"><%= stats.mahasiswaCount || 0 %></p>
+                        <p class="stat-label">Total Mahasiswa</p>
+                    </div>
+                </div>
+                <a href="/admin/mahasiswa" class="stat-link">Lihat Detail <i class="bi bi-arrow-right"></i></a>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="stat-icon me-3" style="color: #198754; background: rgba(25, 135, 84, 0.1);">
+                        <i class="bi bi-person-badge-fill"></i>
+                    </div>
+                    <div>
+                        <p class="stat-value"><%= stats.dosenCount || 0 %></p>
+                        <p class="stat-label">Total Dosen</p>
+                    </div>
+                </div>
+                <a href="/admin/dosen" class="stat-link">Lihat Detail <i class="bi bi-arrow-right"></i></a>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="stat-icon me-3" style="color: #ffc107; background: rgba(255, 193, 7, 0.1);">
+                        <i class="bi bi-book-half"></i>
+                    </div>
+                    <div>
+                        <p class="stat-value"><%= stats.mkCount || 0 %></p>
+                        <p class="stat-label">Mata Kuliah</p>
+                    </div>
+                </div>
+                <a href="/admin/matakuliah" class="stat-link">Lihat Detail <i class="bi bi-arrow-right"></i></a>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="stat-icon me-3" style="color: #0dcaf0; background: rgba(13, 202, 240, 0.1);">
+                        <i class="bi bi-file-earmark-text"></i>
+                    </div>
+                    <div>
+                        <p class="stat-value"><%= stats.krsPending || 0 %></p>
+                        <p class="stat-label">KRS Pending</p>
+                    </div>
+                </div>
+                <a href="/admin/krs" class="stat-link">Lihat Detail <i class="bi bi-arrow-right"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pintasan (Quick Actions) -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <h3 class="section-title"><span>Pintasan</span></h3>
+        </div>
+        <div class="col-md-3 mb-3">
+            <a href="/admin/surat" class="menu-card">
+                <div class="menu-icon">
+                    <i class="bi bi-envelope-paper"></i>
+                </div>
+                <h5 class="menu-title">Surat Mahasiswa</h5>
+                <p class="menu-desc">Kelola pengajuan surat</p>
+            </a>
+        </div>
+        <div class="col-md-3 mb-3">
+            <a href="/admin/krs" class="menu-card">
+                <div class="menu-icon" style="color: #198754; background: rgba(25,135,84,0.1);">
+                    <i class="bi bi-check-all"></i>
+                </div>
+                <h5 class="menu-title">Setujui KRS</h5>
+                <p class="menu-desc">Verifikasi KRS mahasiswa</p>
+                <% if (stats.krsPending > 0) { %>
+                    <span class="badge-new"><%= stats.krsPending %></span>
+                <% } %>
+            </a>
+        </div>
+        <div class="col-md-3 mb-3">
+            <a href="/admin/khs/list" class="menu-card">
+                <div class="menu-icon" style="color: #ffc107; background: rgba(255,193,7,0.1);">
+                    <i class="bi bi-cloud-upload"></i>
+                </div>
+                <h5 class="menu-title">Upload KHS</h5>
+                <p class="menu-desc">Nilai per semester</p>
+            </a>
+        </div>
+        <div class="col-md-3 mb-3">
+            <a href="/admin/tagihan" class="menu-card">
+                <div class="menu-icon" style="color: #0d6efd; background: rgba(13,110,253,0.1);">
+                    <i class="bi bi-cash-coin"></i>
+                </div>
+                <h5 class="menu-title">Kelola Tagihan</h5>
+                <p class="menu-desc">Atur tagihan SPP</p>
+            </a>
+        </div>
+    </div>
+
+    <!-- Menu Utama -->
+    <div class="row">
+        <div class="col-12">
+            <h3 class="section-title"><span>Menu Utama</span></h3>
+        </div>
+
+        <!-- Baris 1: Pengguna & Akademik -->
+        <div class="col-md-3 mb-3">
+            <a href="/admin/users" class="menu-card">
+                <div class="menu-icon"><i class="bi bi-people"></i></div>
+                <h5 class="menu-title">Kelola Pengguna</h5>
+                <p class="menu-desc">Tambah/edit mahasiswa & admin</p>
+            </a>
+        </div>
+        <div class="col-md-3 mb-3">
+            <a href="/admin/dosen" class="menu-card">
+                <div class="menu-icon" style="color: #198754; background: rgba(25,135,84,0.1);">
+                    <i class="bi bi-person-badge"></i>
+                </div>
+                <h5 class="menu-title">Kelola Dosen</h5>
+                <p class="menu-desc">Data dosen, foto, kontak</p>
+            </a>
+        </div>
+        <div class="col-md-3 mb-3">
+            <a href="/admin/mahasiswa" class="menu-card">
+                <div class="menu-icon" style="color: #0dcaf0; background: rgba(13,202,240,0.1);">
+                    <i class="bi bi-mortarboard"></i>
+                </div>
+                <h5 class="menu-title">Kelola Mahasiswa</h5>
+                <p class="menu-desc">List per angkatan, tagihan</p>
+            </a>
+        </div>
+        <div class="col-md-3 mb-3">
+            <a href="/admin/matakuliah" class="menu-card">
+                <div class="menu-icon" style="color: #ffc107; background: rgba(255,193,7,0.1);">
+                    <i class="bi bi-book"></i>
+                </div>
+                <h5 class="menu-title">Kelola Mata Kuliah</h5>
+                <p class="menu-desc">MK, dosen, jadwal</p>
+            </a>
+        </div>
+
+        <!-- Baris 2: Akademik Lanjutan -->
+        <div class="col-md-3 mb-3">
+            <a href="/admin/pengajaran" class="menu-card">
+                <div class="menu-icon" style="color: #dc3545; background: rgba(220,53,69,0.1);">
+                    <i class="bi bi-bar-chart-steps"></i>
+                </div>
+                <h5 class="menu-title">Informasi Pengajaran</h5>
+                <p class="menu-desc">Progress pertemuan MK</p>
+            </a>
+        </div>
+        <div class="col-md-3 mb-3">
+            <a href="/admin/berkas" class="menu-card">
+                <div class="menu-icon" style="color: #6c757d; background: rgba(108,117,125,0.1);">
+                    <i class="bi bi-folder2-open"></i>
+                </div>
+                <h5 class="menu-title">Berkas Akademik</h5>
+                <p class="menu-desc">Lihat KRS/KHS</p>
+            </a>
+        </div>
+        <div class="col-md-3 mb-3">
+            <a href="/admin/emagang" class="menu-card">
+                <div class="menu-icon" style="color: #0d6efd; background: rgba(13,110,253,0.1);">
+                    <i class="bi bi-briefcase"></i>
+                </div>
+                <h5 class="menu-title">E‑Magang</h5>
+                <p class="menu-desc">Logbook mahasiswa</p>
+            </a>
+        </div>
+        <div class="col-md-3 mb-3">
+            <a href="/admin-content/berita" class="menu-card">
+                <div class="menu-icon" style="color: #198754; background: rgba(25,135,84,0.1);">
+                    <i class="bi bi-newspaper"></i>
+                </div>
+                <h5 class="menu-title">Kelola Berita</h5>
+                <p class="menu-desc">Tambah/edit berita</p>
+            </a>
+        </div>
+
+        <!-- Baris 3: Laporan & Statistik -->
+        <div class="col-md-3 mb-3">
+            <a href="/admin/laporan-magang" class="menu-card">
+                <div class="menu-icon" style="color: #0d6efd; background: rgba(13,110,253,0.1);">
+                    <i class="bi bi-file-earmark-pdf"></i>
+                </div>
+                <h5 class="menu-title">Laporan Magang</h5>
+                <p class="menu-desc">Lihat laporan mahasiswa</p>
+            </a>
+        </div>
+        <div class="col-md-3 mb-3">
+            <a href="/admin/statistik" class="menu-card">
+                <div class="menu-icon" style="color: #0dcaf0; background: rgba(13,202,240,0.1);">
+                    <i class="bi bi-pie-chart"></i>
+                </div>
+                <h5 class="menu-title">Statistik Prodi</h5>
+                <p class="menu-desc">Data mahasiswa</p>
+            </a>
+        </div>
+        <div class="col-md-3 mb-3">
+            <a href="/admin/jadwalpenting" class="menu-card">
+                <div class="menu-icon" style="color: #ffc107; background: rgba(255,193,7,0.1);">
+                    <i class="bi bi-calendar-event"></i>
+                </div>
+                <h5 class="menu-title">Jadwal Penting</h5>
+                <p class="menu-desc">Event kalender</p>
+            </a>
+        </div>
+        <div class="col-md-3 mb-3">
+            <a href="/admin/tracklulusan" class="menu-card">
+                <div class="menu-icon" style="color: #dc3545; background: rgba(220,53,69,0.1);">
+                    <i class="bi bi-graph-up"></i>
+                </div>
+                <h5 class="menu-title">Track Lulusan</h5>
+                <p class="menu-desc">Survey & foto</p>
+            </a>
+        </div>
+        <div class="col-md-3 mb-3">
+            <a href="/admin/nilai/list" class="menu-card">
+                <div class="menu-icon" style="color: #6c757d; background: rgba(108,117,125,0.1);">
+                    <i class="bi bi-bar-chart-line"></i>
+                </div>
+                <h5 class="menu-title">Input Nilai</h5>
+                <p class="menu-desc">Nilai mahasiswa</p>
+            </a>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

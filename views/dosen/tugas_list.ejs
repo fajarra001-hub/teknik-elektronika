@@ -1,0 +1,98 @@
+<%- include('../partials/header') %>
+
+<style>
+  .tugas-table th {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    border: none;
+  }
+  .tugas-table td {
+    vertical-align: middle;
+    padding: 1rem 0.75rem;
+  }
+  .btn-action {
+    margin: 2px;
+    border-radius: 8px;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+  }
+  .btn-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+  }
+  .filter-card {
+    border-radius: 1rem;
+    border: none;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    background: white;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .table-responsive {
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+  }
+</style>
+
+<div class="container-fluid mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold">Daftar Tugas</h2>
+    <a href="/dosen/tugas/create" class="btn btn-primary">
+      <i class="bi bi-plus-circle me-2"></i>Buat Tugas Baru
+    </a>
+  </div>
+
+  <!-- Tabel Tugas -->
+  <div class="table-responsive">
+    <table class="table tugas-table">
+      <thead>
+        <tr>
+          <th>Judul</th>
+          <th>Mata Kuliah</th>
+          <th>Deadline</th>
+          <th>Tipe</th>
+          <th>File</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (tugasList.length === 0) { %>
+          <tr>
+            <td colspan="6" class="text-center py-5">
+              <i class="bi bi-inbox fs-1 text-muted d-block mb-3"></i>
+              <p class="text-muted">Belum ada tugas yang dibuat.</p>
+            </td>
+          </tr>
+        <% } %>
+        <% tugasList.forEach(t => { %>
+          <tr>
+            <td><strong><%= t.judul %></strong></td>
+            <td><%= t.mkKode || '-' %></td>
+            <td><%= new Date(t.deadline).toLocaleString('id-ID') %></td>
+            <td><span class="badge bg-info"><%= t.tipe %></span></td>
+            <td>
+              <% if (t.fileUrl) { %>
+                <a href="<%= t.fileUrl %>" target="_blank" class="btn btn-sm btn-outline-info btn-action">Lihat</a>
+              <% } else { %>
+                <span class="text-muted">-</span>
+              <% } %>
+            </td>
+            <td>
+              <a href="/dosen/tugas/<%= t.id %>" class="btn btn-sm btn-outline-primary btn-action">
+                <i class="bi bi-eye"></i> Detail
+              </a>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

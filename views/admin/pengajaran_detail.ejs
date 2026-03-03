@@ -1,0 +1,293 @@
+<%- include('../partials/header') %>
+
+<style>
+  .detail-header {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    margin-bottom: 2rem;
+  }
+  .detail-header h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+  }
+  .info-card {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .progress-lg {
+    height: 1.5rem;
+    border-radius: 1rem;
+  }
+  .pertemuan-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+  }
+  .badge-status {
+    padding: 0.4rem 1rem;
+    border-radius: 50px;
+    font-weight: 500;
+  }
+  .btn-edit-pertemuan {
+    background: transparent;
+    border: 1px solid #2193b0;
+    color: #2193b0;
+    border-radius: 50px;
+    padding: 0.25rem 1rem;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+  }
+  .btn-edit-pertemuan:hover {
+    background: #2193b0;
+    color: white;
+  }
+  .btn-bulk {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border: none;
+    color: white;
+    border-radius: 50px;
+    padding: 0.5rem 1.5rem;
+    font-weight: 500;
+  }
+</style>
+
+<div class="container-fluid mt-4">
+  <!-- Header -->
+  <div class="detail-header">
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        <h1><%= mk.kode %> - <%= mk.nama %></h1>
+        <p class="mb-0 opacity-75"><i class="bi bi-book me-2"></i><%= mk.sks %> SKS | <i class="bi bi-calendar me-2"></i><%= mk.semester || 'Semester ?' %> | <i class="bi bi-clock me-2"></i><%= mk.jadwal || 'Jadwal belum diatur' %></p>
+      </div>
+      <div>
+        <a href="/admin/pengajaran" class="btn btn-light">
+          <i class="bi bi-arrow-left me-2"></i>Kembali
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info Dosen & Progress -->
+  <div class="row g-4 mb-4">
+    <div class="col-md-6">
+      <div class="info-card">
+        <h5 class="fw-bold mb-3"><i class="bi bi-people me-2"></i>Dosen Pengampu</h5>
+        <% if (dosenList && dosenList.length > 0) { %>
+          <div class="d-flex flex-wrap gap-2">
+            <% dosenList.forEach(d => { %>
+              <span class="badge bg-primary bg-opacity-10 text-primary p-2"><%= d.nama %></span>
+            <% }) %>
+          </div>
+        <% } else { %>
+          <p class="text-muted">Belum ada dosen tetap</p>
+        <% } %>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="info-card">
+        <h5 class="fw-bold mb-3"><i class="bi bi-bar-chart-steps me-2"></i>Progress Perkuliahan</h5>
+        <div class="progress progress-lg mb-2">
+          <div class="progress-bar" role="progressbar" style="width: <%= persentase %>%; background: linear-gradient(90deg, #2193b0, #6dd5ed);" 
+               aria-valuenow="<%= persentase %>" aria-valuemin="0" aria-valuemax="100">
+            <%= persentase %>%
+          </div>
+        </div>
+        <p class="text-muted"><%= terlaksana %> dari 16 pertemuan telah dilaksanakan</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bulk Update Button -->
+  <div class="mb-3 text-end">
+    <button class="btn-bulk" onclick="toggleBulkMode()">
+      <i class="bi bi-check-all me-2"></i>Mode Bulk Update
+    </button>
+  </div>
+
+  <!-- Bulk Update Panel (hidden) -->
+  <div id="bulkPanel" class="info-card mb-4" style="display: none;">
+    <h5 class="fw-bold mb-3">Bulk Update Pertemuan</h5>
+    <form id="bulkForm">
+      <div class="row">
+        <% for (let i = 1; i <= 16; i++) { %>
+          <div class="col-md-3 col-6 mb-2">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="completed" value="<%= i %>" id="bulk<%= i %>">
+              <label class="form-check-label" for="bulk<%= i %>">Pertemuan <%= i %></label>
+            </div>
+          </div>
+        <% } %>
+      </div>
+      <button type="button" class="btn btn-primary" onclick="submitBulk()">Simpan Bulk Update</button>
+      <button type="button" class="btn btn-secondary" onclick="toggleBulkMode()">Batal</button>
+    </form>
+  </div>
+
+  <!-- Tabel Pertemuan -->
+  <div class="info-card">
+    <h5 class="fw-bold mb-3"><i class="bi bi-list-task me-2"></i>Rencana Perkuliahan (16 Pertemuan)</h5>
+    <div class="table-responsive">
+      <table class="table table-bordered pertemuan-table">
+        <thead>
+          <tr>
+            <th>Pertemuan</th>
+            <th>Topik</th>
+            <th>Tanggal</th>
+            <th>Status</th>
+            <th>Materi</th>
+            <th>Catatan</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% pertemuanList.forEach(p => { %>
+            <tr class="<%= p.status === 'selesai' ? 'table-success' : '' %>">
+              <td class="text-center fw-bold"><%= p.pertemuan %></td>
+              <td>
+                <span class="topik-text-<%= p.pertemuan %>"><%= p.topik %></span>
+                <input type="text" class="form-control form-control-sm edit-input-<%= p.pertemuan %>" value="<%= p.topik %>" style="display: none;">
+              </td>
+              <td>
+                <span class="tanggal-text-<%= p.pertemuan %>"><%= p.tanggal ? new Date(p.tanggal).toLocaleDateString('id-ID') : '-' %></span>
+                <input type="date" class="form-control form-control-sm edit-input-<%= p.pertemuan %>" value="<%= p.tanggal ? p.tanggal.split('T')[0] : '' %>" style="display: none;">
+              </td>
+              <td>
+                <span class="badge-status bg-<%= p.status === 'selesai' ? 'success' : 'warning' %> text-white">
+                  <%= p.status %>
+                </span>
+              </td>
+              <td>
+                <% if (p.materiUrl) { %>
+                  <a href="<%= p.materiUrl %>" target="_blank" class="btn btn-sm btn-outline-info">Lihat</a>
+                <% } else { %>
+                  <span class="text-muted">-</span>
+                <% } %>
+              </td>
+              <td>
+                <span class="catatan-text-<%= p.pertemuan %>"><%= p.catatan || '-' %></span>
+                <input type="text" class="form-control form-control-sm edit-input-<%= p.pertemuan %>" value="<%= p.catatan || '' %>" style="display: none;">
+              </td>
+              <td>
+                <button class="btn btn-sm btn-outline-primary" onclick="editPertemuan(<%= p.pertemuan %>)">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-success" onclick="submitEdit(<%= p.pertemuan %>)" style="display: none;" id="save-<%= p.pertemuan %>">
+                  <i class="bi bi-check-lg"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-secondary" onclick="cancelEdit(<%= p.pertemuan %>)" style="display: none;" id="cancel-<%= p.pertemuan %>">
+                  <i class="bi bi-x-lg"></i>
+                </button>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Tugas Terkait (opsional) -->
+  <% if (tugasList && tugasList.length > 0) { %>
+    <div class="info-card mt-4">
+      <h5 class="fw-bold mb-3"><i class="bi bi-file-earmark-text me-2"></i>Tugas Terkait</h5>
+      <ul class="list-group">
+        <% tugasList.forEach(t => { %>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+              <strong><%= t.judul %></strong><br>
+              <small class="text-muted">Deadline: <%= new Date(t.deadline).toLocaleDateString('id-ID') %></small>
+            </div>
+            <span class="badge bg-primary"><%= t.tipe %></span>
+          </li>
+        <% }) %>
+      </ul>
+    </div>
+  <% } %>
+</div>
+
+<script>
+  function toggleBulkMode() {
+    const panel = document.getElementById('bulkPanel');
+    panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+  }
+
+  function submitBulk() {
+    const checkboxes = document.querySelectorAll('#bulkForm input[name="completed"]:checked');
+    const completed = Array.from(checkboxes).map(cb => parseInt(cb.value));
+    
+    fetch('/admin/pengajaran/<%= mk.id %>/pertemuan/bulk-update', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ completed })
+    })
+    .then(res => {
+      if (res.ok) location.reload();
+      else alert('Gagal update');
+    })
+    .catch(err => alert('Error: ' + err.message));
+  }
+
+  function editPertemuan(pertemuan) {
+    // Sembunyikan teks
+    document.querySelector(`.topik-text-${pertemuan}`).style.display = 'none';
+    document.querySelector(`.tanggal-text-${pertemuan}`).style.display = 'none';
+    document.querySelector(`.catatan-text-${pertemuan}`).style.display = 'none';
+    
+    // Tampilkan input
+    document.querySelectorAll(`.edit-input-${pertemuan}`).forEach(el => el.style.display = 'block');
+    
+    // Tampilkan tombol save/cancel
+    document.getElementById(`save-${pertemuan}`).style.display = 'inline-block';
+    document.getElementById(`cancel-${pertemuan}`).style.display = 'inline-block';
+  }
+
+  function cancelEdit(pertemuan) {
+    // Tampilkan teks
+    document.querySelector(`.topik-text-${pertemuan}`).style.display = 'inline';
+    document.querySelector(`.tanggal-text-${pertemuan}`).style.display = 'inline';
+    document.querySelector(`.catatan-text-${pertemuan}`).style.display = 'inline';
+    
+    // Sembunyikan input
+    document.querySelectorAll(`.edit-input-${pertemuan}`).forEach(el => el.style.display = 'none');
+    
+    // Sembunyikan tombol
+    document.getElementById(`save-${pertemuan}`).style.display = 'none';
+    document.getElementById(`cancel-${pertemuan}`).style.display = 'none';
+  }
+
+  function submitEdit(pertemuan) {
+    const topik = document.querySelectorAll(`.edit-input-${pertemuan}`)[0].value;
+    const tanggal = document.querySelectorAll(`.edit-input-${pertemuan}`)[1].value;
+    const catatan = document.querySelectorAll(`.edit-input-${pertemuan}`)[2].value;
+    
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `/admin/pengajaran/<%= mk.id %>/pertemuan/${pertemuan}`;
+    
+    const inputTopik = document.createElement('input');
+    inputTopik.type = 'hidden';
+    inputTopik.name = 'topik';
+    inputTopik.value = topik;
+    form.appendChild(inputTopik);
+    
+    const inputTanggal = document.createElement('input');
+    inputTanggal.type = 'hidden';
+    inputTanggal.name = 'tanggal';
+    inputTanggal.value = tanggal;
+    form.appendChild(inputTanggal);
+    
+    const inputCatatan = document.createElement('input');
+    inputCatatan.type = 'hidden';
+    inputCatatan.name = 'catatan';
+    inputCatatan.value = catatan;
+    form.appendChild(inputCatatan);
+    
+    document.body.appendChild(form);
+    form.submit();
+  }
+</script>
+
+<%- include('../partials/footer') %>

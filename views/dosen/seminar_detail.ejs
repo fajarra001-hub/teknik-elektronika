@@ -1,0 +1,94 @@
+<%- include('../partials/header') %>
+
+<style>
+  .detail-header {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border-radius: 1rem;
+    padding: 2rem;
+    color: white;
+    margin-bottom: 2rem;
+  }
+  .info-card {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+</style>
+
+<div class="container-fluid mt-4">
+  <div class="detail-header d-flex justify-content-between align-items-center">
+    <div>
+      <h2><i class="bi bi-calendar-event me-2"></i>Detail Seminar</h2>
+    </div>
+    <a href="/dosen/seminar" class="btn btn-light">
+      <i class="bi bi-arrow-left me-2"></i>Kembali
+    </a>
+  </div>
+
+  <!-- Info Mahasiswa -->
+  <div class="info-card">
+    <h5 class="fw-bold mb-3">Data Mahasiswa</h5>
+    <div class="row">
+      <div class="col-md-6">
+        <p><strong>NIM:</strong> <%= mahasiswa.nim || '-' %></p>
+        <p><strong>Nama:</strong> <%= mahasiswa.nama %></p>
+      </div>
+      <div class="col-md-6">
+        <p><strong>Email:</strong> <%= mahasiswa.email || '-' %></p>
+        <p><strong>No. HP:</strong> <%= mahasiswa.noHp || '-' %></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info Seminar -->
+  <div class="info-card">
+    <h5 class="fw-bold mb-3">Detail Permohonan</h5>
+    <table class="table table-borderless">
+      <tr><th style="width: 150px;">Judul</th><td><%= seminar.judul %></td></tr>
+      <tr><th>Tanggal</th><td><%= seminar.tanggal ? new Date(seminar.tanggal).toLocaleDateString('id-ID') : '-' %></td></tr>
+      <tr><th>Waktu</th><td><%= seminar.waktu || '-' %></td></tr>
+      <tr><th>Tempat</th><td><%= seminar.tempat || '-' %></td></tr>
+      <tr><th>Pembimbing 1</th><td><%= seminar.pembimbing1 || '-' %></td></tr>
+      <tr><th>Pembimbing 2</th><td><%= seminar.pembimbing2 || '-' %></td></tr>
+      <tr><th>Penguji</th><td><%= seminar.penguji || '-' %></td></tr>
+      <tr><th>Status</th><td>
+        <% if (seminar.status === 'pending') { %>
+          <span class="badge bg-warning text-dark">Pending</span>
+        <% } else if (seminar.status === 'approved') { %>
+          <span class="badge bg-success">Disetujui</span>
+        <% } else if (seminar.status === 'rejected') { %>
+          <span class="badge bg-danger">Ditolak</span>
+        <% } %>
+      </td></tr>
+      <% if (seminar.jadwal) { %>
+        <tr><th>Jadwal</th><td>
+          <%= seminar.jadwal.tanggal ? new Date(seminar.jadwal.tanggal).toLocaleDateString('id-ID') : '' %>,
+          <%= seminar.jadwal.waktu || '' %>, <%= seminar.jadwal.tempat || '' %>
+          <%= seminar.jadwal.penguji ? ', Penguji: ' + seminar.jadwal.penguji : '' %>
+        </td></tr>
+      <% } %>
+      <% if (seminar.alasanPenolakan) { %>
+        <tr><th>Alasan Penolakan</th><td class="text-danger"><%= seminar.alasanPenolakan %></td></tr>
+      <% } %>
+    </table>
+  </div>
+
+  <!-- Riwayat -->
+  <% if (seminar.history && seminar.history.length > 0) { %>
+    <div class="info-card">
+      <h5 class="fw-bold mb-3">Riwayat</h5>
+      <ul class="list-group">
+        <% seminar.history.forEach(item => { %>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <%= item.catatan %>
+            <small class="text-muted"><%= new Date(item.timestamp).toLocaleString('id-ID') %></small>
+          </li>
+        <% }) %>
+      </ul>
+    </div>
+  <% } %>
+</div>
+
+<%- include('../partials/footer') %>

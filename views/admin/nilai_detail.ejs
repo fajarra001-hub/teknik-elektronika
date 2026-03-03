@@ -1,0 +1,100 @@
+<%- include('../partials/header') %>
+
+<style>
+  .detail-header {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    color: white;
+    margin-bottom: 2rem;
+  }
+  .nilai-table th {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    border: none;
+  }
+  .nilai-table td {
+    vertical-align: middle;
+    padding: 0.75rem 0.5rem;
+  }
+  .table-responsive {
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+  }
+  .btn-action {
+    margin: 2px;
+    border-radius: 8px;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.85rem;
+  }
+</style>
+
+<div class="container-fluid mt-4">
+  <div class="detail-header d-flex justify-content-between align-items-center">
+    <div>
+      <h2 class="fw-bold"><%= mk.kode %> - <%= mk.nama %></h2>
+      <p class="mb-0 opacity-75">SKS: <%= mk.sks %> | Semester: <%= mk.semester || '-' %></p>
+    </div>
+    <a href="/admin/nilai" class="btn btn-light">
+      <i class="bi bi-arrow-left me-2"></i>Kembali
+    </a>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table nilai-table">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>NIM</th>
+          <th>Nama</th>
+          <% tipeList.forEach(tipe => { %>
+            <th><%= tipe %></th>
+          <% }) %>
+          <th>Nilai Akhir</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (mahasiswaList.length === 0) { %>
+          <tr>
+            <td colspan="<%= 3 + tipeList.length + 1 %>" class="text-center py-5">
+              <i class="bi bi-inbox fs-1 text-muted d-block mb-3"></i>
+              <p class="text-muted">Tidak ada mahasiswa terdaftar.</p>
+            </td>
+          </tr>
+        <% } %>
+        <% mahasiswaList.forEach((item, index) => { %>
+          <tr>
+            <td class="text-center"><%= index + 1 %></td>
+            <td><%= item.mahasiswa.nim %></td>
+            <td><%= item.mahasiswa.nama %></td>
+            <% tipeList.forEach(tipe => { 
+              const nilai = item.nilai[tipe];
+            %>
+              <td class="text-center">
+                <% if (nilai) { %>
+                  <span class="badge bg-primary"><%= nilai %></span>
+                <% } else { %>
+                  <span class="text-muted">-</span>
+                <% } %>
+              </td>
+            <% }) %>
+            <td class="text-center">
+              <% if (item.nilaiAkhir) { %>
+                <strong><%= item.nilaiAkhir.toFixed(2) %></strong>
+              <% } else { %>
+                <span class="text-muted">-</span>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

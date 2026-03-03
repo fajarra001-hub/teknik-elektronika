@@ -1,0 +1,158 @@
+<%- include('../../partials/header') %>
+
+<style>
+  .detail-header {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border-radius: 1rem;
+    padding: 2rem;
+    color: white;
+    margin-bottom: 2rem;
+  }
+  .detail-header h2 {
+    font-weight: 700;
+  }
+  .info-card {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .badge-status {
+    padding: 0.4rem 1rem;
+    border-radius: 50px;
+    font-weight: 500;
+  }
+  .badge-pending { background: #ffc107; color: #212529; }
+  .badge-approved { background: #28a745; color: white; }
+  .badge-rejected { background: #dc3545; color: white; }
+  .badge-cancelled { background: #6c757d; color: white; }
+  .btn-gradient {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border: none;
+    color: white;
+    font-weight: 500;
+    padding: 0.6rem 1.5rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(33,147,176,0.3);
+    color: white;
+  }
+  .btn-outline-gradient {
+    background: transparent;
+    border: 2px solid #2193b0;
+    color: #2193b0;
+    font-weight: 500;
+    padding: 0.6rem 1.5rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-outline-gradient:hover {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border-color: transparent;
+    color: white;
+  }
+</style>
+
+<div class="container-fluid mt-4">
+  <!-- Header -->
+  <div class="detail-header d-flex justify-content-between align-items-center">
+    <div>
+      <h2><i class="bi bi-envelope-paper me-2"></i>Detail Surat</h2>
+    </div>
+    <a href="/mahasiswa/persuratan" class="btn btn-light">
+      <i class="bi bi-arrow-left me-2"></i>Kembali
+    </a>
+  </div>
+
+  <!-- Info Surat -->
+  <div class="info-card">
+    <div class="row">
+      <div class="col-md-6">
+        <p><strong>Jenis Surat:</strong> <%= surat.jenis %></p>
+        <p><strong>Nomor Surat:</strong> <%= surat.nomorSurat || 'Belum diterbitkan' %></p>
+        <p><strong>Tanggal Pengajuan:</strong> <%= new Date(surat.createdAt).toLocaleString('id-ID') %></p>
+      </div>
+      <div class="col-md-6">
+        <p><strong>Status:</strong> 
+          <% if (surat.status === 'pending') { %>
+            <span class="badge-status badge-pending">Pending</span>
+          <% } else if (surat.status === 'approved') { %>
+            <span class="badge-status badge-approved">Disetujui</span>
+          <% } else if (surat.status === 'rejected') { %>
+            <span class="badge-status badge-rejected">Ditolak</span>
+          <% } else if (surat.status === 'cancelled') { %>
+            <span class="badge-status badge-cancelled">Dibatalkan</span>
+          <% } %>
+        </p>
+        <p><strong>Semester:</strong> <%= surat.semester %></p>
+        <p><strong>Tahun Akademik:</strong> <%= surat.tahunAkademik %></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Keperluan -->
+  <div class="info-card">
+    <h5 class="fw-bold mb-3">Keperluan</h5>
+    <p><%= surat.keperluan %></p>
+  </div>
+
+  <!-- Kode Validasi (jika approved) -->
+  <% if (surat.status === 'approved' || surat.status === 'completed') { %>
+    <div class="info-card">
+      <h5 class="fw-bold mb-3">Kode Validasi</h5>
+      <p class="mb-2">Gunakan kode ini untuk memverifikasi keaslian surat:</p>
+      <div class="bg-light p-3 rounded text-center">
+        <code class="fs-5"><%= surat.kodeValidasi %></code>
+      </div>
+    </div>
+  <% } %>
+
+  <!-- Alasan Penolakan (jika rejected) -->
+  <% if (surat.status === 'rejected' && surat.alasanPenolakan) { %>
+    <div class="info-card bg-danger bg-opacity-10">
+      <h5 class="fw-bold mb-3 text-danger">Alasan Penolakan</h5>
+      <p><%= surat.alasanPenolakan %></p>
+    </div>
+  <% } %>
+
+  <!-- Riwayat Tracking -->
+  <% if (surat.history && surat.history.length > 0) { %>
+    <div class="info-card">
+      <h5 class="fw-bold mb-3">Riwayat Pengajuan</h5>
+      <ul class="list-group">
+        <% surat.history.forEach(item => { %>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>
+              <i class="bi bi-check-circle-fill text-success"></i>
+              <%= item.catatan %>
+            </span>
+            <small class="text-muted"><%= new Date(item.timestamp).toLocaleString('id-ID') %></small>
+          </li>
+        <% }) %>
+      </ul>
+    </div>
+  <% } %>
+
+  <!-- Tombol Aksi -->
+  <div class="d-flex gap-3">
+    <% if (surat.status === 'pending') { %>
+      <form method="POST" action="/mahasiswa/persuratan/<%= surat.id %>/batal" onsubmit="return confirm('Batalkan pengajuan surat ini?')">
+        <button type="submit" class="btn btn-warning">Batalkan Pengajuan</button>
+      </form>
+    <% } %>
+    <% if (surat.status === 'approved' || surat.status === 'completed') { %>
+      <a href="/mahasiswa/persuratan/<%= surat.id %>/download" class="btn btn-success">Unduh PDF</a>
+    <% } %>
+    <a href="/mahasiswa/persuratan" class="btn btn-secondary">Kembali</a>
+  </div>
+</div>
+
+<%- include('../../partials/footer') %>

@@ -1,0 +1,81 @@
+<%- include('../partials/header') %>
+
+<style>
+  .tagihan-table th {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    border: none;
+  }
+  .tagihan-table td {
+    vertical-align: middle;
+    padding: 1rem 0.75rem;
+  }
+  .filter-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  }
+  .table-responsive {
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+  }
+  .btn-action {
+    margin: 2px;
+    border-radius: 8px;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.85rem;
+  }
+</style>
+
+<div class="container-fluid mt-4">
+  <h2 class="fw-bold mb-4">Kelola Tagihan Mahasiswa</h2>
+
+  <div class="table-responsive">
+    <table class="table tagihan-table">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>NIM</th>
+          <th>Nama</th>
+          <th>Jumlah Tagihan</th>
+          <th>Total Belum Lunas</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (mahasiswaList.length === 0) { %>
+          <tr>
+            <td colspan="6" class="text-center py-5">
+              <i class="bi bi-inbox fs-1 text-muted d-block mb-3"></i>
+              <p class="text-muted">Tidak ada mahasiswa.</p>
+            </td>
+          </tr>
+        <% } else { %>
+          <% mahasiswaList.forEach((m, index) => { %>
+          <tr>
+            <td class="text-center"><%= index + 1 %></td>
+            <td><%= m.nim || '-' %></td>
+            <td><%= m.nama %></td>
+            <td class="text-center"><%= m.tagihanCount %></td>
+            <td class="text-end">Rp <%= new Intl.NumberFormat('id-ID').format(m.totalBelumLunas) %></td>
+            <td>
+              <a href="/admin/tagihan/mahasiswa/<%= m.id %>" class="btn btn-sm btn-outline-info btn-action">
+                <i class="bi bi-eye"></i> Detail Tagihan
+              </a>
+            </td>
+          </tr>
+          <% }) %>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

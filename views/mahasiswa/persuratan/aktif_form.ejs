@@ -1,0 +1,123 @@
+<%- include('../../partials/header') %>
+
+<style>
+  .form-card {
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    overflow: hidden;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  .form-header {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    padding: 1.5rem;
+    color: white;
+  }
+  .form-header h3 {
+    margin: 0;
+    font-weight: 600;
+  }
+  .form-body {
+    padding: 2rem;
+  }
+  .btn-gradient {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border: none;
+    color: white;
+    font-weight: 500;
+    padding: 0.6rem 2rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+    border: none;
+  }
+  .btn-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(33,147,176,0.3);
+    color: white;
+  }
+  .btn-outline-gradient {
+    background: transparent;
+    border: 2px solid #2193b0;
+    color: #2193b0;
+    font-weight: 500;
+    padding: 0.6rem 2rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-outline-gradient:hover {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border-color: transparent;
+    color: white;
+  }
+  .form-label {
+    font-weight: 600;
+    color: #1e293b;
+  }
+  .form-control, .form-select {
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid #cbd5e1;
+    transition: all 0.3s;
+  }
+  .form-control:focus, .form-select:focus {
+    border-color: #2193b0;
+    box-shadow: 0 0 0 0.2rem rgba(33,147,176,0.25);
+  }
+</style>
+
+<div class="container mt-4">
+  <div class="form-card">
+    <div class="form-header">
+      <h3><i class="bi bi-envelope-paper me-2"></i>Pengajuan Surat Aktif Kuliah</h3>
+    </div>
+    <div class="form-body">
+      <form method="POST" action="/mahasiswa/persuratan/aktif-kuliah">
+        <!-- Data Mahasiswa (readonly) -->
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="form-label">NIM</label>
+            <input type="text" class="form-control" value="<%= user.nim %>" readonly disabled>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Nama</label>
+            <input type="text" class="form-control" value="<%= user.nama %>" readonly disabled>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="form-label">Program Studi</label>
+            <input type="text" class="form-control" value="Teknik Elektronika" readonly disabled>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Semester</label>
+            <input type="text" class="form-control" name="semester" value="<%= semesterSekarang %>" readonly>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="keperluan" class="form-label">Keperluan <span class="text-danger">*</span></label>
+          <textarea class="form-control" id="keperluan" name="keperluan" rows="3" placeholder="Contoh: Untuk melamar beasiswa, Untuk keperluan magang, dll." required></textarea>
+        </div>
+
+        <div class="alert alert-info">
+          <i class="bi bi-info-circle"></i> Surat akan diproses dalam 1-2 hari kerja. Status pengajuan dapat dilihat di riwayat surat.
+        </div>
+
+        <div class="d-flex justify-content-between">
+          <a href="/mahasiswa/persuratan" class="btn-outline-gradient">
+            <i class="bi bi-arrow-left me-2"></i>Batal
+          </a>
+          <button type="submit" class="btn-gradient">
+            <i class="bi bi-send me-2"></i>Ajukan Surat
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<%- include('../../partials/footer') %>

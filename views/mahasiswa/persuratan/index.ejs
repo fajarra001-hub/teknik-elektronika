@@ -1,0 +1,238 @@
+<%- include('../../partials/header') %>
+
+<style>
+  .persuratan-header {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border-radius: 1rem;
+    padding: 2rem;
+    color: white;
+    margin-bottom: 2rem;
+  }
+  .persuratan-header h2 {
+    font-weight: 700;
+  }
+  .surat-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #1e293b;
+  }
+  .badge-status {
+    padding: 0.4rem 1rem;
+    border-radius: 50px;
+    font-weight: 500;
+  }
+  .badge-pending { background: #ffc107; color: #212529; }
+  .badge-approved { background: #28a745; color: white; }
+  .badge-rejected { background: #dc3545; color: white; }
+  .badge-cancelled { background: #6c757d; color: white; }
+  .btn-gradient {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border: none;
+    color: white;
+    font-weight: 500;
+    padding: 0.6rem 1.5rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(33,147,176,0.3);
+    color: white;
+  }
+  .btn-outline-gradient {
+    background: transparent;
+    border: 2px solid #2193b0;
+    color: #2193b0;
+    font-weight: 500;
+    padding: 0.6rem 1.5rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-outline-gradient:hover {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border-color: transparent;
+    color: white;
+  }
+
+    .surat-table th {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    border: none;
+  }
+  .surat-table td {
+    vertical-align: middle;
+    padding: 1rem 0.75rem;
+  }
+  .badge-status {
+    padding: 0.4rem 1rem;
+    border-radius: 50px;
+    font-weight: 500;
+  }
+  .badge-pending { background: #ffc107; color: #212529; }
+  .badge-approved { background: #28a745; color: white; }
+  .badge-rejected { background: #dc3545; color: white; }
+  .badge-cancelled { background: #6c757d; color: white; }
+  .badge-completed { background: #17a2b8; color: white; }
+  .btn-gradient {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border: none;
+    color: white;
+    font-weight: 500;
+    padding: 0.6rem 1.5rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+  }
+  .btn-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(33,147,176,0.3);
+    color: white;
+  }
+  .table-responsive {
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+  }
+</style>
+
+<div class="container-fluid mt-4">
+  <!-- Header -->
+  <div class="persuratan-header d-flex justify-content-between align-items-center">
+    <div>
+      <h2><i class="bi bi-envelope-paper me-2"></i>Persuratan</h2>
+      <p class="mb-0 opacity-75">Pengajuan surat aktif kuliah dan surat lainnya</p>
+    </div>
+    <a href="/mahasiswa/persuratan/aktif-kuliah" class="btn btn-light">
+      <i class="bi bi-plus-circle me-2"></i>Ajukan Surat
+    </a>
+  </div>
+
+  <!-- Daftar Surat -->
+  <div class="table-responsive">
+    <table class="table table-hover align-middle surat-table">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Jenis Surat</th>
+          <th>Nomor Surat</th>
+          <th>Tanggal Pengajuan</th>
+          <th>Semester</th>
+          <th>Status</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (suratList.length === 0) { %>
+          <tr>
+            <td colspan="7" class="text-center py-5">
+              <i class="bi bi-inbox fs-1 text-muted d-block mb-3"></i>
+              <p class="text-muted">Belum ada pengajuan surat.</p>
+            </td>
+          </tr>
+        <% } %>
+        <% suratList.forEach((s, index) => { %>
+          <tr>
+            <td><%= index + 1 %></td>
+            <td><%= s.jenis %></td>
+            <td><%= s.nomorSurat || '-' %></td>
+            <td><%= new Date(s.createdAt).toLocaleDateString('id-ID') %></td>
+            <td><%= s.semester %></td>
+            <td>
+              <% if (s.status === 'pending') { %>
+                <span class="badge-status badge-pending">Pending</span>
+              <% } else if (s.status === 'approved') { %>
+                <span class="badge-status badge-approved">Disetujui</span>
+              <% } else if (s.status === 'rejected') { %>
+                <span class="badge-status badge-rejected">Ditolak</span>
+              <% } else if (s.status === 'cancelled') { %>
+                <span class="badge-status badge-cancelled">Dibatalkan</span>
+              <% } %>
+            </td>
+            <td>
+              <a href="/mahasiswa/persuratan/<%= s.id %>" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-eye"></i> Detail
+              </a>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <div class="container-fluid mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold">Daftar Surat</h2>
+    <div>
+      <a href="/mahasiswa/persuratan/aktif-kuliah" class="btn btn-primary me-2">
+        <i class="bi bi-envelope-paper me-2"></i>Surat Aktif Kuliah
+      </a>
+      <a href="/mahasiswa/persuratan/lainnya" class="btn btn-success">
+        <i class="bi bi-envelope-plus me-2"></i>Surat Lainnya
+      </a>
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table surat-table">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Jenis Surat</th>
+          <th>Tanggal Pengajuan</th>
+          <th>Keperluan</th>
+          <th>Status</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (suratList.length === 0) { %>
+          <tr>
+            <td colspan="6" class="text-center py-5">
+              <i class="bi bi-inbox fs-1 text-muted d-block mb-3"></i>
+              <p class="text-muted">Belum ada surat yang diajukan.</p>
+            </td>
+          </tr>
+        <% } %>
+        <% suratList.forEach((surat, index) => { %>
+          <tr>
+            <td class="text-center"><%= index + 1 %></td>
+            <td><%= surat.jenis %></td>
+            <td><%= new Date(surat.createdAt).toLocaleDateString('id-ID') %></td>
+            <td><%= surat.keperluan.substring(0, 50) %><%= surat.keperluan.length > 50 ? '...' : '' %></td>
+            <td>
+              <% if (surat.status === 'pending') { %>
+                <span class="badge-status badge-pending">Pending</span>
+              <% } else if (surat.status === 'approved') { %>
+                <span class="badge-status badge-approved">Disetujui</span>
+              <% } else if (surat.status === 'rejected') { %>
+                <span class="badge-status badge-rejected">Ditolak</span>
+              <% } else if (surat.status === 'cancelled') { %>
+                <span class="badge-status badge-cancelled">Dibatalkan</span>
+              <% } else if (surat.status === 'completed') { %>
+                <span class="badge-status badge-completed">Selesai</span>
+              <% } %>
+            </td>
+            <td>
+              <a href="/mahasiswa/persuratan/<%= surat.id %>" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-eye"></i> Detail
+              </a>
+              <% if (surat.status === 'completed' && surat.fileUrl) { %>
+                <a href="/mahasiswa/persuratan/<%= surat.id %>/download" class="btn btn-sm btn-outline-success" target="_blank">
+                  <i class="bi bi-download"></i> Unduh
+                </a>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../../partials/footer') %>

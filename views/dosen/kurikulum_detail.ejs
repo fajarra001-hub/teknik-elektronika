@@ -1,0 +1,132 @@
+<%- include('../partials/header') %>
+
+<style>
+  .detail-header {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    margin-bottom: 2rem;
+  }
+  .detail-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+  }
+  .info-card {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .materi-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+  }
+  .badge-status {
+    padding: 0.4rem 1rem;
+    border-radius: 50px;
+    font-weight: 500;
+  }
+</style>
+
+<div class="container-fluid mt-4">
+  <div class="detail-header">
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        <h1><%= mk.kode %> - <%= mk.nama %></h1>
+        <p class="mb-0 opacity-75">
+          <i class="bi bi-book me-2"></i><%= mk.sks %> SKS | 
+          <i class="bi bi-calendar me-2"></i>Semester <%= mk.semester %>
+        </p>
+      </div>
+      <div>
+        <a href="/dosen/kurikulum" class="btn btn-light">
+          <i class="bi bi-arrow-left me-2"></i>Kembali
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dosen Pengampu -->
+  <div class="info-card">
+    <h5 class="fw-bold mb-3"><i class="bi bi-people me-2"></i>Dosen Pengampu</h5>
+    <div class="d-flex flex-wrap gap-2">
+      <% dosenList.forEach(d => { %>
+        <span class="badge bg-primary bg-opacity-10 text-primary p-2"><%= d %></span>
+      <% }) %>
+    </div>
+  </div>
+
+  <!-- CPL -->
+  <% if (mk.cpl) { %>
+    <div class="info-card">
+      <h5 class="fw-bold mb-3"><i class="bi bi-award me-2"></i>Capaian Pembelajaran Lulusan (CPL)</h5>
+      <p><%= mk.cpl %></p>
+    </div>
+  <% } %>
+
+  <!-- RPS -->
+  <% if (mk.rpsUrl) { %>
+    <div class="info-card">
+      <h5 class="fw-bold mb-3"><i class="bi bi-file-earmark-text me-2"></i>Rencana Pembelajaran Semester (RPS)</h5>
+      <a href="<%= mk.rpsUrl %>" target="_blank" class="btn btn-outline-primary">
+        <i class="bi bi-file-pdf"></i> Unduh RPS
+      </a>
+    </div>
+  <% } %>
+
+  <!-- Materi per Pertemuan -->
+  <div class="info-card">
+    <h5 class="fw-bold mb-3"><i class="bi bi-list-task me-2"></i>Materi Perkuliahan (16 Pertemuan)</h5>
+    <div class="table-responsive">
+      <table class="table table-bordered materi-table">
+        <thead>
+          <tr>
+            <th>Pertemuan</th>
+            <th>Topik</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (materi.length === 0) { %>
+            <tr><td colspan="3" class="text-center">Belum ada materi yang diinput.</td></tr>
+          <% } %>
+          <% materi.forEach(m => { %>
+            <tr>
+              <td class="text-center"><%= m.pertemuan %></td>
+              <td><%= m.topik %></td>
+              <td>
+                <% if (m.status === 'selesai') { %>
+                  <span class="badge-status bg-success text-white">Selesai</span>
+                <% } else { %>
+                  <span class="badge-status bg-warning text-dark">Belum</span>
+                <% } %>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Tugas Terkait -->
+  <% if (tugasList.length > 0) { %>
+    <div class="info-card">
+      <h5 class="fw-bold mb-3"><i class="bi bi-file-earmark-text me-2"></i>Tugas Terkait</h5>
+      <ul class="list-group">
+        <% tugasList.forEach(t => { %>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+              <strong><%= t.judul %></strong><br>
+              <small class="text-muted">Deadline: <%= new Date(t.deadline).toLocaleDateString('id-ID') %></small>
+            </div>
+            <span class="badge bg-primary"><%= t.tipe %></span>
+          </li>
+        <% }) %>
+      </ul>
+    </div>
+  <% } %>
+</div>
+
+<%- include('../partials/footer') %>

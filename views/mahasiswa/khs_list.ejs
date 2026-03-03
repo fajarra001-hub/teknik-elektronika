@@ -1,0 +1,149 @@
+<%- include('../partials/header') %>
+
+<style>
+  .khs-table th {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    border: none;
+  }
+  .khs-table td {
+    vertical-align: middle;
+    padding: 1rem 0.75rem;
+  }
+  .badge-ip {
+    background: #28a745;
+    color: white;
+    font-weight: 600;
+    padding: 0.4rem 0.8rem;
+    border-radius: 50px;
+  }
+  .avatar-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.2rem;
+  }
+  .table-responsive {
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+  }
+  .info-card {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .filter-card {
+    border-radius: 1rem;
+    border: none;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    background: white;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+</style>
+
+<div class="container-fluid mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold">Kartu Hasil Studi (KHS)</h2>
+    <div>
+      <span class="badge bg-primary p-2"><%= user.nim %></span>
+    </div>
+  </div>
+
+  <div class="info-card">
+    <div class="d-flex align-items-center">
+      <% if (user.foto) { %>
+        <img src="<%= user.foto %>" alt="foto" class="rounded-circle me-3" style="width: 60px; height: 60px; object-fit: cover;">
+      <% } else { %>
+        <div class="avatar-circle me-3" style="width: 60px; height: 60px; font-size: 2rem;"><%= (user.nama || '?').charAt(0).toUpperCase() %></div>
+      <% } %>
+      <div>
+        <h4><%= user.nama %></h4>
+        <p class="text-muted mb-0">Program Studi Teknik Elektronika</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter Card -->
+  <div class="filter-card">
+    <form method="GET" class="row g-3 align-items-end">
+      <div class="col-md-4">
+        <label for="semester" class="form-label fw-semibold">Filter Semester</label>
+        <select class="form-select" id="semester" name="semester">
+          <option value="">Semua Semester</option>
+          <% if (semesterList && semesterList.length) { %>
+            <% semesterList.forEach(s => { %>
+              <option value="<%= s %>" <%= filters?.semester === s ? 'selected' : '' %>><%= s %></option>
+            <% }) %>
+          <% } %>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">Filter</button>
+      </div>
+      <div class="col-md-2">
+        <a href="/mahasiswa/akademik/khs" class="btn btn-outline-secondary w-100">Reset</a>
+      </div>
+    </form>
+  </div>
+
+  <!-- Tabel KHS -->
+  <div class="table-responsive">
+    <table class="table khs-table">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Semester</th>
+          <th>IP Semester</th>
+          <th>File KHS</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (khsList.length === 0) { %>
+          <tr>
+            <td colspan="5" class="text-center py-5">
+              <i class="bi bi-inbox fs-1 text-muted d-block mb-3"></i>
+              <p class="text-muted">Belum ada KHS.</p>
+            </td>
+          </tr>
+        <% } else { %>
+          <% khsList.forEach((khs, index) => { %>
+          <tr>
+            <td class="fw-bold"><%= index + 1 %></td>
+            <td><%= khs.semester || '-' %></td>
+            <td><span class="badge-ip"><%= khs.ip ? khs.ip.toFixed(2) : '-' %></span></td>
+            <td>
+              <% if (khs.fileUrl) { %>
+                <a href="<%= khs.fileUrl %>" target="_blank" class="btn btn-sm btn-outline-info">
+                  <i class="bi bi-file-earmark-pdf"></i> Lihat
+                </a>
+              <% } else { %>
+                <span class="badge bg-secondary">No file</span>
+              <% } %>
+            </td>
+            <td>
+              <a href="/mahasiswa/akademik/khs/<%= khs.id %>" class="btn btn-sm btn-outline-primary">Detail</a>
+            </td>
+          </tr>
+          <% }) %>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

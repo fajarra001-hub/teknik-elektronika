@@ -1,0 +1,160 @@
+<%- include('../partials/header') %>
+
+<style>
+  .nilai-table th {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    border: none;
+  }
+  .nilai-table td {
+    vertical-align: middle;
+    padding: 0.75rem 0.5rem;
+  }
+  .nilai-input {
+    width: 80px;
+    padding: 0.2rem 0.5rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+  }
+  .btn-simpan {
+    font-size: 0.8rem;
+    padding: 0.2rem 0.8rem;
+  }
+  .filter-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  }
+  .table-responsive {
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+  }
+</style>
+
+<div class="container-fluid mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold">Rekap Nilai - <%= mk.kode %> <%= mk.nama %></h2>
+    <a href="/dosen/nilai" class="btn btn-outline-primary">
+      <i class="bi bi-arrow-left me-2"></i>Kembali
+    </a>
+  </div>
+
+  <!-- Info MK -->
+  <div class="filter-card">
+    <div class="row">
+      <div class="col-md-3">
+        <strong>Kode MK:</strong> <%= mk.kode %>
+      </div>
+      <div class="col-md-3">
+        <strong>Nama MK:</strong> <%= mk.nama %>
+      </div>
+      <div class="col-md-3">
+        <strong>SKS:</strong> <%= mk.sks %>
+      </div>
+      <div class="col-md-3">
+        <strong>Semester:</strong> <%= mk.semester %>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table nilai-table">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>NIM</th>
+          <th>Nama</th>
+          <% tipeList.forEach(tipe => { %>
+            <th><%= tipe %></th>
+          <% }) %>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (data.length === 0) { %>
+          <tr>
+            <td colspan="<%= 3 + tipeList.length + 1 %>" class="text-center py-5">
+              <i class="bi bi-inbox fs-1 text-muted d-block mb-3"></i>
+              <p class="text-muted">Belum ada mahasiswa terdaftar di MK ini.</p>
+            </td>
+          </tr>
+        <% } %>
+        <% data.forEach((item, index) => { %>
+          <tr>
+            <td class="text-center"><%= index + 1 %></td>
+            <td><%= item.mahasiswa.nim %></td>
+            <td><%= item.mahasiswa.nama %></td>
+            <% tipeList.forEach(tipe => { 
+              const nilai = item.nilai[tipe];
+            %>
+              <td>
+                <% if (nilai) { %>
+                  <span class="badge bg-primary"><%= nilai.nilai %></span>
+                <% } else { %>
+                  <span class="text-muted">-</span>
+                <% } %>
+              </td>
+            <% }) %>
+            <td>
+              <button class="btn btn-sm btn-warning btn-simpan" onclick="bukaModal('<%= item.mahasiswa.id %>', '<%= mk.id %>')">
+                <i class="bi bi-pencil"></i> Input Nilai
+              </button>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal Input Nilai -->
+<div class="modal fade" id="nilaiModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Input Nilai</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form method="POST" action="/dosen/nilai/input" id="nilaiForm">
+        <input type="hidden" name="mkId" id="mkId">
+        <input type="hidden" name="mahasiswaId" id="mahasiswaId">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="tipe" class="form-label fw-bold">Tipe Nilai</label>
+            <select class="form-select" id="tipe" name="tipe" required>
+              <option value="">Pilih Tipe</option>
+              <% tipeList.forEach(tipe => { %>
+                <option value="<%= tipe %>"><%= tipe %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="nilai" class="form-label fw-bold">Nilai (0-100)</label>
+            <input type="number" class="form-control" id="nilai" name="nilai" min="0" max="100" step="0.01" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-primary">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  function bukaModal(mahasiswaId, mkId) {
+    document.getElementById('mahasiswaId').value = mahasiswaId;
+    document.getElementById('mkId').value = mkId;
+    new bootstrap.Modal(document.getElementById('nilaiModal')).show();
+  }
+</script>
+
+<%- include('../partials/footer') %>

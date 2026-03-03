@@ -1,0 +1,121 @@
+<%- include('../partials/header') %>
+
+<style>
+  .form-card {
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    overflow: hidden;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  .form-header {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    padding: 1.5rem;
+    color: white;
+  }
+  .form-header h3 {
+    margin: 0;
+    font-weight: 600;
+  }
+  .form-body {
+    padding: 2rem;
+  }
+  .btn-gradient {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border: none;
+    color: white;
+    font-weight: 500;
+    padding: 0.6rem 2rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+  }
+  .btn-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(33,147,176,0.3);
+    color: white;
+  }
+  .btn-outline-gradient {
+    background: transparent;
+    border: 2px solid #2193b0;
+    color: #2193b0;
+    font-weight: 500;
+    padding: 0.6rem 2rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+    text-decoration: none;
+  }
+  .btn-outline-gradient:hover {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border-color: transparent;
+    color: white;
+  }
+  .form-label {
+    font-weight: 600;
+    color: #1e293b;
+  }
+  .form-control, .form-select {
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid #cbd5e1;
+    transition: all 0.3s;
+  }
+  .form-control:focus, .form-select:focus {
+    border-color: #2193b0;
+    box-shadow: 0 0 0 0.2rem rgba(33,147,176,0.25);
+  }
+</style>
+
+<div class="container mt-4">
+  <div class="form-card">
+    <div class="form-header">
+      <h3><i class="bi bi-calendar-event me-2"></i><%= jadwal ? 'Edit Jadwal' : 'Tambah Jadwal' %></h3>
+    </div>
+    <div class="form-body">
+      <form method="POST" action="<%= jadwal ? '/admin/jadwalpenting/' + jadwal.id + '/update' : '/admin/jadwalpenting' %>">
+        <div class="mb-3">
+          <label for="judul" class="form-label">Judul <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" id="judul" name="judul" value="<%= jadwal ? jadwal.judul : '' %>" required>
+        </div>
+        <div class="mb-3">
+          <label for="deskripsi" class="form-label">Deskripsi</label>
+          <textarea class="form-control" id="deskripsi" name="deskripsi" rows="3"><%= jadwal ? jadwal.deskripsi : '' %></textarea>
+        </div>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="tanggal" class="form-label">Tanggal <span class="text-danger">*</span></label>
+            <input type="date" class="form-control" id="tanggal" name="tanggal" value="<%= jadwal ? jadwal.tanggal.split('T')[0] : '' %>" required>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="waktu" class="form-label">Waktu</label>
+            <input type="text" class="form-control" id="waktu" name="waktu" placeholder="Contoh: 09:00 - 12:00" value="<%= jadwal ? jadwal.waktu : '' %>">
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="tempat" class="form-label">Tempat</label>
+          <input type="text" class="form-control" id="tempat" name="tempat" value="<%= jadwal ? jadwal.tempat : '' %>">
+        </div>
+        <div class="mb-3">
+          <label for="kategori" class="form-label">Kategori</label>
+          <select class="form-select" id="kategori" name="kategori">
+            <option value="seminar" <%= jadwal && jadwal.kategori === 'seminar' ? 'selected' : '' %>>Seminar</option>
+            <option value="wisuda" <%= jadwal && jadwal.kategori === 'wisuda' ? 'selected' : '' %>>Wisuda</option>
+            <option value="libur" <%= jadwal && jadwal.kategori === 'libur' ? 'selected' : '' %>>Libur Akademik</option>
+            <option value="pendaftaran" <%= jadwal && jadwal.kategori === 'pendaftaran' ? 'selected' : '' %>>Pendaftaran</option>
+            <option value="umum" <%= jadwal && jadwal.kategori === 'umum' ? 'selected' : '' %>>Umum</option>
+          </select>
+        </div>
+        <div class="d-flex justify-content-between mt-4">
+          <a href="/admin/jadwalpenting" class="btn-outline-gradient">
+            <i class="bi bi-arrow-left me-2"></i>Kembali
+          </a>
+          <button type="submit" class="btn-gradient">
+            <i class="bi bi-save me-2"></i>Simpan
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

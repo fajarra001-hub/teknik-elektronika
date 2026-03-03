@@ -1,0 +1,341 @@
+<%- include('../partials/header-landing') %>
+
+<style>
+  /* Hero Section */
+  .hero-lulusan {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    padding: 4rem 0;
+    color: white;
+    margin-bottom: 3rem;
+  }
+  .hero-lulusan h1 {
+    font-size: 3rem;
+    font-weight: 700;
+  }
+
+  /* Statistik Cards */
+  .stat-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    text-align: center;
+    transition: transform 0.3s;
+  }
+  .stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(33,147,176,0.1);
+  }
+  .stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-size: 1.8rem;
+  }
+  .stat-icon.total { background: #e3f2fd; color: #1976d2; }
+  .stat-icon.bekerja { background: #e8f5e9; color: #2e7d32; }
+  .stat-icon.wirausaha { background: #fff3e0; color: #ed6c02; }
+  .stat-icon.kuliah { background: #e0f2fe; color: #0288d1; }
+  .stat-number {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+  }
+  .stat-label {
+    color: #64748b;
+    font-weight: 500;
+  }
+
+  /* Filter */
+  .filter-section {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    margin-bottom: 2rem;
+  }
+  .filter-btn {
+    border: 2px solid #dee2e6;
+    border-radius: 50px;
+    padding: 0.5rem 1.5rem;
+    margin: 0.25rem;
+    font-weight: 600;
+    transition: all 0.3s;
+    background: white;
+    color: #495057;
+  }
+  .filter-btn:hover,
+  .filter-btn.active {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+    border-color: transparent;
+  }
+
+  /* Card Lulusan */
+  .lulusan-card {
+    background: white;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    transition: transform 0.3s, box-shadow 0.3s;
+    height: 100%;
+    border: none;
+  }
+  .lulusan-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(33,147,176,0.15);
+  }
+  .card-img-wrapper {
+    height: 200px;
+    overflow: hidden;
+    position: relative;
+  }
+  .card-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s;
+  }
+  .lulusan-card:hover .card-img-wrapper img {
+    transform: scale(1.1);
+  }
+  .status-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: white;
+    padding: 0.3rem 1rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+  .status-badge.bekerja { color: #2e7d32; background: #e8f5e9; }
+  .status-badge.wirausaha { color: #ed6c02; background: #fff3e0; }
+  .status-badge.kuliah { color: #0288d1; background: #e0f2fe; }
+  .card-body {
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .nama {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    color: #1e293b;
+  }
+  .nim {
+    font-size: 0.9rem;
+    color: #64748b;
+    margin-bottom: 0.75rem;
+  }
+  .tahun {
+    display: inline-block;
+    background: #f1f5f9;
+    padding: 0.2rem 1rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    color: #475569;
+    margin-bottom: 1rem;
+  }
+  .pekerjaan {
+    font-weight: 600;
+    color: #2193b0;
+    margin-bottom: 0.25rem;
+  }
+  .tempat {
+    font-size: 0.9rem;
+    color: #475569;
+    margin-bottom: 1rem;
+  }
+  .testimoni {
+    font-style: italic;
+    color: #334155;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 1rem;
+    margin-top: 1rem;
+  }
+  .testimoni i {
+    color: #6b7280;
+    font-size: 1.2rem;
+  }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: #f8f9fa;
+    border-radius: 1rem;
+  }
+  .empty-state i {
+    font-size: 5rem;
+    color: #ced4da;
+    margin-bottom: 1rem;
+  }
+
+  /* Pagination (sederhana) */
+  .pagination .page-link {
+    color: #2193b0;
+    border: 1px solid #dee2e6;
+    margin: 0 2px;
+    border-radius: 0.5rem;
+  }
+  .pagination .page-link:hover {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+    border-color: transparent;
+  }
+  .pagination .active .page-link {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border-color: transparent;
+    color: white;
+  }
+</style>
+
+<!-- Hero Section -->
+<section class="hero-lulusan">
+  <div class="container text-center">
+    <h1>Alumni Teknik Elektronika</h1>
+    <p class="lead">Kiprah lulusan Politeknik Dewantara di dunia kerja, wirausaha, dan studi lanjut</p>
+  </div>
+</section>
+
+<!-- Statistik -->
+<div class="container mb-5">
+  <div class="row g-4">
+    <div class="col-md-3">
+      <div class="stat-card">
+        <div class="stat-icon total"><i class="bi bi-people"></i></div>
+        <div class="stat-number"><%= stats.total %></div>
+        <div class="stat-label">Total Alumni</div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stat-card">
+        <div class="stat-icon bekerja"><i class="bi bi-briefcase"></i></div>
+        <div class="stat-number"><%= stats.bekerja %></div>
+        <div class="stat-label">Bekerja</div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stat-card">
+        <div class="stat-icon wirausaha"><i class="bi bi-shop"></i></div>
+        <div class="stat-number"><%= stats.wirausaha %></div>
+        <div class="stat-label">Wirausaha</div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stat-card">
+        <div class="stat-icon kuliah"><i class="bi bi-book"></i></div>
+        <div class="stat-number"><%= stats.kuliah %></div>
+        <div class="stat-label">Studi Lanjut</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Filter -->
+<div class="container mb-4">
+  <div class="filter-section">
+    <div class="row align-items-center">
+      <div class="col-md-3">
+        <h5 class="mb-md-0"><i class="bi bi-funnel me-2"></i>Filter</h5>
+      </div>
+      <div class="col-md-9">
+        <div class="d-flex flex-wrap gap-2">
+          <!-- Filter Angkatan -->
+          <select class="form-select w-auto" id="filterAngkatan">
+            <option value="">Semua Angkatan</option>
+            <% angkatanList.forEach(a => { %>
+              <option value="<%= a %>" <%= a == filterAngkatan ? 'selected' : '' %>><%= a %></option>
+            <% }) %>
+          </select>
+          <!-- Filter Status -->
+          <select class="form-select w-auto" id="filterStatus">
+            <option value="semua" <%= filterStatus === 'semua' ? 'selected' : '' %>>Semua Status</option>
+            <option value="bekerja" <%= filterStatus === 'bekerja' ? 'selected' : '' %>>Bekerja</option>
+            <option value="wirausaha" <%= filterStatus === 'wirausaha' ? 'selected' : '' %>>Wirausaha</option>
+            <option value="kuliah" <%= filterStatus === 'kuliah' ? 'selected' : '' %>>Studi Lanjut</option>
+          </select>
+          <button class="btn btn-primary" onclick="applyFilter()">Terapkan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Grid Lulusan -->
+<div class="container mb-5">
+  <% if (lulusan.length === 0) { %>
+    <div class="empty-state">
+      <i class="bi bi-emoji-frown"></i>
+      <h4>Belum Ada Data Alumni</h4>
+      <p class="text-muted">Saat ini belum ada data alumni yang ditampilkan.</p>
+    </div>
+  <% } else { %>
+    <div class="row g-4">
+      <% lulusan.forEach(l => { %>
+        <div class="col-lg-4 col-md-6">
+          <div class="lulusan-card">
+            <div class="card-img-wrapper">
+              <img src="<%= l.foto || 'https://via.placeholder.com/400x300?text=Alumni' %>" alt="<%= l.nama %>">
+              <span class="status-badge <%= l.status %>">
+                <% if (l.status === 'bekerja') { %>💼 Bekerja<% } %>
+                <% if (l.status === 'wirausaha') { %>🏪 Wirausaha<% } %>
+                <% if (l.status === 'kuliah') { %>📚 Studi Lanjut<% } %>
+              </span>
+            </div>
+            <div class="card-body">
+              <h5 class="nama"><%= l.nama %></h5>
+              <div class="nim"><%= l.nim %></div>
+              <span class="tahun">Angkatan <%= l.tahunLulus %></span>
+              <% if (l.pekerjaan) { %>
+                <div class="pekerjaan"><%= l.pekerjaan %></div>
+                <div class="tempat"><%= l.tempatKerja %></div>
+              <% } %>
+              <% if (l.testimoni) { %>
+                <div class="testimoni">
+                  <i class="bi bi-quote"></i>
+                  <p class="mb-0"><%= l.testimoni %></p>
+                </div>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+</div>
+
+<!-- Pagination sederhana (opsional) -->
+<% if (lulusan.length > 12) { %>
+<div class="container mb-5">
+  <nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+      <li class="page-item disabled"><a class="page-link" href="#">«</a></li>
+      <li class="page-item active"><a class="page-link" href="#">1</a></li>
+      <li class="page-item"><a class="page-link" href="#">2</a></li>
+      <li class="page-item"><a class="page-link" href="#">3</a></li>
+      <li class="page-item"><a class="page-link" href="#">»</a></li>
+    </ul>
+  </nav>
+</div>
+<% } %>
+
+<script>
+  function applyFilter() {
+    const angkatan = document.getElementById('filterAngkatan').value;
+    const status = document.getElementById('filterStatus').value;
+    let url = '/lulusan';
+    const params = [];
+    if (angkatan) params.push('angkatan=' + angkatan);
+    if (status && status !== 'semua') params.push('status=' + status);
+    if (params.length > 0) url += '?' + params.join('&');
+    window.location.href = url;
+  }
+</script>
+
+<%- include('../partials/footer-landing') %>

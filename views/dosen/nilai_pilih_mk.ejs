@@ -1,0 +1,108 @@
+<%- include('../partials/header') %>
+
+<style>
+  .page-header {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    margin-bottom: 2rem;
+  }
+  .mk-card {
+    border: none;
+    border-radius: 1rem;
+    transition: all 0.3s;
+    overflow: hidden;
+    background: white;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    height: 100%;
+  }
+  .mk-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(33,147,176,0.15);
+  }
+  .mk-header {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    padding: 1rem;
+    color: white;
+  }
+  .mk-header h5 {
+    margin: 0;
+    font-weight: 700;
+  }
+  .mk-body {
+    padding: 1.5rem;
+  }
+  .mk-info {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    color: #6c757d;
+  }
+  .mk-info i {
+    width: 20px;
+    color: #2193b0;
+  }
+  .btn-detail {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border: none;
+    color: white;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+    width: 100%;
+  }
+  .btn-detail:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(33,147,176,0.3);
+    color: white;
+  }
+</style>
+
+<div class="container-fluid mt-4">
+  <div class="page-header">
+    <h1 class="fw-bold">Pilih Mata Kuliah</h1>
+    <p class="mb-0 opacity-75">Pilih mata kuliah untuk melihat rekap nilai mahasiswa</p>
+  </div>
+
+  <% if (mkList && mkList.length > 0) { %>
+    <div class="row g-4">
+      <% mkList.forEach(mk => { %>
+        <div class="col-md-4">
+          <div class="mk-card">
+            <div class="mk-header">
+              <h5><%= mk.kode %></h5>
+            </div>
+            <div class="mk-body">
+              <h6 class="fw-bold mb-3"><%= mk.nama %></h6>
+              <div class="mk-info">
+                <div><i class="bi bi-calendar"></i> Semester <%= mk.semester || '-' %></div>
+                <div><i class="bi bi-clock"></i> <%= mk.sks %> SKS</div>
+              </div>
+              <div class="mk-info">
+                <div><i class="bi bi-people"></i> <%= mk.jumlahMahasiswa || '?' %> Mahasiswa</div>
+              </div>
+              <a href="/dosen/nilai/<%= mk.id %>" class="btn-detail">
+                <i class="bi bi-bar-chart me-2"></i>Lihat Rekap Nilai
+              </a>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } else { %>
+    <div class="alert alert-info">
+      <i class="bi bi-info-circle me-2"></i>
+      Anda belum mengampu mata kuliah apapun.
+    </div>
+  <% } %>
+
+  <div class="mt-4">
+    <a href="/dosen/dashboard" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left me-2"></i>Kembali ke Dashboard
+    </a>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

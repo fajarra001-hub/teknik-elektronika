@@ -1,0 +1,104 @@
+<%- include('../partials/header') %>
+
+<style>
+  .detail-card {
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    overflow: hidden;
+  }
+  .detail-header {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    padding: 2rem;
+    color: white;
+  }
+  .detail-header h2 {
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+  .detail-body {
+    padding: 2rem;
+  }
+  .info-table th {
+    width: 200px;
+    font-weight: 600;
+    color: #1e293b;
+  }
+  .badge-ip {
+    background: #28a745;
+    color: white;
+    font-weight: 600;
+    padding: 0.5rem 1.5rem;
+    border-radius: 50px;
+    font-size: 1rem;
+  }
+  .btn-action {
+    padding: 0.5rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s;
+  }
+</style>
+
+<div class="container-fluid mt-4">
+  <div class="detail-card">
+    <div class="detail-header">
+      <div class="d-flex justify-content-between align-items-center">
+        <h2>Detail KHS</h2>
+        <span class="badge-ip">IP: <%= khs.ip ? khs.ip.toFixed(2) : '-' %></span>
+      </div>
+      <p class="mb-0">Semester: <%= khs.semester %></p>
+    </div>
+    <div class="detail-body">
+      <h5 class="fw-bold mb-3">Data Mahasiswa</h5>
+      <table class="table table-borderless info-table">
+        <tr>
+          <th>NIM</th>
+          <td><%= mahasiswa.nim || '-' %></td>
+        </tr>
+        <tr>
+          <th>Nama</th>
+          <td><%= mahasiswa.nama || '-' %></td>
+        </tr>
+        <tr>
+          <th>Program Studi</th>
+          <td>Teknik Elektronika</td>
+        </tr>
+      </table>
+
+      <hr>
+
+      <h5 class="fw-bold mb-3">Informasi KHS</h5>
+      <table class="table table-borderless info-table">
+        <tr>
+          <th>Semester</th>
+          <td><%= khs.semester %></td>
+        </tr>
+        <tr>
+          <th>IP Semester</th>
+          <td><span class="badge-ip"><%= khs.ip ? khs.ip.toFixed(2) : '-' %></span></td>
+        </tr>
+        <tr>
+          <th>File KHS</th>
+          <td>
+            <% if (khs.fileUrl) { %>
+              <a href="<%= khs.fileUrl %>" target="_blank" class="btn btn-sm btn-outline-info">
+                <i class="bi bi-file-earmark-pdf"></i> Lihat File
+              </a>
+            <% } else { %>
+              <span class="text-muted">Tidak ada file</span>
+            <% } %>
+          </td>
+        </tr>
+      </table>
+
+      <div class="mt-4">
+        <a href="/mahasiswa/khs" class="btn btn-outline-secondary btn-action">
+          <i class="bi bi-arrow-left me-2"></i>Kembali
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

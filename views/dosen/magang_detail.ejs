@@ -1,0 +1,199 @@
+<%- include('../partials/header') %>
+
+<style>
+  .profile-card {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border-radius: 1rem;
+    padding: 2rem;
+    color: white;
+    margin-bottom: 2rem;
+  }
+  .avatar-large {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid white;
+  }
+  .avatar-circle-large {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: white;
+    color: #2193b0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    font-weight: 600;
+  }
+  .logbook-table th {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    border: none;
+  }
+  .table-responsive {
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+  }
+  .thumbnail {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid #ddd;
+  }
+</style>
+
+<div class="container-fluid mt-4">
+  <div class="profile-card">
+    <div class="d-flex align-items-center">
+      <div class="flex-shrink-0 me-4">
+        <% if (mahasiswa.foto) { %>
+          <img src="<%= mahasiswa.foto %>" alt="foto" class="avatar-large">
+        <% } else { %>
+          <div class="avatar-circle-large"><%= (mahasiswa.nama || '?').charAt(0).toUpperCase() %></div>
+        <% } %>
+      </div>
+      <div>
+        <h2 class="fw-bold"><%= mahasiswa.nama %></h2>
+        <p class="mb-1"><i class="bi bi-qr-code me-2"></i>NIM: <%= mahasiswa.nim %></p>
+        <p class="mb-1"><i class="bi bi-envelope me-2"></i><%= mahasiswa.email %></p>
+        <p class="mb-0"><i class="bi bi-telephone me-2"></i><%= mahasiswa.noHp || '-' %></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold">Logbook Magang</h4>
+    <a href="/dosen/magang" class="btn btn-outline-primary">
+      <i class="bi bi-arrow-left me-2"></i>Kembali
+    </a>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table logbook-table">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Tanggal</th>
+          <th>Kegiatan</th>
+          <th>Durasi</th>
+          <th>Lokasi</th>
+          <th>Semester</th>
+          <th>Gambar</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (logbookList.length === 0) { %>
+          <tr>
+            <td colspan="8" class="text-center py-5">
+              <i class="bi bi-inbox fs-1 text-muted d-block mb-3"></i>
+              <p class="text-muted">Mahasiswa ini belum mengisi logbook.</p>
+            </td>
+          </tr>
+        <% } %>
+        <% logbookList.forEach((item, index) => { %>
+          <tr>
+            <td class="text-center"><%= index + 1 %></td>
+            <td><%= item.tanggalFormatted %></td>
+            <td><%= item.kegiatan %></td>
+            <td class="text-center"><%= item.durasi || '-' %></td>
+            <td><%= item.lokasi || '-' %></td>
+            <td><%= item.semester || '-' %></td>
+            <td class="text-center">
+              <% if (item.imageUrls && item.imageUrls.length > 0) { 
+                let fileId = '';
+                let url = item.imageUrls[0];
+                if (url.includes('id=')) {
+                  fileId = url.split('id=')[1].split('&')[0];
+                } else if (url.includes('/d/')) {
+                  fileId = url.split('/d/')[1].split('/')[0];
+                } else {
+                  fileId = url.split('/').pop();
+                }
+              %>
+                <img src="https://drive.google.com/thumbnail?id=<%= fileId %>&sz=w200" 
+                     class="thumbnail" alt="dokumentasi"
+                     onclick='lihatGambar(<%= JSON.stringify(item.imageUrls) %>)'
+                     onerror="this.onerror=null; this.src='https://drive.google.com/uc?export=view&id=<%= fileId %>';">
+              <% } else { %>
+                -
+              <% } %>
+            </td>
+            <td>
+              <% if (item.status === 'approved') { %>
+                <span class="badge bg-success">Disetujui</span>
+              <% } else if (item.status === 'rejected') { %>
+                <span class="badge bg-danger">Ditolak</span>
+              <% } else { %>
+                <span class="badge bg-warning text-dark">Pending</span>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="fw-bold">Logbook Magang</h4>
+  <div>
+    <a href="/dosen/magang/print/<%= mahasiswa.id %>" class="btn btn-info me-2" target="_blank">
+      <i class="bi bi-printer me-2"></i>Print
+    </a>
+    <a href="/dosen/magang" class="btn btn-outline-primary">
+      <i class="bi bi-arrow-left me-2"></i>Kembali
+    </a>
+  </div>
+</div>
+<!-- Lightbox Modal (salin dari admin) -->
+<div class="modal fade lightbox-modal" id="galleryModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Dokumentasi</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div id="galleryCarousel" class="carousel slide" data-bs-ride="false">
+          <div class="carousel-inner" id="galleryCarouselInner"></div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#galleryCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#galleryCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function lihatGambar(imageUrls) {
+    const inner = document.getElementById('galleryCarouselInner');
+    inner.innerHTML = '';
+    imageUrls.forEach((url, index) => {
+      const activeClass = index === 0 ? 'active' : '';
+      const item = `
+        <div class="carousel-item ${activeClass}">
+          <img src="${url}" class="d-block w-100" alt="Dokumentasi">
+        </div>
+      `;
+      inner.innerHTML += item;
+    });
+    new bootstrap.Modal(document.getElementById('galleryModal')).show();
+  }
+</script>
+
+<%- include('../partials/footer') %>

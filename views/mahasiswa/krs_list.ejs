@@ -1,0 +1,155 @@
+<%- include('../partials/header') %>
+
+<style>
+  .krs-table th {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    border: none;
+  }
+  .krs-table td {
+    vertical-align: middle;
+    padding: 1rem 0.75rem;
+  }
+  .badge-status {
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-weight: 500;
+    font-size: 0.8rem;
+  }
+  .badge-pending { background: #ffc107; color: #212529; }
+  .badge-approved { background: #28a745; color: white; }
+  .badge-rejected { background: #dc3545; color: white; }
+  .avatar-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.2rem;
+  }
+  .table-responsive {
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+  }
+  .info-card {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .btn-gradient {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border: none;
+    color: white;
+    font-weight: 600;
+    padding: 0.6rem 2rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+  }
+  .btn-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(33,147,176,0.3);
+    color: white;
+  }
+</style>
+
+<div class="container-fluid mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold">Kartu Rencana Studi (KRS)</h2>
+    <div>
+      <span class="badge bg-primary p-2"><%= user.nim %></span>
+    </div>
+  </div>
+
+  <div class="info-card">
+    <div class="d-flex align-items-center">
+      <% if (user.foto) { %>
+        <img src="<%= user.foto %>" alt="foto" class="rounded-circle me-3" style="width: 60px; height: 60px; object-fit: cover;">
+      <% } else { %>
+        <div class="avatar-circle me-3" style="width: 60px; height: 60px; font-size: 2rem;"><%= (user.nama || '?').charAt(0).toUpperCase() %></div>
+      <% } %>
+      <div>
+        <h4><%= user.nama %></h4>
+        <p class="text-muted mb-0">Program Studi Teknik Elektronika</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tombol Buat KRS Baru -->
+  <div class="mb-4">
+    <a href="/mahasiswa/akademik/krs/baru" class="btn-gradient">
+      <i class="bi bi-plus-circle me-2"></i>Buat KRS Baru
+    </a>
+  </div>
+
+  <!-- Tabel KRS -->
+  <div class="table-responsive">
+    <table class="table krs-table">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Semester</th>
+          <th>Mata Kuliah</th>
+          <th>Status</th>
+          <th>Tanggal Diajukan</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (krsList.length === 0) { %>
+          <tr>
+            <td colspan="6" class="text-center py-5">
+              <i class="bi bi-inbox fs-1 text-muted d-block mb-3"></i>
+              <p class="text-muted">Belum ada KRS yang diajukan.</p>
+            </td>
+          </tr>
+        <% } else { %>
+          <% krsList.forEach((krs, index) => { %>
+          <tr>
+            <td class="fw-bold"><%= index + 1 %></td>
+            <td><%= krs.semester || '-' %></td>
+            <td>
+              <% if (krs.courses && krs.courses.length > 0) { %>
+                <ul class="list-unstyled mb-0 small">
+                  <% krs.courses.slice(0, 2).forEach(c => { %>
+                    <li><span class="badge bg-primary bg-opacity-10 text-primary"><%= c.kode %></span> <%= c.nama %></li>
+                  <% }) %>
+                  <% if (krs.courseCount > 2) { %>
+                    <li class="text-muted">+ <%= krs.courseCount - 2 %> lainnya</li>
+                  <% } %>
+                </ul>
+              <% } else { %>
+                <span class="text-muted">-</span>
+              <% } %>
+            </td>
+            <td>
+              <span class="badge-status 
+                <%= krs.status === 'pending' ? 'badge-pending' : '' %>
+                <%= krs.status === 'approved' ? 'badge-approved' : '' %>
+                <%= krs.status === 'rejected' ? 'badge-rejected' : '' %>">
+                <%= krs.status %>
+              </span>
+            </td>
+            <td><%= krs.createdAt ? new Date(krs.createdAt).toLocaleDateString('id-ID') : '-' %></td>
+            <td>
+              <a href="/mahasiswa/akademik/krs/<%= krs.id %>" class="btn btn-sm btn-outline-primary">Detail</a>
+            </td>
+          </tr>
+          <% }) %>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

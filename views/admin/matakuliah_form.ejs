@@ -1,0 +1,164 @@
+<%- include('../partials/header') %>
+
+<style>
+  .form-card {
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    overflow: hidden;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .form-header {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    padding: 1.5rem;
+    color: white;
+  }
+  .form-header h3 {
+    margin: 0;
+    font-weight: 600;
+  }
+  .form-body {
+    padding: 2rem;
+  }
+  .btn-gradient {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border: none;
+    color: white;
+    font-weight: 500;
+    padding: 0.6rem 2rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+  }
+  .btn-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(33,147,176,0.3);
+    color: white;
+  }
+  .btn-outline-gradient {
+    background: transparent;
+    border: 2px solid #2193b0;
+    color: #2193b0;
+    font-weight: 500;
+    padding: 0.6rem 2rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+  }
+  .btn-outline-gradient:hover {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border-color: transparent;
+    color: white;
+  }
+  .form-label {
+    font-weight: 600;
+    color: #1e293b;
+  }
+  .form-control, .form-select {
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid #cbd5e1;
+    transition: all 0.3s;
+  }
+  .form-control:focus, .form-select:focus {
+    border-color: #2193b0;
+    box-shadow: 0 0 0 0.2rem rgba(33,147,176,0.25);
+  }
+  .dosen-container {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #cbd5e1;
+    border-radius: 0.75rem;
+    padding: 1rem;
+  }
+  .dosen-item {
+    padding: 0.5rem;
+    border-bottom: 1px solid #e9ecef;
+  }
+  .dosen-item:last-child {
+    border-bottom: none;
+  }
+</style>
+
+<div class="container mt-4">
+  <div class="form-card">
+    <div class="form-header">
+      <h3><i class="bi bi-book me-2"></i><%= mk ? 'Edit Mata Kuliah' : 'Tambah Mata Kuliah' %></h3>
+    </div>
+    <div class="form-body">
+      <form method="POST" action="<%= mk ? '/admin/matakuliah/' + mk.id + '/update' : '/admin/matakuliah' %>">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="kode" class="form-label">Kode Mata Kuliah <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="kode" name="kode" value="<%= mk ? mk.kode : '' %>" required>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="nama" class="form-label">Nama Mata Kuliah <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="nama" name="nama" value="<%= mk ? mk.nama : '' %>" required>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="sks" class="form-label">SKS <span class="text-danger">*</span></label>
+            <input type="number" class="form-control" id="sks" name="sks" min="1" max="6" value="<%= mk ? mk.sks : '' %>" required>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="semester" class="form-label">Semester</label>
+            <select class="form-select" id="semester" name="semester">
+              <option value="">-- Pilih Semester --</option>
+              <% for (let i = 1; i <= 8; i++) { %>
+                <option value="<%= i %>" <%= mk && mk.semester == i ? 'selected' : '' %>>Semester <%= i %></option>
+              <% } %>
+            </select>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="jadwal" class="form-label">Jadwal Kuliah</label>
+          <input type="text" class="form-control" id="jadwal" name="jadwal" value="<%= mk ? mk.jadwal : '' %>" placeholder="Contoh: Senin 08:00-10:30, Ruang A101">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Dosen Pengampu</label>
+          <div class="dosen-container">
+            <% if (dosenList && dosenList.length) { %>
+              <% dosenList.forEach(d => { %>
+                <div class="dosen-item">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="dosenIds" value="<%= d.id %>" id="dosen_<%= d.id %>"
+                      <%= (mk && mk.dosenIds && mk.dosenIds.includes(d.id)) ? 'checked' : '' %>>
+                    <label class="form-check-label" for="dosen_<%= d.id %>">
+                      <%= d.nama %> (<%= d.nip %>)
+                    </label>
+                  </div>
+                </div>
+              <% }) %>
+            <% } else { %>
+              <p class="text-muted">Belum ada data dosen. <a href="/admin/dosen/create">Tambah dosen</a> terlebih dahulu.</p>
+            <% } %>
+          </div>
+          <small class="text-muted">Pilih satu atau lebih dosen pengampu</small>
+        </div>
+        <!-- ... setelah bagian dosen pengampu ... -->
+
+        <div class="mb-3 form-check">
+          <input type="checkbox" class="form-check-input" id="isPDK" name="isPDK" value="1" <%= mk && mk.isPDK ? 'checked' : '' %>>
+          <label class="form-check-label" for="isPDK">Mata Kuliah PDK (Praktik Dunia Kerja)</label>
+          <small class="text-muted d-block">Centang jika ini adalah mata kuliah Praktik Dunia Kerja 1, 2, atau 3</small>
+        </div>
+
+        <!-- ... kemudian tombol simpan ... -->
+        <div class="d-flex justify-content-between mt-4">
+          <a href="/admin/matakuliah" class="btn-outline-gradient">
+            <i class="bi bi-arrow-left me-2"></i>Kembali
+          </a>
+          <button type="submit" class="btn-gradient">
+            <i class="bi bi-save me-2"></i>Simpan
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

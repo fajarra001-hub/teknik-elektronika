@@ -1,0 +1,187 @@
+<%- include('../../partials/header') %>
+
+<style>
+  .detail-header {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border-radius: 1rem;
+    padding: 2rem;
+    color: white;
+    margin-bottom: 2rem;
+  }
+  .info-card {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .badge-status {
+    padding: 0.4rem 1rem;
+    border-radius: 50px;
+    font-weight: 500;
+  }
+  .badge-pending { background: #ffc107; color: #212529; }
+  .badge-completed { background: #17a2b8; color: white; }
+  .badge-rejected { background: #dc3545; color: white; }
+  .badge-cancelled { background: #6c757d; color: white; }
+  .btn-gradient {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border: none;
+    color: white;
+    font-weight: 600;
+    padding: 0.6rem 2rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+  }
+  .btn-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(33,147,176,0.3);
+    color: white;
+  }
+  .btn-outline-gradient {
+    background: transparent;
+    border: 2px solid #2193b0;
+    color: #2193b0;
+    font-weight: 600;
+    padding: 0.6rem 2rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+  }
+  .btn-outline-gradient:hover {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border-color: transparent;
+    color: white;
+  }
+</style>
+
+<div class="container-fluid mt-4">
+  <div class="detail-header d-flex justify-content-between align-items-center">
+    <div>
+      <h2><i class="bi bi-envelope-paper me-2"></i>Detail Surat</h2>
+    </div>
+    <a href="/admin/surat" class="btn btn-light">
+      <i class="bi bi-arrow-left me-2"></i>Kembali
+    </a>
+  </div>
+
+  <!-- Info Mahasiswa -->
+  <div class="info-card">
+    <h5 class="fw-bold mb-3">Data Mahasiswa</h5>
+    <div class="row">
+      <div class="col-md-6">
+        <p><strong>Nama:</strong> <%= mahasiswa.nama %></p>
+        <p><strong>NIM:</strong> <%= mahasiswa.nim %></p>
+      </div>
+      <div class="col-md-6">
+        <p><strong>Email:</strong> <%= mahasiswa.email %></p>
+        <p><strong>No HP:</strong> <%= mahasiswa.noHp || '-' %></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info Surat -->
+  <div class="info-card">
+    <div class="row">
+      <div class="col-md-6">
+        <p><strong>Jenis Surat:</strong> <%= surat.jenis %></p>
+        <p><strong>Tanggal Pengajuan:</strong> <%= new Date(surat.createdAt).toLocaleString('id-ID') %></p>
+        <p><strong>Status:</strong> 
+          <% if (surat.status === 'pending') { %>
+            <span class="badge-status badge-pending">Pending</span>
+          <% } else if (surat.status === 'completed') { %>
+            <span class="badge-status badge-completed">Selesai</span>
+          <% } else if (surat.status === 'rejected') { %>
+            <span class="badge-status badge-rejected">Ditolak</span>
+          <% } else if (surat.status === 'cancelled') { %>
+            <span class="badge-status badge-cancelled">Dibatalkan</span>
+          <% } %>
+        </p>
+      </div>
+      <div class="col-md-6">
+        <p><strong>Kode Validasi:</strong> <%= surat.kodeValidasi %></p>
+        <% if (surat.semester) { %>
+          <p><strong>Semester:</strong> <%= surat.semester %></p>
+        <% } %>
+        <% if (surat.tahunAkademik) { %>
+          <p><strong>Tahun Akademik:</strong> <%= surat.tahunAkademik %></p>
+        <% } %>
+      </div>
+    </div>
+    <hr>
+    <p><strong>Keperluan:</strong> <%= surat.keperluan %></p>
+    <% if (surat.keterangan) { %>
+      <p><strong>Keterangan Tambahan:</strong> <%= surat.keterangan %></p>
+    <% } %>
+  </div>
+
+  <!-- File yang sudah diupload (jika ada) -->
+  <% if (surat.fileUrl) { %>
+    <div class="info-card">
+      <h5 class="fw-bold mb-3">File Surat</h5>
+      <p>File telah diupload:</p>
+      <a href="<%= surat.fileUrl %>" target="_blank" class="btn btn-info">
+        <i class="bi bi-eye me-2"></i>Lihat File
+      </a>
+    </div>
+  <% } %>
+
+  <!-- Riwayat -->
+  <% if (surat.history && surat.history.length > 0) { %>
+    <div class="info-card">
+      <h5 class="fw-bold mb-3">Riwayat</h5>
+      <ul class="list-group">
+        <% surat.history.slice().reverse().forEach(item => { %>
+          <li class="list-group-item">
+            <div class="d-flex justify-content-between align-items-center">
+              <span><%= item.catatan %></span>
+              <small class="text-muted"><%= new Date(item.timestamp).toLocaleString('id-ID') %></small>
+            </div>
+          </li>
+        <% }) %>
+      </ul>
+    </div>
+  <% } %>
+
+  <!-- Form Aksi (untuk pending) -->
+  <% if (surat.status === 'pending') { %>
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <div class="info-card">
+          <h5 class="fw-bold mb-3">Upload Surat Jadi</h5>
+          <form method="POST" action="/admin/surat/<%= surat.id %>/upload" enctype="multipart/form-data">
+            <div class="mb-3">
+              <input type="file" class="form-control" name="file" accept=".pdf,.doc,.docx" required>
+            </div>
+            <button type="submit" class="btn btn-success">Upload & Selesaikan</button>
+          </form>
+        </div>
+      </div>
+      <div class="col-md-6 mb-3">
+        <div class="info-card">
+          <h5 class="fw-bold mb-3">Tolak Surat</h5>
+          <form method="POST" action="/admin/surat/<%= surat.id %>/reject">
+            <div class="mb-3">
+              <textarea class="form-control" name="alasan" rows="3" placeholder="Alasan penolakan" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-danger" onclick="return confirm('Yakin menolak surat ini?')">Tolak</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  <% } %>
+
+  <!-- Jika sudah selesai, bisa upload ulang? Tergantung kebijakan. Kita bisa tambahkan opsi. -->
+  <% if (surat.status === 'completed') { %>
+    <div class="info-card">
+      <h5 class="fw-bold mb-3">Upload Ulang Surat (Jika perlu)</h5>
+      <form method="POST" action="/admin/surat/<%= surat.id %>/upload" enctype="multipart/form-data">
+        <div class="mb-3">
+          <input type="file" class="form-control" name="file" accept=".pdf,.doc,.docx">
+        </div>
+        <button type="submit" class="btn btn-warning">Ganti File</button>
+      </form>
+    </div>
+  <% } %>
+</div>
+
+<%- include('../../partials/footer') %>
