@@ -298,7 +298,8 @@
             <div class="item-body">
               <h5 class="item-title"><%= judul %></h5>
               <div class="item-author">
-                <i class="bi bi-person-circle"></i> <%= penulis %>
+                <i class="bi bi-person-circle"></i> 
+                <%= penulis %><% if (item._type === 'laporan' && item.nim) { %> (<%= item.nim %>)<% } %>
               </div>
               <p class="item-abstract"><%= abstrak.substring(0, 100) %><%= abstrak.length > 100 ? '...' : '' %></p>
             </div>
