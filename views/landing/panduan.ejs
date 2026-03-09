@@ -1,0 +1,664 @@
+<%- include('../partials/header-landing') %>
+
+<style>
+  /* ===== VARIABEL WARNA ===== */
+  :root {
+    --primary: #2147b0;
+    --primary-dark: #1a3a8f;
+    --primary-light: rgba(33,71,176,0.08);
+    --gradient: linear-gradient(135deg, #2147b0, #6d8bed);
+    --gradient-hover: linear-gradient(135deg, #1a3a8f, #5a75d9);
+    --shadow-sm: 0 5px 15px rgba(0,0,0,0.05);
+    --shadow-hover: 0 15px 30px rgba(33,71,176,0.15);
+    --border-radius: 1.5rem;
+  }
+
+  body {
+    scroll-behavior: smooth;
+  }
+
+  /* ===== HEADER PANDUAN ===== */
+  .panduan-header {
+    background: var(--gradient);
+    border-radius: var(--border-radius);
+    padding: 3.5rem 2rem;
+    color: white;
+    margin-bottom: 2.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 15px 30px rgba(33,71,176,0.25);
+  }
+  .panduan-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 300px;
+    height: 300px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+    transform: rotate(25deg);
+  }
+  .panduan-header h1 {
+    font-weight: 800;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    margin-bottom: 0.5rem;
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  }
+  .panduan-header p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ===== TABLE OF CONTENTS ===== */
+  .toc {
+    background: white;
+    border-radius: 50px;
+    box-shadow: var(--shadow-sm);
+    padding: 1rem 1.5rem;
+    margin-bottom: 2.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.8rem 1.5rem;
+    border: 1px solid rgba(33,71,176,0.1);
+  }
+  .toc a {
+    color: var(--primary-dark);
+    font-weight: 600;
+    text-decoration: none;
+    padding: 0.3rem 1rem;
+    border-radius: 50px;
+    transition: all 0.2s;
+    background: var(--primary-light);
+  }
+  .toc a:hover {
+    background: var(--gradient);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(33,71,176,0.2);
+  }
+
+  /* ===== SECTION TITLE ===== */
+  .section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 3rem 0 2rem;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    border-bottom: 3px solid var(--primary);
+    padding-bottom: 0.8rem;
+  }
+  .section-title i {
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-size: 2.2rem;
+  }
+
+  /* ===== CARD ROLE ===== */
+  .role-card {
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    margin-bottom: 2.5rem;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .role-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-hover);
+  }
+  .role-header {
+    background: var(--gradient);
+    color: white;
+    font-weight: 700;
+    font-size: 1.4rem;
+    padding: 1rem 1.5rem;
+    border-bottom: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .role-header i {
+    font-size: 1.8rem;
+  }
+  .role-body {
+    padding: 1.8rem;
+    background: white;
+  }
+
+  /* ===== SUB SECTION ===== */
+  .sub-section {
+    margin-top: 1.8rem;
+    margin-left: 0.5rem;
+    padding-left: 1.2rem;
+    border-left: 4px solid var(--primary);
+    background: #fafbff;
+    border-radius: 0 1rem 1rem 0;
+    padding: 1rem 1.5rem;
+    transition: background 0.2s;
+  }
+  .sub-section:hover {
+    background: #f0f3ff;
+  }
+  .sub-section h5 {
+    font-weight: 700;
+    color: var(--primary-dark);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+  }
+  .sub-section h5 i {
+    color: var(--primary);
+    font-size: 1.3rem;
+  }
+  .sub-section ul {
+    padding-left: 1.2rem;
+    margin-bottom: 0;
+  }
+  .sub-section li {
+    margin-bottom: 0.4rem;
+    line-height: 1.5;
+  }
+  .sub-section li strong {
+    color: var(--primary-dark);
+  }
+
+  /* ===== LIST ITEM WITH ICON ===== */
+  .list-icon {
+    list-style: none;
+    padding: 0;
+  }
+  .list-icon li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    margin-bottom: 0.6rem;
+  }
+  .list-icon li i {
+    color: var(--primary);
+    font-size: 1.2rem;
+    margin-top: 0.2rem;
+  }
+
+  /* ===== TIPS CARD ===== */
+  .tip-card {
+    background: var(--primary-light);
+    border-left: 4px solid var(--primary);
+    border-radius: 1rem;
+    padding: 1rem 1.5rem;
+    margin: 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .tip-card i {
+    font-size: 2rem;
+    color: var(--primary);
+  }
+  .tip-card p {
+    margin: 0;
+    color: #1e293b;
+  }
+
+  /* ===== BACK TO TOP ===== */
+  .back-to-top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: var(--gradient);
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    box-shadow: 0 5px 15px rgba(33,71,176,0.3);
+    opacity: 0.7;
+    transition: opacity 0.3s, transform 0.3s;
+    z-index: 999;
+    text-decoration: none;
+  }
+  .back-to-top:hover {
+    opacity: 1;
+    transform: translateY(-5px);
+    color: white;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    .toc {
+      flex-direction: column;
+      align-items: center;
+      border-radius: 1rem;
+    }
+    .section-title {
+      font-size: 1.6rem;
+    }
+  }
+</style>
+
+<div class="container mt-4">
+  <!-- Header -->
+  <div class="panduan-header">
+    <h1><i class="bi bi-question-circle-fill"></i> Panduan Penggunaan webAPP</h1>
+    <p class="lead mb-0">Sistem Informasi Teknik Elektronika – Politeknik Dewantara</p>
+  </div>
+
+  <!-- Table of Contents -->
+  <div class="toc">
+    <a href="#pendahuluan">📌 Pendahuluan</a>
+    <a href="#login">🔐 Login</a>
+    <a href="#dashboard">📊 Dashboard</a>
+    <a href="#admin">🛡️ Admin</a>
+    <a href="#dosen">👨‍🏫 Dosen</a>
+    <a href="#mahasiswa">🎓 Mahasiswa</a>
+    <a href="#elk-library">📚 ELK Library</a>
+    <a href="#tips">🔧 Tips</a>
+  </div>
+
+  <div class="row">
+    <div class="col-12">
+      <!-- Pendahuluan -->
+      <section id="pendahuluan">
+        <h2 class="section-title"><i class="bi bi-info-circle-fill"></i> Pendahuluan</h2>
+        <p class="lead">Sistem ini terintegrasi untuk mempermudah pelayanan akademik Program Studi Teknik Elektronika. Fitur utama:</p>
+        <div class="row g-4 mt-3">
+          <div class="col-md-6">
+            <ul class="list-icon">
+              <li><i class="bi bi-check-circle-fill"></i> <strong>Manajemen Pengguna:</strong> Admin, Dosen, Mahasiswa</li>
+              <li><i class="bi bi-check-circle-fill"></i> <strong>Akademik:</strong> Mata Kuliah, KRS, KHS, Transkrip</li>
+              <li><i class="bi bi-check-circle-fill"></i> <strong>Magang:</strong> Logbook, Laporan, Seminar</li>
+              <li><i class="bi bi-check-circle-fill"></i> <strong>ELK Learning:</strong> Tugas, Materi, Nilai</li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <ul class="list-icon">
+              <li><i class="bi bi-check-circle-fill"></i> <strong>ELK Library:</strong> Repositori Laporan & Artikel</li>
+              <li><i class="bi bi-check-circle-fill"></i> <strong>Persuratan & Tagihan</strong> SPP</li>
+              <li><i class="bi bi-check-circle-fill"></i> <strong>Tracer Study</strong> & Track Lulusan</li>
+              <li><i class="bi bi-check-circle-fill"></i> <strong>Kalender Akademik</strong> & Berita</li>
+            </ul>
+          </div>
+        </div>
+        <p class="mt-4">Akses sistem melalui <a href="/" class="fw-bold">halaman utama</a> (atau <code>elektronika.polidewa.ac.id</code>).</p>
+      </section>
+
+      <!-- Login -->
+      <section id="login">
+        <h2 class="section-title"><i class="bi bi-box-arrow-in-right"></i> Login</h2>
+        <div class="role-body" style="border-radius: 1rem;">
+          <ol class="list-icon" style="list-style: decimal; padding-left: 1.5rem;">
+            <li>Klik tombol <strong>Portal Mahasiswa</strong> atau <strong>Portal Dosen/Admin</strong> di navbar.</li>
+            <li>Masukkan email dan password yang telah didaftarkan.</li>
+            <li>Klik <strong>Login</strong>. Sistem akan mengarahkan ke dashboard sesuai peran.</li>
+          </ol>
+          <div class="tip-card">
+            <i class="bi bi-info-circle"></i>
+            <p>Jika lupa password, gunakan fitur <strong>Lupa Password</strong> pada halaman login – email reset akan dikirim.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Dashboard -->
+      <section id="dashboard">
+        <h2 class="section-title"><i class="bi bi-speedometer2"></i> Dashboard</h2>
+        <p>Setiap pengguna memiliki dashboard dengan informasi ringkas:</p>
+        <ul class="list-icon">
+          <li><i class="bi bi-bar-chart"></i> Statistik sesuai peran (jumlah MK, mahasiswa, tugas, tagihan).</li>
+          <li><i class="bi bi-rocket"></i> Aksi cepat ke menu utama (buat tugas, input nilai, dll).</li>
+          <li><i class="bi bi-journal-bookmark-fill"></i> Daftar mata kuliah yang diampu/diambil.</li>
+          <li><i class="bi bi-bell"></i> Notifikasi dan pengumuman.</li>
+        </ul>
+      </section>
+
+      <!-- Admin -->
+      <section id="admin">
+        <div class="role-card">
+          <div class="role-header">
+            <i class="bi bi-shield-lock-fill"></i> Admin – Manajemen Penuh
+          </div>
+          <div class="role-body">
+            <p class="mb-3">Admin memiliki akses ke seluruh fitur. Berikut menu dan langkah penggunaannya:</p>
+            
+            <div class="sub-section">
+              <h5><i class="bi bi-people-fill"></i> Kelola Pengguna</h5>
+              <ul>
+                <li><strong>Daftar Pengguna</strong>: filter peran (semua/admin/dosen/mahasiswa) dan cari.</li>
+                <li><strong>Tambah Pengguna</strong>: klik tombol "Tambah Pengguna", isi form (nama, email, password, peran, NIM/NIP, foto opsional).</li>
+                <li><strong>Edit/Hapus</strong>: ikon pensil/hapus. Saat hapus, file foto di Drive ikut terhapus.</li>
+                <li><strong>Reset Password</strong>: ikon kunci mengirim email reset.</li>
+              </ul>
+            </div>
+
+            <div class="sub-section">
+              <h5><i class="bi bi-person-badge-fill"></i> Kelola Dosen</h5>
+              <ul>
+                <li>Daftar, tambah, edit, hapus data dosen.</li>
+                <li>Lihat mata kuliah yang diampu.</li>
+              </ul>
+            </div>
+
+            <div class="sub-section">
+              <h5><i class="bi bi-mortarboard-fill"></i> Kelola Mahasiswa</h5>
+              <ul>
+                <li>Daftar mahasiswa, filter angkatan & status (aktif/lulus/cuti).</li>
+                <li>Tambah/edit/hapus mahasiswa, reset password, lihat tagihan.</li>
+              </ul>
+            </div>
+
+            <div class="sub-section">
+              <h5><i class="bi bi-book-fill"></i> Kelola Mata Kuliah</h5>
+              <ul>
+                <li>Daftar MK, filter semester, cari kode/nama.</li>
+                <li>Tambah MK: kode, nama, SKS, semester, dosen pengampu, jadwal.</li>
+                <li>Edit/hapus MK.</li>
+              </ul>
+            </div>
+
+            <div class="sub-section">
+              <h5><i class="bi bi-pencil-square"></i> KRS (Kartu Rencana Studi)</h5>
+              <ul>
+                <li>Daftar KRS dengan status pending/approved/rejected.</li>
+                <li>Detail KRS, setujui (otomatis buat enrollment), tolak (beri alasan), hapus (file di Drive ikut).</li>
+              </ul>
+            </div>
+
+            <div class="sub-section">
+              <h5><i class="bi bi-file-earmark-pdf-fill"></i> Laporan Magang</h5>
+              <ul>
+                <li>Daftar laporan per mahasiswa.</li>
+                <li>Setujui: isi judul publik, abstrak, pembimbing, tahun → muncul di ELK Library.</li>
+                <li>Tolak: beri catatan, mahasiswa bisa upload ulang.</li>
+                <li>Hapus laporan (file di Drive ikut).</li>
+              </ul>
+            </div>
+
+            <div class="sub-section">
+              <h5><i class="bi bi-journal-richtext"></i> ELK Library (Kelola Konten)</h5>
+              <ul>
+                <li>Tab laporan dan artikel yang sudah disetujui.</li>
+                <li>Edit metadata (judul, abstrak, dll) atau hapus konten (file di Drive ikut).</li>
+              </ul>
+            </div>
+
+            <div class="sub-section">
+              <h5><i class="bi bi-envelope-paper-fill"></i> Surat Mahasiswa</h5>
+              <ul>
+                <li>Daftar pengajuan surat, upload file surat jadi (PDF), status completed.</li>
+                <li>Tolak surat dengan alasan.</li>
+              </ul>
+            </div>
+
+            <div class="sub-section">
+              <h5><i class="bi bi-cash-coin"></i> Tagihan SPP</h5>
+              <ul>
+                <li>Daftar tagihan per mahasiswa, tambah/edit/hapus, import CSV.</li>
+              </ul>
+            </div>
+
+            <div class="sub-section">
+              <h5><i class="bi bi-bar-chart-steps"></i> Informasi Pengajaran</h5>
+              <ul>
+                <li>Lihat progress perkuliahan per MK, update pertemuan.</li>
+              </ul>
+            </div>
+
+            <div class="sub-section">
+              <h5><i class="bi bi-folder2-open"></i> Berkas Akademik</h5>
+              <ul>
+                <li>Pilih angkatan → mahasiswa → lihat KRS dan KHS yang pernah diupload.</li>
+              </ul>
+            </div>
+
+            <div class="sub-section">
+              <h5><i class="bi bi-briefcase-fill"></i> E‑Magang</h5>
+              <ul>
+                <li>Pantau logbook mahasiswa dengan filter (mahasiswa, MK, semester, tanggal).</li>
+                <li>Lihat gambar dokumentasi (lightbox).</li>
+              </ul>
+            </div>
+
+            <div class="sub-section">
+              <h5><i class="bi bi-newspaper"></i> Kelola Berita</h5>
+              <ul>
+                <li>Tambah, edit, hapus berita (judul, isi, tanggal, gambar URL).</li>
+              </ul>
+            </div>
+
+            <div class="sub-section">
+              <h5><i class="bi bi-calendar-event-fill"></i> Jadwal Penting</h5>
+              <ul>
+                <li>Kelola event untuk kalender akademik (tambah, edit, hapus).</li>
+              </ul>
+            </div>
+
+            <div class="sub-section">
+              <h5><i class="bi bi-graph-up"></i> Track Lulusan</h5>
+              <ul>
+                <li>Lihat data tracer study lulusan (pekerjaan, foto tempat kerja).</li>
+              </ul>
+            </div>
+
+            <div class="sub-section">
+              <h5><i class="bi bi-pie-chart-fill"></i> Statistik Prodi</h5>
+              <ul>
+                <li>Atur data angkatan untuk grafik sebaran mahasiswa.</li>
+              </ul>
+            </div>
+
+            <div class="sub-section">
+              <h5><i class="bi bi-bar-chart-line"></i> Input Nilai</h5>
+              <ul>
+                <li>Lihat rekap nilai per MK, input/update nilai UTS, UAS, tugas.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Dosen -->
+      <section id="dosen">
+        <div class="role-card">
+          <div class="role-header">
+            <i class="bi bi-person-badge-fill"></i> Dosen – Pengajaran & Penilaian
+          </div>
+          <div class="role-body">
+            <div class="sub-section">
+              <h5><i class="bi bi-speedometer2"></i> Dashboard Dosen</h5>
+              <ul>
+                <li>Statistik: MK diampu, mahasiswa bimbingan, tugas aktif, pengumpulan belum dinilai.</li>
+                <li>Aksi cepat: buat tugas, input nilai, lihat MK, monitoring magang.</li>
+              </ul>
+            </div>
+            <div class="sub-section">
+              <h5><i class="bi bi-book"></i> Mata Kuliah Diampu</h5>
+              <ul>
+                <li>Daftar MK dengan jumlah mahasiswa dan progress.</li>
+                <li>Detail MK: edit topik, tanggal, status, upload materi (file PDF).</li>
+                <li>Lihat daftar mahasiswa.</li>
+              </ul>
+            </div>
+            <div class="sub-section">
+              <h5><i class="bi bi-bar-chart"></i> Input Nilai</h5>
+              <ul>
+                <li>Pilih MK, lihat rekap nilai mahasiswa, input/update nilai, export CSV.</li>
+              </ul>
+            </div>
+            <div class="sub-section">
+              <h5><i class="bi bi-journal-bookmark-fill"></i> Monitoring Magang</h5>
+              <ul>
+                <li>Daftar mahasiswa magang, lihat logbook (read‑only), cetak logbook.</li>
+              </ul>
+            </div>
+            <div class="sub-section">
+              <h5><i class="bi bi-journal-richtext"></i> Artikel Dosen (ELK Library)</h5>
+              <ul>
+                <li>Daftar artikel, upload baru (status pending), edit/hapus.</li>
+              </ul>
+            </div>
+            <div class="sub-section">
+              <h5><i class="bi bi-list-task"></i> Tugas</h5>
+              <ul>
+                <li>Buat tugas: pilih MK, judul, deskripsi, deadline, tipe, file soal.</li>
+                <li>Daftar tugas, detail tugas (lihat mahasiswa, status pengumpulan, beri nilai).</li>
+                <li>Hapus tugas.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Mahasiswa -->
+      <section id="mahasiswa">
+        <div class="role-card">
+          <div class="role-header">
+            <i class="bi bi-mortarboard-fill"></i> Mahasiswa – Akademik & Magang
+          </div>
+          <div class="role-body">
+            <div class="sub-section">
+              <h5><i class="bi bi-speedometer2"></i> Dashboard Mahasiswa</h5>
+              <ul>
+                <li>Statistik: SKS diambil, semester, rata‑rata pertemuan, tugas aktif.</li>
+                <li>Ringkasan tagihan SPP (total, lunas, sisa).</li>
+              </ul>
+            </div>
+            <div class="sub-section">
+              <h5><i class="bi bi-journal-bookmark-fill"></i> Akademik</h5>
+              <ul>
+                <li><strong>KRS</strong>: lihat daftar, buat baru (pilih MK), upload file.</li>
+                <li><strong>KHS</strong>: lihat nilai per semester.</li>
+                <li><strong>Transkrip</strong>: semua nilai dan IPK.</li>
+                <li><strong>Kalender</strong>: event penting 6 bulan ke depan.</li>
+              </ul>
+            </div>
+            <div class="sub-section">
+              <h5><i class="bi bi-laptop"></i> ELK‑Learning</h5>
+              <ul>
+                <li>Daftar MK diambil, detail MK (materi, tugas).</li>
+                <li>Kumpul tugas (upload file), lihat status, nilai, komentar.</li>
+                <li>Hapus pengumpulan jika deadline belum lewat.</li>
+              </ul>
+            </div>
+            <div class="sub-section">
+              <h5><i class="bi bi-briefcase-fill"></i> ELK‑Magang</h5>
+              <ul>
+                <li><strong>Logbook</strong>: tambah entri (pilih MK PDK, tanggal, kegiatan, lokasi, durasi, upload gambar). Edit, hapus, cetak.</li>
+                <li><strong>Laporan</strong>: upload 3 laporan, lihat status, komentar admin, upload ulang jika ditolak.</li>
+                <li><strong>Seminar</strong>: ajukan seminar (judul, tanggal, waktu, tempat, pembimbing, penguji). Lihat status, batalkan jika pending.</li>
+              </ul>
+            </div>
+            <div class="sub-section">
+              <h5><i class="bi bi-envelope-paper"></i> Persuratan</h5>
+              <ul>
+                <li>Ajukan surat aktif kuliah atau lainnya, lihat status, unduh file jika selesai.</li>
+                <li>Batalkan pengajuan (jika pending).</li>
+              </ul>
+            </div>
+            <div class="sub-section">
+              <h5><i class="bi bi-bar-chart-line"></i> Tracer Study</h5>
+              <ul>
+                <li>Isi data pekerjaan, upload foto tempat kerja (kompres otomatis).</li>
+                <li>Edit data jika sudah pernah mengisi.</li>
+              </ul>
+            </div>
+            <div class="sub-section">
+              <h5><i class="bi bi-person-circle"></i> Biodata</h5>
+              <ul>
+                <li>Lihat profil, ubah nama, no HP, foto profil (kompres otomatis).</li>
+                <li>Ubah password (email reset dikirim).</li>
+              </ul>
+            </div>
+            <div class="sub-section">
+              <h5><i class="bi bi-cash-coin"></i> Tagihan SPP</h5>
+              <ul>
+                <li>Lihat daftar tagihan per semester, status, jumlah, jatuh tempo.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ELK Library Publik -->
+      <section id="elk-library">
+        <h2 class="section-title"><i class="bi bi-journals"></i> ELK Library (Publik)</h2>
+        <div class="role-body" style="border-radius: 1rem;">
+          <p>Halaman ini dapat diakses siapa saja tanpa login melalui menu <strong>ELK Library</strong> di navbar.</p>
+          <ul class="list-icon">
+            <li><i class="bi bi-search"></i> <strong>Pencarian & filter</strong> berdasarkan tipe (laporan/artikel), tahun, kata kunci.</li>
+            <li><i class="bi bi-card-list"></i> <strong>Daftar karya</strong> ditampilkan dalam card dengan judul, penulis, tahun, abstrak singkat, jumlah dilihat.</li>
+            <li><i class="bi bi-file-earmark-pdf"></i> <strong>Detail karya</strong> menampilkan abstrak lengkap, metadata, tombol unduh/lihat file.</li>
+            <li><i class="bi bi-arrow-left-right"></i> <strong>Pagination</strong> untuk navigasi halaman.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Tips & Troubleshooting -->
+      <section id="tips">
+        <h2 class="section-title"><i class="bi bi-tools"></i> Tips & Troubleshooting</h2>
+        <div class="tip-card">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+          <p><strong>Hello SI-ELK</strong> – Fitur akan selalu diupdate seiring temuan masalah dan dukungan anda sangat berarti dalam pengembangan sistem ini </p>
+        </div>
+        <div class="tip-card">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+          <p><strong>Laporan tidak muncul di ELK Library</strong> – Periksa status, mahasiswa harus <code>approved</code> dan memiliki field <code>approvedAt</code>.</p>
+        </div>
+        <div class="tip-card">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+          <p><strong>Upload gagal</strong> – Periksa koneksi, ukuran file (laporan maks 10MB, foto maks 2MB).</p>
+        </div>
+        <div class="tip-card">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+          <p><strong>Logout</strong> – Gunakan tombol logout di dropdown profil (pojok kanan atas).</p>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+  <div class="text-center text-muted mt-5 mb-3">
+    <small><i class="bi bi-shield-check me-1"></i> Sistem Informasi Program Studi Elektronika- Politeknik Dewantara 2025 by Fajar Elektrik</small>
+  </div>
+
+<!-- Back to Top Button -->
+<a href="#" class="back-to-top" id="backToTop">
+  <i class="bi bi-arrow-up-short"></i>
+</a>
+
+<script>
+  // Smooth scroll untuk anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  // Back to top button visibility
+  window.addEventListener('scroll', function() {
+    const btn = document.getElementById('backToTop');
+    if (window.scrollY > 300) {
+      btn.style.opacity = '1';
+    } else {
+      btn.style.opacity = '0';
+    }
+  });
+</script>
+
+<%- include('../partials/footer-landing') %>

@@ -440,7 +440,8 @@ router.post('/laporan/upload', upload.single('file'), async (req, res) => {
       fileName,
       semester: currentSemester,
       uploadedAt: new Date().toISOString(),
-      status: 'submitted'
+      status: 'submitted',
+      komentar: [] // ← field untuk menyimpan komentar dari admin/dosen
     });
 
     res.redirect('/mahasiswa/magang/laporan');

@@ -155,6 +155,40 @@ router.post('/:id/delete', async (req, res) => {
   }
 });
 // ============================================================================
+// TAMBAH KOMENTAR PADA LAPORAN
+// ============================================================================
+router.post('/:id/comment', async (req, res) => {
+  try {
+    const { isi } = req.body;
+    if (!isi || isi.trim() === '') {
+      return res.status(400).send('Komentar tidak boleh kosong');
+    }
+
+    const docRef = db.collection('laporanMagang').doc(req.params.id);
+    const doc = await docRef.get();
+    if (!doc.exists) return res.status(404).send('Laporan tidak ditemukan');
+
+    const laporan = doc.data();
+    const komentarBaru = {
+      id: Date.now().toString() + Math.random().toString(36).substring(2, 6),
+      penulis: req.user.nama || 'Admin',
+      isi,
+      tanggal: new Date().toISOString()
+    };
+
+    // Tambahkan ke array komentar (gunakan array-union)
+    const komentarLama = laporan.komentar || [];
+    await docRef.update({
+      komentar: [...komentarLama, komentarBaru]
+    });
+
+    res.redirect(`/admin/laporan-magang/mahasiswa/${laporan.userId}?success=comment`);
+  } catch (error) {
+    console.error('Error tambah komentar:', error);
+    res.status(500).send('Gagal menambah komentar');
+  }
+});
+// ============================================================================
 // PROSES PERSETUJUAN
 // ============================================================================
 router.post('/:id/approve', async (req, res) => {

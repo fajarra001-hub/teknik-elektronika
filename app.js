@@ -66,7 +66,10 @@ app.use('/dosen/artikel', dosenArtikelRouter);
 // Rute admin untuk kelola elk library
 const adminElkLibraryRouter = require('./routes/admin/elkLibrary');
 app.use('/admin/elk-library', adminElkLibraryRouter);
-
+// Route untuk halaman panduan
+app.get('/panduan', (req, res) => {
+  res.render('landing/panduan', { title: 'Panduan Penggunaan' });
+});
 // Rute publik elk library (sudah ada)
 const elkLibraryRouter = require('./routes/elkLibrary');
 app.use('/elk-library', elkLibraryRouter);
