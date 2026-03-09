@@ -127,6 +127,33 @@
     border-color: #2193b0;
     box-shadow: 0 0 0 0.2rem rgba(33,147,176,0.25);
   }
+
+  /* ===== KOMENTAR ===== */
+  .komentar-section {
+    margin-top: 1rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed #dee2e6;
+  }
+  .komentar-item {
+    background-color: #f8f9fa;
+    border-left: 3px solid #2193b0;
+    border-radius: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+  .komentar-item .penulis {
+    font-weight: 600;
+    color: #1e293b;
+  }
+  .komentar-item .tanggal {
+    font-size: 0.7rem;
+    color: #6c757d;
+  }
+  .komentar-item p {
+    margin-top: 0.3rem;
+    margin-bottom: 0;
+    font-size: 0.9rem;
+  }
 </style>
 
 <div class="container-fluid mt-4">
@@ -193,6 +220,22 @@
               <p class="mb-2 text-muted small">
                 <i class="bi bi-calendar3 me-1"></i>Diunggah: <%= new Date(item.data.uploadedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) %>
               </p>
+
+              <!-- ===== KOMENTAR ===== -->
+              <% if (item.data.komentar && item.data.komentar.length > 0) { %>
+                <div class="komentar-section">
+                  <h6 class="fw-bold mb-2"><i class="bi bi-chat-dots me-1"></i>Komentar</h6>
+                  <% item.data.komentar.forEach(k => { %>
+                    <div class="komentar-item">
+                      <div class="d-flex justify-content-between align-items-center">
+                        <span class="penulis"><%= k.penulis %></span>
+                        <span class="tanggal"><%= new Date(k.tanggal).toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }) %></span>
+                      </div>
+                      <p><%= k.isi %></p>
+                    </div>
+                  <% }) %>
+                </div>
+              <% } %>
 
               <!-- Alasan penolakan jika ada -->
               <% if (isRejected && item.data.rejectionReason) { %>
