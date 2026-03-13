@@ -71,6 +71,7 @@ function groupEventsByMonth(events) {
   return months;
 }
 
+// Route utama kalender
 router.get('/', async (req, res) => {
   try {
     const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD

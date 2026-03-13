@@ -1,6 +1,11 @@
 <%- include('../partials/header') %>
 
 <style>
+  @media (max-width: 480px) {
+    body {
+        zoom: 0.82; 
+    }
+  }
   .login-page {
     min-height: 80vh;
     display: flex;
@@ -17,7 +22,7 @@
     background: rgba(255,255,255,0.95);
   }
   .login-header {
-    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    background: linear-gradient(135deg, #1e3a8a, #3b82f6); /* warna baru sesuai navbar */
     padding: 2rem;
     text-align: center;
     border-bottom: none;
@@ -46,8 +51,8 @@
     transition: all 0.3s;
   }
   .form-control:focus {
-    border-color: #2193b0;
-    box-shadow: 0 0 0 0.2rem rgba(33,147,176,0.25);
+    border-color: #3b82f6; /* warna baru */
+    box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
   }
   .input-group {
     border-radius: 0.75rem;
@@ -67,10 +72,10 @@
   }
   .input-group .btn-outline-secondary:hover {
     background: #f8f9fa;
-    color: #2193b0;
+    color: #3b82f6; /* warna baru */
   }
   .btn-login {
-    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    background: linear-gradient(135deg, #1e3a8a, #3b82f6); /* warna baru */
     border: none;
     border-radius: 0.75rem;
     padding: 0.75rem;
@@ -81,7 +86,7 @@
   }
   .btn-login:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(33,147,176,0.4);
+    box-shadow: 0 10px 20px rgba(30, 58, 138, 0.4); /* warna baru */
   }
   .btn-login:active {
     transform: translateY(0);

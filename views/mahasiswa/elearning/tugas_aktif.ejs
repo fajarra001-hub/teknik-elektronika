@@ -1,0 +1,241 @@
+<%- include('../../partials/header') %>
+
+<style>
+    @media (max-width: 480px) {
+    body {
+        zoom: 0.72; 
+    }
+}
+  .page-header {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border-radius: 1.5rem;
+    padding: 2rem;
+    color: white;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 20px rgba(33,147,176,0.2);
+  }
+  .page-header h2 {
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+  .page-header p {
+    opacity: 0.9;
+    font-size: 1rem;
+  }
+  .btn-back {
+    background: rgba(255,255,255,0.15);
+    border: 2px solid rgba(255,255,255,0.3);
+    color: white;
+    border-radius: 50px;
+    padding: 0.6rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.3s;
+    backdrop-filter: blur(5px);
+  }
+  .btn-back:hover {
+    background: white;
+    color: #2193b0;
+    border-color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+  }
+  .table-card {
+    background: white;
+    border-radius: 1.5rem;
+    padding: 1.5rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    border: 1px solid #f1f5f9;
+  }
+  .tugas-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 0.5rem;
+  }
+  .tugas-table thead th {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    border: none;
+    padding: 1rem 1.2rem;
+    white-space: nowrap;
+  }
+  .tugas-table thead th:first-child {
+    border-top-left-radius: 1rem;
+    border-bottom-left-radius: 1rem;
+  }
+  .tugas-table thead th:last-child {
+    border-top-right-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+  }
+  .tugas-table tbody tr {
+    background: white;
+    border-radius: 1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+    margin-bottom: 0.5rem;
+  }
+  .tugas-table tbody tr:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(33,147,176,0.15);
+    background: white;
+  }
+  .tugas-table tbody td {
+    padding: 1.2rem 1.2rem;
+    border: none;
+    vertical-align: middle;
+    font-size: 0.95rem;
+  }
+  .tugas-table tbody td:first-child {
+    border-top-left-radius: 1rem;
+    border-bottom-left-radius: 1rem;
+  }
+  .tugas-table tbody td:last-child {
+    border-top-right-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+  }
+  .badge-status {
+    padding: 0.4rem 1rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  .badge-belum {
+    background: #fff3cd;
+    color: #856404;
+  }
+  .badge-sudah {
+    background: #d4edda;
+    color: #155724;
+  }
+  .deadline {
+    font-weight: 600;
+  }
+  .deadline-lewat {
+    color: #dc3545;
+    font-weight: 600;
+  }
+  .btn-detail {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border: none;
+    color: white;
+    border-radius: 50px;
+    padding: 0.4rem 1.2rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-detail:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(33,147,176,0.4);
+    color: white;
+  }
+  .empty-state {
+    background: #f8fafc;
+    border-radius: 1.5rem;
+    padding: 3rem;
+    text-align: center;
+  }
+  .empty-state i {
+    font-size: 4rem;
+    color: #cbd5e1;
+  }
+  .empty-state p {
+    color: #64748b;
+    font-size: 1.1rem;
+    margin-top: 1rem;
+  }
+</style>
+
+<div class="container-fluid mt-4">
+  <!-- Page Header -->
+  <div class="page-header d-flex flex-wrap justify-content-between align-items-center">
+    <div>
+      <h2><i class="bi bi-list-task me-2"></i>Tugas Aktif</h2>
+      <p class="mb-0">Daftar tugas yang masih dapat dikerjakan</p>
+    </div>
+    <a href="/mahasiswa/elearning" class="btn btn-back">
+      <i class="bi bi-arrow-left me-2"></i>Kembali
+    </a>
+  </div>
+
+  <!-- Table Card -->
+  <div class="table-card">
+    <div class="table-responsive">
+      <table class="tugas-table">
+        <thead>
+          <tr>
+            <th>Mata Kuliah</th>
+            <th>Judul Tugas</th>
+            <th>Deadline</th>
+            <th>Status</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (tugasList.length === 0) { %>
+            <tr>
+              <td colspan="5" class="text-center py-5">
+                <div class="empty-state">
+                  <i class="bi bi-inbox"></i>
+                  <p>Tidak ada tugas aktif.</p>
+                </div>
+              </td>
+            </tr>
+          <% } else { %>
+            <% tugasList.forEach(t => { 
+              const deadline = new Date(t.deadline);
+              const now = new Date();
+              const deadlineLewat = deadline < now;
+            %>
+              <tr>
+                <td>
+                  <div><strong><%= t.mkKode %></strong></div>
+                  <small class="text-muted"><%= t.mkNama %></small>
+                </td>
+                <td>
+                  <strong><%= t.judul %></strong>
+                  <% if (t.deskripsi) { %>
+                    <br><small class="text-muted"><%= t.deskripsi.substring(0, 30) %><%= t.deskripsi.length > 30 ? '...' : '' %></small>
+                  <% } %>
+                </td>
+                <td class="<%= deadlineLewat ? 'deadline-lewat' : '' %>">
+                  <i class="bi bi-calendar-event me-1"></i>
+                  <%= deadline.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) %>
+                  <br>
+                  <i class="bi bi-clock me-1"></i>
+                  <%= deadline.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) %>
+                </td>
+                <td>
+                  <% if (t.pengumpulan) { %>
+                    <span class="badge-status badge-sudah">
+                      <i class="bi bi-check-circle-fill"></i> Sudah dikumpul
+                    </span>
+                  <% } else { %>
+                    <span class="badge-status badge-belum">
+                      <i class="bi bi-hourglass-split"></i> Belum dikumpul
+                    </span>
+                  <% } %>
+                </td>
+                <td>
+                  <a href="/mahasiswa/elearning/tugas/<%= t.id %>" class="btn-detail">
+                    <i class="bi bi-eye me-1"></i>Detail
+                  </a>
+                </td>
+              </tr>
+            <% }) %>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<%- include('../../partials/footer') %>
