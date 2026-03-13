@@ -13,6 +13,41 @@
 %>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
+    @media (max-width: 480px) {
+    body {
+        zoom: 0.80; 
+    }
+}
+    @media (max-width: 480px) {
+        body {
+            font-size: 12px;
+        }
+        .navbar-brand img {
+            height: 30px;
+        }
+        .brand-text {
+            font-size: 0.7rem;
+        }
+        .brand-sub {
+            font-size: 0.55rem;
+        }
+        .navbar-nav .nav-link {
+            font-size: 0.8rem;
+            padding: 0.4rem 0.6rem;
+        }
+        .container {
+            padding-left: 8px;
+            padding-right: 8px;
+        }
+        /* Jika ada elemen lain di halaman, bisa ditambahkan di sini */
+    }
+
+    /* Landscape HP (tetap) */
+    @media (max-height: 500px) and (orientation: landscape) {
+        body { padding-top: 60px; }
+        .navbar-brand img { height: 30px; }
+        .brand-text { font-size: 0.7rem; }
+    }
     /* ===== VARIABLES ===== */
     :root {
         --primary: #0d6efd;
