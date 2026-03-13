@@ -78,11 +78,26 @@ async function getTugasAktif(mkIds) {
   }
 }
 
+// Fungsi baru untuk mengambil upcoming events
+async function getUpcomingEvents(limit = 3) {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    const snapshot = await db.collection('jadwalPenting')
+      .where('tanggal', '>=', today)
+      .orderBy('tanggal', 'asc')
+      .limit(limit)
+      .get();
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  } catch (error) {
+    console.error('Error getUpcomingEvents:', error);
+    return [];
+  }
+}
+
 // ============================================================================
 // RUTE UTAMA DASHBOARD
 // ============================================================================
 
-// routes/mahasiswa/dashboard.js
 router.get('/', async (req, res) => {
   try {
     const user = req.user;
@@ -93,6 +108,7 @@ router.get('/', async (req, res) => {
     const mkIds = mkList.map(mk => mk.id);
     const totalSks = mkList.reduce((acc, mk) => acc + (mk.sks || 0), 0);
     const tugasAktif = await getTugasAktif(mkIds);
+    const upcomingEvents = await getUpcomingEvents(3); // ambil 3 event terdekat
 
     const currentSemester = getCurrentAcademicSemester();
     const semesterSekarang = currentSemester.label;
@@ -103,7 +119,7 @@ router.get('/', async (req, res) => {
       pertemuanRata = Math.round(totalPertemuan / mkList.length);
     }
 
-    // ===== HITUNG TOTAL TAGIHAN =====
+    // Hitung total tagihan
     let totalTagihan = 0;
     let totalLunas = 0;
     tagihan.forEach(t => {
@@ -125,7 +141,8 @@ router.get('/', async (req, res) => {
       totalSks,
       semesterSekarang,
       pertemuanRata,
-      tugasAktif
+      tugasAktif,
+      upcomingEvents  // <-- ditambahkan
     });
 
   } catch (error) {
@@ -136,4 +153,5 @@ router.get('/', async (req, res) => {
     });
   }
 });
+
 module.exports = router;

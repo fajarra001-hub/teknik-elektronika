@@ -1,6 +1,99 @@
 <%- include('../partials/header') %>
 
+<%
+  // ========== DEFAULT VALUES UNTUK MENCEGAH ERROR ==========
+  if (typeof user === 'undefined') user = { nama: 'Mahasiswa', email: '', nim: '-', foto: null };
+  if (typeof tagihan === 'undefined') tagihan = [];
+  if (typeof upcomingEvents === 'undefined') upcomingEvents = [];
+  if (typeof events === 'undefined') events = [];
+  if (typeof tugasAktif === 'undefined') tugasAktif = [];
+  if (typeof totalSks === 'undefined') totalSks = 0;
+  if (typeof semesterSekarang === 'undefined') semesterSekarang = 'Genap 2025/2026';
+  if (typeof pertemuanRata === 'undefined') pertemuanRata = 0;
+  if (typeof uploadSuccess === 'undefined') uploadSuccess = false;
+
+  // Fungsi untuk mengambil ID dari URL Google Drive
+  const getFileIdFromUrl = (url) => {
+    if (!url) return null;
+    let match = url.match(/[?&]id=([^&]+)/);
+    if (match) return match[1];
+    match = url.match(/\/d\/([^\/]+)/);
+    if (match) return match[1];
+    return null;
+  };
+
+  // Pastikan tagihan adalah array untuk keamanan
+  const tagihanList = Array.isArray(tagihan) ? tagihan : [];
+  // Hitung total tagihan yang belum lunas
+  const totalBelumLunas = tagihanList.reduce((sum, t) => {
+    return sum + (t.status !== 'lunas' ? (Number(t.jumlah) || 0) : 0);
+  }, 0);
+  const isLunas = totalBelumLunas <= 0;
+  // Filter hanya tagihan yang belum lunas
+  const unpaidTagihan = tagihanList.filter(t => t.status !== 'lunas');
+
+  // Pastikan tugasAktif adalah array
+  const tugasAktifList = Array.isArray(tugasAktif) ? tugasAktif : [];
+%>
+
 <style>
+
+@media (max-width: 480px) {
+    body {
+        zoom: 0.72; 
+    }
+}
+  @media (max-width: 576px) {
+  .profile-card {
+    padding: 1rem;
+  }
+  .profile-card h2 {
+    font-size: 1.3rem;
+  }
+  .profile-card p {
+    font-size: 0.8rem;
+  }
+  .profile-avatar {
+    width: 60px;
+    height: 60px;
+  }
+  .stat-value {
+    font-size: 1.3rem;
+  }
+  .badge-tagihan {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
+  .badge-tagihan i {
+    font-size: 1rem;
+  }
+  .tagihan-item {
+    padding: 0.8rem 1rem;
+  }
+  .tagihan-item .fs-5 {
+    font-size: 1rem !important;
+  }
+  .menu-grid {
+    gap: 0.8rem;
+  }
+  .menu-card {
+    padding: 1rem 0.5rem;
+  }
+  .menu-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 1.8rem;
+  }
+  .menu-title {
+    font-size: 0.9rem;
+  }
+  .menu-desc {
+    font-size: 0.7rem;
+  }
+  .section-title {
+    font-size: 1.2rem;
+  }
+}
   /* ===== VARIABEL WARNA ===== */
   :root {
     --primary-start: #2193b0;
@@ -53,6 +146,39 @@
   }
   .profile-avatar:hover {
     transform: scale(1.05);
+  }
+
+  /* ===== BADGE TAGIHAN (MODERN) ===== */
+  .badge-tagihan {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    padding: 0.6rem 1.4rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    box-shadow: 0 6px 15px rgba(245, 87, 108, 0.25);
+    border: 1px solid rgba(255,255,255,0.15);
+    backdrop-filter: blur(2px);
+    letter-spacing: 0.3px;
+    transition: all 0.3s ease;
+  }
+  .badge-tagihan i {
+    font-size: 1.2rem;
+  }
+  .badge-tagihan:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(245, 87, 108, 0.4);
+  }
+  .badge-lunas {
+    background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+    color: #1e3c72;
+    box-shadow: 0 6px 15px rgba(132, 250, 176, 0.25);
+  }
+  .badge-lunas:hover {
+    box-shadow: 0 10px 20px rgba(132, 250, 176, 0.4);
   }
 
   /* ===== STATISTIK CARDS ===== */
@@ -147,20 +273,6 @@
   .tagihan-item:last-child {
     border-bottom: none;
   }
-  .badge-tagihan {
-    padding: 0.4rem 1rem;
-    border-radius: 50px;
-    font-weight: 500;
-    font-size: 0.8rem;
-  }
-  .badge-lunas {
-    background: #d4edda;
-    color: #155724;
-  }
-  .badge-belum {
-    background: #fff3cd;
-    color: #856404;
-  }
 
   /* ===== MENU CARDS ===== */
   .menu-grid {
@@ -233,17 +345,6 @@
   }
 </style>
 
-<%
-  const getFileIdFromUrl = (url) => {
-    if (!url) return null;
-    let match = url.match(/[?&]id=([^&]+)/);
-    if (match) return match[1];
-    match = url.match(/\/d\/([^\/]+)/);
-    if (match) return match[1];
-    return null;
-  };
-%>
-
 <div class="container-fluid mt-4">
   <!-- Notifikasi Upload Sukses -->
   <% if (uploadSuccess) { %>
@@ -281,87 +382,179 @@
     </div>
   </div>
 
-  <!-- Statistik Cards -->
-  <div class="row g-3 mb-4">
-    <div class="col-md-3 col-6">
-      <div class="stat-card">
-        <div class="stat-icon" style="background: rgba(13,110,253,0.1); color: #0d6efd;">
-          <i class="bi bi-book"></i>
+  <!-- Card Ringkasan Akademik, Jadwal Penting, dan Tugas Aktif -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+        <div class="card-header bg-white border-0 pt-4 px-4 pb-0 d-flex flex-wrap justify-content-between align-items-center">
+          <h5 class="fw-bold mb-0"><i class="bi bi-mortarboard me-2 text-primary"></i>Ringkasan Akademik</h5>
+          <div class="d-flex align-items-center gap-3 mt-2 mt-sm-0">
+            <!-- Badge jumlah tugas aktif -->
+            <span class="badge bg-warning bg-opacity-10 text-warning px-3 py-2 rounded-pill">
+              <i class="bi bi-file-earmark-text me-1"></i><%= tugasAktifList.length %> tugas
+            </span>
+            <a href="/mahasiswa/elearning/tugas-aktif" class="btn btn-outline-warning btn-sm rounded-pill px-3">
+              Lihat Semua <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+          </div>
         </div>
-        <div class="stat-value"><%= totalSks || 0 %></div>
-        <div class="stat-label">SKS Diambil</div>
-      </div>
-    </div>
-    <div class="col-md-3 col-6">
-      <div class="stat-card">
-        <div class="stat-icon" style="background: rgba(25,135,84,0.1); color: #198754;">
-          <i class="bi bi-calendar-week"></i>
+        <div class="card-body p-4">
+          <!-- Tiga statistik dalam satu baris -->
+          <div class="row g-3 mb-4">
+            <div class="col-md-4 col-6">
+              <div class="d-flex align-items-center">
+                <div class="flex-shrink-0 me-3">
+                  <div class="rounded-circle p-2" style="background: rgba(13,110,253,0.1);">
+                    <i class="bi bi-book fs-5" style="color: #0d6efd;"></i>
+                  </div>
+                </div>
+                <div>
+                  <div class="fw-bold fs-4"><%= totalSks %></div>
+                  <div class="text-muted small">SKS Diambil</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 col-6">
+              <div class="d-flex align-items-center">
+                <div class="flex-shrink-0 me-3">
+                  <div class="rounded-circle p-2" style="background: rgba(25,135,84,0.1);">
+                    <i class="bi bi-calendar-week fs-5" style="color: #198754;"></i>
+                  </div>
+                </div>
+                <div>
+                  <div class="fw-bold fs-4"><%= semesterSekarang %></div>
+                  <div class="text-muted small">Semester Aktif</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 col-6">
+              <div class="d-flex align-items-center">
+                <div class="flex-shrink-0 me-3">
+                  <div class="rounded-circle p-2" style="background: rgba(13,202,240,0.1);">
+                    <i class="bi bi-bar-chart-steps fs-5" style="color: #0dcaf0;"></i>
+                  </div>
+                </div>
+                <div>
+                  <div class="fw-bold fs-4"><%= pertemuanRata %> / 16</div>
+                  <div class="text-muted small">Pertemuan Terkini</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Jadwal Penting Mendatang -->
+          <% if (upcomingEvents.length > 0) { %>
+            <div class="mb-4">
+              <h6 class="fw-semibold mb-3"><i class="bi bi-calendar-event me-2"></i>Jadwal Penting</h6>
+              <div class="d-flex flex-wrap gap-3">
+                <% upcomingEvents.forEach(event => { %>
+                  <div class="flex-grow-1" style="min-width: 150px;">
+                    <div class="p-3 rounded-3" style="background: rgba(33,147,176,0.05); border-left: 3px solid #2193b0;">
+                      <div class="fw-semibold"><%= event.judul %></div>
+                      <div class="small text-muted">
+                        <i class="bi bi-calendar3 me-1"></i><%= new Date(event.tanggal).toLocaleDateString('id-ID', { day: 'numeric', month: 'long' }) %>
+                      </div>
+                    </div>
+                  </div>
+                <% }) %>
+              </div>
+            </div>
+          <% } %>
+
+          <!-- Daftar Tugas Aktif -->
+          <h6 class="fw-semibold mb-3"><i class="bi bi-list-task me-2"></i>Tugas Aktif</h6>
+          <% if (tugasAktifList.length === 0) { %>
+            <div class="text-center py-3">
+              <i class="bi bi-check-circle-fill fs-1 text-success mb-2"></i>
+              <p class="text-muted mb-0">Tidak ada tugas aktif saat ini.</p>
+            </div>
+          <% } else { %>
+            <div style="max-height: 300px; overflow-y: auto; padding-right: 8px;">
+              <% tugasAktifList.slice(0, 5).forEach(t => { 
+                const deadline = new Date(t.deadline);
+                const now = new Date();
+                const deadlineLewat = deadline < now;
+              %>
+                <div class="d-flex flex-wrap justify-content-between align-items-center py-3 border-bottom border-light">
+                  <div style="min-width: 0; flex: 1;">
+                    <strong class="fs-6"><%= t.judul %></strong>
+                    <p class="mb-0 text-muted small">
+                      <i class="bi bi-journal-bookmark-fill me-1"></i><%= t.mkKode || '-' %> <%= t.mkNama ? '- ' + t.mkNama : '' %>
+                    </p>
+                    <p class="mb-0 text-muted small <%= deadlineLewat ? 'text-danger' : '' %>">
+                      <i class="bi bi-calendar3 me-1"></i>Deadline: <%= deadline.toLocaleString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) %>
+                    </p>
+                  </div>
+                  <div class="mt-2 mt-sm-0 ms-2">
+                    <a href="/mahasiswa/elearning/tugas/<%= t.id %>" class="btn btn-sm btn-warning rounded-pill px-3">
+                      <i class="bi bi-cloud-upload me-1"></i>Kumpul
+                    </a>
+                  </div>
+                </div>
+              <% }) %>
+              <% if (tugasAktifList.length > 5) { %>
+                <div class="text-center mt-3">
+                  <a href="/mahasiswa/elearning/tugas-aktif" class="btn btn-sm btn-outline-secondary rounded-pill px-4">
+                    Lihat <%= tugasAktifList.length - 5 %> tugas lainnya
+                  </a>
+                </div>
+              <% } %>
+            </div>
+          <% } %>
         </div>
-        <div class="stat-value"><%= semesterSekarang || 'Genap 2025/2026' %></div>
-        <div class="stat-label">Semester Aktif</div>
-      </div>
-    </div>
-    <div class="col-md-3 col-6">
-      <div class="stat-card">
-        <div class="stat-icon" style="background: rgba(13,202,240,0.1); color: #0dcaf0;">
-          <i class="bi bi-bar-chart-steps"></i>
-        </div>
-        <div class="stat-value"><%= pertemuanRata || 0 %> / 16</div>
-        <div class="stat-label">Pertemuan Terkini</div>
-      </div>
-    </div>
-    <div class="col-md-3 col-6">
-      <div class="stat-card">
-        <div class="stat-icon" style="background: rgba(255,193,7,0.1); color: #ffc107;">
-          <i class="bi bi-file-earmark-text"></i>
-        </div>
-        <div class="stat-value"><%= tugasAktif ? tugasAktif.length : 0 %></div>
-        <div class="stat-label">Tugas Aktif</div>
       </div>
     </div>
   </div>
 
-  <!-- Tagihan SPP -->
-  <!-- Tagihan SPP -->
+  <!-- Tagihan SPP (semua semester dalam scroll) -->
   <div class="row mb-4">
     <div class="col-12">
-      <div class="tagihan-card">
-        <div class="tagihan-header d-flex justify-content-between align-items-center">
-          <h5 class="fw-bold mb-0"><i class="bi bi-cash-coin"></i> Tagihan SPP</h5>
-          <div class="d-flex align-items-center gap-3">
-            <span class="text-white">
-              <small>Total Tagihan:</small>
-              <strong>Rp <%= new Intl.NumberFormat('id-ID').format(totalTagihan + totalLunas) %></strong>
+      <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+        <div class="card-header bg-white border-0 pt-4 px-4 pb-0 d-flex flex-wrap justify-content-between align-items-center">
+          <h5 class="fw-bold mb-0"><i class="bi bi-cash-coin me-2 text-primary"></i>Tagihan SPP</h5>
+          <div class="d-flex align-items-center gap-3 mt-2 mt-sm-0">
+            <!-- Badge ringkasan tagihan -->
+            <span class="badge-tagihan <%= isLunas ? 'badge-lunas' : '' %>">
+              <i class="bi bi-<%= isLunas ? 'check-circle-fill' : 'wallet2' %> me-1"></i>
+              <% if (isLunas) { %>
+                Lunas
+              <% } else { %>
+                Rp <%= new Intl.NumberFormat('id-ID').format(totalBelumLunas) %>
+              <% } %>
             </span>
-            <span class="badge bg-light text-dark">
-              Sisa: Rp <%= new Intl.NumberFormat('id-ID').format(sisaTagihan) %>
-            </span>
-            <a href="/mahasiswa/tagihan" class="btn btn-light btn-sm">Lihat Semua</a>
+            <a href="/mahasiswa/tagihan" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+              Kelola <i class="bi bi-arrow-right ms-1"></i>
+            </a>
           </div>
         </div>
-        <div class="card-body p-0">
-          <% if (tagihan.length === 0) { %>
-            <div class="p-4 text-center text-muted">
-              <i class="bi bi-check-circle-fill fs-1 text-success d-block mb-2"></i>
-              <p class="mb-0">Tidak ada tagihan aktif.</p>
+        <div class="card-body p-4">
+          <% if (unpaidTagihan.length === 0) { %>
+            <!-- Empty state jika tidak ada tagihan belum lunas -->
+            <div class="text-center py-4">
+              <i class="bi bi-check-circle-fill fs-1 text-success mb-3 d-block"></i>
+              <p class="text-muted mb-0">Tidak ada tagihan aktif.</p>
             </div>
           <% } else { %>
-            <% tagihan.slice(0, 3).forEach(t => { %>
-              <div class="tagihan-item d-flex flex-wrap justify-content-between align-items-center">
-                <div>
-                  <strong class="fs-6"><%= t.semester %></strong>
-                  <p class="mb-0 text-muted small">
-                    <i class="bi bi-calendar3 me-1"></i>Jatuh tempo: <%= t.jatuhTempo ? new Date(t.jatuhTempo).toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' }) : '-' %>
-                  </p>
+            <!-- Container dengan scroll untuk semua tagihan yang belum lunas -->
+            <div style="max-height: 400px; overflow-y: auto; padding-right: 8px;">
+              <% unpaidTagihan.forEach(t => { %>
+                <div class="d-flex flex-wrap justify-content-between align-items-center py-3 border-bottom border-light">
+                  <div>
+                    <strong class="fs-6"><%= t.semester || 'Semester ' + t.semester %></strong>
+                    <p class="mb-0 text-muted small">
+                      <i class="bi bi-calendar3 me-1"></i>Jatuh tempo: 
+                      <%= t.jatuhTempo ? new Date(t.jatuhTempo).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '-' %>
+                    </p>
+                  </div>
+                  <div class="text-end mt-2 mt-sm-0">
+                    <span class="fw-bold fs-5 d-block">Rp <%= new Intl.NumberFormat('id-ID').format(t.jumlah) %></span>
+                    <span class="badge-tagihan <%= t.status === 'lunas' ? 'badge-lunas' : 'badge-belum' %> mt-1">
+                      <%= t.status === 'lunas' ? 'Lunas' : 'Belum Lunas' %>
+                    </span>
+                  </div>
                 </div>
-                <div class="text-end mt-2 mt-sm-0">
-                  <span class="fw-bold fs-5">Rp <%= new Intl.NumberFormat('id-ID').format(t.jumlah) %></span><br>
-                  <span class="badge-tagihan <%= t.status === 'lunas' ? 'badge-lunas' : 'badge-belum' %>">
-                    <%= t.status === 'lunas' ? 'Lunas' : 'Belum Lunas' %>
-                  </span>
-                </div>
-              </div>
-            <% }) %>
+              <% }) %>
+            </div>
           <% } %>
         </div>
       </div>
@@ -437,7 +630,7 @@
 
   <!-- Footer kecil -->
   <div class="text-center text-muted mt-5 mb-3">
-    <small><i class="bi bi-shield-check me-1"></i> Sistem Informasi Mahasiswa Elektronika- Politeknik Dewantara 2025 by Fajar Elektrik</small>
+    <small><i class="bi bi-shield-check me-1"></i> Sistem Informasi Mahasiswa Elektronika - Politeknik Dewantara 2025 by Fajar Elektrik</small>
   </div>
 </div>
 

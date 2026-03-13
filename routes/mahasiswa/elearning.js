@@ -265,7 +265,70 @@ router.get('/mk/:id', async (req, res) => {
     });
   }
 });
+// ============================================================================
+// TUGAS AKTIF (daftar semua tugas yang masih bisa dikerjakan)
+// ============================================================================
 
+/**
+ * GET /mahasiswa/elearning/tugas-aktif
+ * Menampilkan daftar tugas aktif dari semua MK yang diambil
+ */
+router.get('/tugas-aktif', async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // 1. Ambil semua mata kuliah yang diambil (dari enrollment aktif)
+    const enrollmentSnapshot = await db.collection('enrollment')
+      .where('userId', '==', userId)
+      .where('status', '==', 'active')
+      .get();
+
+    const mkIds = enrollmentSnapshot.docs.map(doc => doc.data().mkId);
+    const now = new Date().toISOString();
+    const tugasList = [];
+
+    // 2. Untuk setiap MK, ambil tugas dengan deadline > sekarang
+    for (const mkId of mkIds) {
+      const tugasSnapshot = await db.collection('tugas')
+        .where('mkId', '==', mkId)
+        .where('deadline', '>', now)
+        .orderBy('deadline', 'asc')
+        .get();
+
+      for (const doc of tugasSnapshot.docs) {
+        const tugas = { id: doc.id, ...doc.data() };
+        // Ambil data MK (kode dan nama)
+        const mkDoc = await db.collection('mataKuliah').doc(mkId).get();
+        if (mkDoc.exists) {
+          tugas.mkKode = mkDoc.data().kode;
+          tugas.mkNama = mkDoc.data().nama;
+        } else {
+          tugas.mkKode = '-';
+          tugas.mkNama = '-';
+        }
+        // Cek status pengumpulan
+        const pengumpulan = await getPengumpulan(tugas.id, userId);
+        tugas.pengumpulan = pengumpulan;
+        tugasList.push(tugas);
+      }
+    }
+
+    // Urutkan berdasarkan deadline (terdekat dulu)
+    tugasList.sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
+
+    res.render('mahasiswa/elearning/tugas_aktif', {
+      title: 'Tugas Aktif',
+      user: req.user,
+      tugasList
+    });
+  } catch (error) {
+    console.error('Error mengambil tugas aktif:', error);
+    res.status(500).render('error', {
+      title: 'Error',
+      message: 'Gagal memuat tugas aktif'
+    });
+  }
+});
 // ============================================================================
 // DETAIL TUGAS & KUMPUL TUGAS
 // ============================================================================
