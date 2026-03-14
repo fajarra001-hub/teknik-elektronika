@@ -148,6 +148,56 @@
             color: white;
         }
 
+        /* HP kecil (375px, iPhone 6/7/8/X) */
+@media (max-width: 390px) {
+    .navbar-brand img {
+        height: 35px;
+    }
+    .brand-text {
+        font-size: 0.8rem;
+    }
+    .brand-sub {
+        font-size: 0.6rem;
+    }
+    .navbar-nav .nav-link {
+        font-size: 0.85rem;
+        padding: 0.4rem 0.6rem;
+    }
+}
+
+/* HP sangat kecil (320px, iPhone SE) */
+@media (max-width: 340px) {
+    .navbar-brand img {
+        height: 30px;
+    }
+    .separator {
+        font-size: 1.2rem;
+        margin: 0 2px;
+    }
+    .brand-text {
+        font-size: 0.7rem;
+    }
+    .brand-sub {
+        font-size: 0.5rem;
+    }
+    .navbar-nav .nav-link {
+        font-size: 0.8rem;
+        padding: 0.3rem 0.5rem;
+    }
+    .navbar-brand {
+        gap: 3px;
+    }
+}
+
+/* HP besar (428px, iPhone Pro Max) */
+@media (min-width: 430px) and (max-width: 480px) {
+    .navbar-brand img {
+        height: 45px;
+    }
+    .brand-text {
+        font-size: 0.95rem;
+    }
+}
         /* ===== RESPONSIVE UNTUK TABLET DAN HP ===== */
         @media (max-width: 991px) {
             /* Navbar collapse background di mobile */
