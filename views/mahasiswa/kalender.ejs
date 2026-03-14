@@ -1,17 +1,22 @@
 <%- include('../partials/header') %>
 
 <style>
-  @media (max-width: 480px) {
-    body {
-        zoom: 0.72; 
-    }
-}
-  /* ===== VARIABEL WARNA ===== */
+  /* ===== VARIABEL WARNA (sesuai navbar) ===== */
   :root {
-    --primary-start: #2193b0;
-    --primary-end: #6dd5ed;
-    --primary-light: rgba(33,147,176,0.1);
-    --primary-dark: #1a7a8f;
+    --primary-start: #1e3a8a;
+    --primary-end: #3b82f6;
+    --primary-light: rgba(30,58,138,0.1);
+    --primary-dark: #0f2b5c;
+    --font-base: 16px;
+  }
+
+  html {
+    font-size: 16px;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background-color: #f8fafc;
   }
 
   /* ===== HEADER ===== */
@@ -21,7 +26,7 @@
     padding: 2rem;
     color: white;
     margin-bottom: 2rem;
-    box-shadow: 0 15px 30px rgba(33,147,176,0.25);
+    box-shadow: 0 15px 30px rgba(30,58,138,0.25);
     position: relative;
     overflow: hidden;
   }
@@ -44,12 +49,14 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    font-size: 1.8rem;
   }
   .page-header p {
     margin-bottom: 0;
     opacity: 0.9;
     position: relative;
     z-index: 1;
+    font-size: 1rem;
   }
   .btn-back {
     background: white;
@@ -64,6 +71,7 @@
     transition: all 0.3s;
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     border: none;
+    font-size: 0.95rem;
   }
   .btn-back:hover {
     transform: translateY(-3px);
@@ -74,18 +82,18 @@
   /* ===== BULAN CARD ===== */
   .bulan-card {
     background: white;
-    border-radius: 1.2rem;
+    border-radius: 1.5rem;
     overflow: hidden;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
     transition: all 0.3s;
     height: 100%;
-    border: 1px solid rgba(33,147,176,0.1);
+    border: 1px solid rgba(30,58,138,0.1);
     display: flex;
     flex-direction: column;
   }
   .bulan-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 20px 35px rgba(33,147,176,0.15);
+    box-shadow: 0 20px 35px rgba(30,58,138,0.15);
   }
   .bulan-header {
     background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
@@ -197,18 +205,45 @@
     color: #adb5bd;
     padding: 0.5rem 0;
   }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    html { font-size: 15px; }
+    .page-header h2 { font-size: 1.6rem; }
+    .page-header p { font-size: 0.95rem; }
+    .btn-back { padding: 0.4rem 1.2rem; font-size: 0.9rem; }
+    .bulan-header { font-size: 1.1rem; }
+  }
+
+  @media (max-width: 576px) {
+    html { font-size: 14px; }
+    .page-header h2 { font-size: 1.4rem; }
+    .page-header { padding: 1.5rem; }
+    .bulan-body { padding: 1rem; }
+    .event-info strong { font-size: 0.8rem; }
+  }
+
+  @media (max-width: 400px) {
+    html { font-size: 13px; }
+    .page-header h2 { font-size: 1.2rem; }
+    .bulan-header { font-size: 1rem; }
+  }
+
+  @media (max-width: 340px) {
+    html { font-size: 12px; }
+  }
 </style>
 
-<div class="container-fluid mt-4">
+<div class="container mt-4">
   <!-- Header -->
   <div class="page-header d-flex flex-wrap justify-content-between align-items-center">
     <div>
       <h2><i class="bi bi-calendar-event-fill me-2"></i>Kalender Akademik</h2>
-      <p class="mb-0 opacity-75">Jadwal penting 6 bulan ke depan</p>
+      <p class="mb-0">Jadwal & Event semester ini</p>
     </div>
-    <a href="/mahasiswa/akademik" class="btn-back mt-2 mt-sm-0">
-      <i class="bi bi-arrow-left"></i> Kembali
-    </a>
+<a href="javascript:void(0)" onclick="window.history.back(); return false;" class="btn-back mt-2 mt-sm-0">
+  <i class="bi bi-arrow-left"></i> Kembali
+</a>
   </div>
 
   <!-- Daftar Bulan (2 kolom pada layar sedang, 3 pada layar besar) -->

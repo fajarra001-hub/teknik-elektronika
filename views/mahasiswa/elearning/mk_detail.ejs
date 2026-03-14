@@ -1,123 +1,306 @@
 <%- include('../../partials/header') %>
 
 <style>
-  @media (max-width: 480px) {
-    body {
-        zoom: 0.72; 
-    }
-}
+  /* ===== VARIABEL WARNA (sesuai navbar) ===== */
+  :root {
+    --primary-start: #1e3a8a;
+    --primary-end: #3b82f6;
+    --primary-light: rgba(30,58,138,0.1);
+    --primary-dark: #0f2b5c;
+    --warning-bg: #fef3c7;
+    --warning-text: #92400e;
+    --success-bg: #d1fae5;
+    --success-text: #065f46;
+    --font-base: 16px;
+  }
+
+  html {
+    font-size: 16px;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background-color: #f8fafc;
+  }
+
+  /* ===== HEADER MATA KULIAH ===== */
   .mk-detail-header {
-    background: linear-gradient(135deg, #2193b0, #6dd5ed);
-    border-radius: 1rem;
+    background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+    border-radius: 1.5rem;
     padding: 2rem;
     color: white;
     margin-bottom: 2rem;
+    box-shadow: 0 15px 30px rgba(30,58,138,0.25);
+    position: relative;
+    overflow: hidden;
+  }
+  .mk-detail-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 300px;
+    height: 300px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+    transform: rotate(25deg);
   }
   .mk-detail-header h2 {
     font-weight: 700;
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    position: relative;
+    z-index: 1;
   }
-  .jadwal-card {
+  .mk-detail-header p {
+    font-size: 1rem;
+    opacity: 0.9;
+    position: relative;
+    z-index: 1;
+  }
+  .mk-detail-header .btn-light {
     background: white;
-    border-radius: 1rem;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-  }
-  .materi-table th {
-    background: #f8f9fa;
-    font-weight: 600;
-    color: #1e293b;
-  }
-  .badge-status {
-    padding: 0.4rem 1rem;
     border-radius: 50px;
-    font-weight: 500;
-  }
-  .badge-belum { background: #ffc107; color: #212529; }
-  .badge-selesai { background: #28a745; color: white; }
-  .tugas-item {
-    background: white;
-    border-radius: 1rem;
-    padding: 1.2rem;
-    margin-bottom: 1rem;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    transition: transform 0.2s;
-  }
-  .tugas-item:hover {
-    transform: translateX(5px);
-    box-shadow: 0 5px 15px rgba(33,147,176,0.15);
-  }
-  .btn-gradient {
-    background: linear-gradient(135deg, #2193b0, #6dd5ed);
-    border: none;
-    color: white;
-    font-weight: 500;
     padding: 0.5rem 1.5rem;
-    border-radius: 50px;
+    font-weight: 500;
+    color: var(--primary-start);
+    border: none;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     transition: all 0.3s;
+    font-size: 0.95rem;
     text-decoration: none;
     display: inline-block;
   }
-  .btn-gradient:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(33,147,176,0.3);
-    color: white;
+  .mk-detail-header .btn-light:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    color: var(--primary-dark);
   }
-  .btn-outline-gradient {
-    background: transparent;
-    border: 2px solid #2193b0;
-    color: #2193b0;
-    font-weight: 500;
-    padding: 0.5rem 1.5rem;
-    border-radius: 50px;
-    transition: all 0.3s;
-    text-decoration: none;
+
+  /* ===== CARD UMUM ===== */
+  .info-card {
+    background: white;
+    border-radius: 1.5rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(30,58,138,0.1);
   }
-  .btn-outline-gradient:hover {
-    background: linear-gradient(135deg, #2193b0, #6dd5ed);
-    border-color: transparent;
-    color: white;
+  .info-card h5 {
+    font-weight: 700;
+    color: #1e293b;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.2rem;
   }
+  .info-card h5 i {
+    color: var(--primary-start);
+  }
+
+  /* ===== BADGE DOSEN ===== */
   .dosen-badge {
-    background: #e9ecef;
-    color: #495057;
-    padding: 0.4rem 1rem;
+    background: var(--primary-light);
+    color: var(--primary-start);
+    padding: 0.4rem 1.2rem;
     border-radius: 50px;
     display: inline-block;
     margin-right: 0.5rem;
     margin-bottom: 0.5rem;
+    font-weight: 500;
+    font-size: 0.9rem;
   }
+
+  /* ===== PROGRESS BAR ===== */
   .progress-lg {
-    height: 1.5rem;
+    height: 1.2rem;
     border-radius: 1rem;
+    background-color: #e9ecef;
+  }
+  .progress-bar {
+    background: linear-gradient(90deg, var(--primary-start), var(--primary-end));
+    border-radius: 1rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ===== TUGAS CARD ===== */
+  .tugas-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .tugas-item {
+    background: #f9fafc;
+    border-radius: 1.2rem;
+    padding: 1.2rem;
+    transition: all 0.3s;
+    border: 1px solid rgba(30,58,138,0.1);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .tugas-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 8px 20px rgba(30,58,138,0.1);
+    border-color: rgba(30,58,138,0.2);
+    background: white;
+  }
+  .tugas-item h6 {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #1e293b;
+    margin-bottom: 0.25rem;
+  }
+  .tugas-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    font-size: 0.85rem;
+    color: #64748b;
+  }
+  .tugas-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-top: 0.5rem;
+  }
+  .btn-detail {
+    background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+    border: none;
+    color: white;
+    font-weight: 500;
+    padding: 0.4rem 1.2rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+    box-shadow: 0 4px 10px rgba(30,58,138,0.2);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+  }
+  .btn-detail:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(30,58,138,0.4);
+    color: white;
+  }
+  .badge-status {
+    padding: 0.3rem 1rem;
+    border-radius: 50px;
+    font-weight: 500;
+    font-size: 0.8rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  .badge-belum {
+    background: var(--warning-bg);
+    color: var(--warning-text);
+  }
+  .badge-selesai {
+    background: var(--success-bg);
+    color: var(--success-text);
+  }
+
+  /* ===== TABEL MATERI (MINIMALIS) ===== */
+  .table-responsive {
+    border-radius: 1rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+  }
+  .materi-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .materi-table th {
+    background: #f1f5f9;
+    color: #1e293b;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 1px solid #e2e8f0;
+    padding: 0.7rem 1rem;
+    white-space: nowrap;
+  }
+  .materi-table td {
+    vertical-align: middle;
+    padding: 0.7rem 1rem;
+    border: 1px solid #e2e8f0;
+    font-size: 0.9rem;
+  }
+  .materi-table tbody tr:hover {
+    background-color: #f8fafc;
+  }
+
+  /* ===== TOMBOL UNDUH GRADIEN ===== */
+  .btn-download {
+    background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+    border: none;
+    color: white;
+    font-weight: 500;
+    padding: 0.3rem 1rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+    box-shadow: 0 4px 8px rgba(30,58,138,0.2);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.8rem;
+  }
+  .btn-download:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(30,58,138,0.3);
+    color: white;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    html { font-size: 15px; }
+    .mk-detail-header { padding: 1.5rem; }
+    .mk-detail-header h2 { font-size: 1.6rem; }
+  }
+  @media (max-width: 576px) {
+    html { font-size: 14px; }
+    .tugas-item { flex-direction: column; align-items: flex-start; }
+    .tugas-actions { align-self: flex-start; }
   }
 </style>
 
-<div class="container-fluid mt-4">
+<div class="container mt-4">
   <!-- Header MK -->
-  <div class="mk-detail-header d-flex justify-content-between align-items-center">
+  <div class="mk-detail-header d-flex flex-wrap justify-content-between align-items-center">
     <div>
       <h2><%= mk.kode %> - <%= mk.nama %></h2>
-      <p class="mb-0 opacity-75">
+      <p class="mb-0">
         <i class="bi bi-book me-2"></i><%= mk.sks %> SKS |
         <i class="bi bi-calendar me-2"></i>Semester <%= mk.semester || '-' %> |
         <i class="bi bi-people me-2"></i><%= jumlahMahasiswa || 0 %> mahasiswa terdaftar
       </p>
     </div>
-    <a href="/mahasiswa/elearning" class="btn btn-light">
+    <a href="/mahasiswa/elearning" class="btn-light mt-2 mt-sm-0">
       <i class="bi bi-arrow-left me-2"></i>Kembali
     </a>
   </div>
 
   <!-- Jadwal & Dosen -->
-  <div class="jadwal-card">
-    <div class="row">
+  <div class="info-card">
+    <div class="row g-4">
       <div class="col-md-6">
-        <h5 class="fw-bold mb-3"><i class="bi bi-clock me-2"></i>Jadwal Kuliah</h5>
-        <p><%= jadwal %></p>
+        <h5><i class="bi bi-clock"></i> Jadwal Kuliah</h5>
+        <p class="text-muted mb-0"><%= jadwal || 'Belum diatur' %></p>
       </div>
       <div class="col-md-6">
-        <h5 class="fw-bold mb-3"><i class="bi bi-people me-2"></i>Dosen Pengampu</h5>
+        <h5><i class="bi bi-people"></i> Dosen Pengampu</h5>
         <% if (dosenList && dosenList.length > 0) { %>
           <div>
             <% dosenList.forEach(d => { %>
@@ -125,52 +308,89 @@
             <% }) %>
           </div>
         <% } else { %>
-          <p class="text-muted">-</p>
+          <p class="text-muted mb-0">-</p>
         <% } %>
       </div>
     </div>
   </div>
 
   <!-- Progress Perkuliahan -->
-  <div class="jadwal-card">
-    <h5 class="fw-bold mb-3"><i class="bi bi-bar-chart-steps me-2"></i>Progress Perkuliahan</h5>
+  <div class="info-card">
+    <h5><i class="bi bi-bar-chart-steps"></i> Progress Perkuliahan</h5>
     <%
       const totalPertemuan = 16;
       const selesaiCount = materi ? materi.filter(m => m.status === 'selesai').length : 0;
       const persentase = totalPertemuan > 0 ? (selesaiCount / totalPertemuan * 100) : 0;
     %>
     <div class="progress progress-lg mb-2">
-      <div class="progress-bar" role="progressbar" style="width: <%= persentase %>%; background: linear-gradient(90deg, #2193b0, #6dd5ed);" 
+      <div class="progress-bar" role="progressbar" style="width: <%= persentase %>%;" 
            aria-valuenow="<%= persentase %>" aria-valuemin="0" aria-valuemax="100">
         <%= Math.round(persentase) %>%
       </div>
     </div>
-    <p class="text-muted"><%= selesaiCount %> dari <%= totalPertemuan %> pertemuan telah dilaksanakan.</p>
+    <p class="text-muted small"><%= selesaiCount %> dari <%= totalPertemuan %> pertemuan telah dilaksanakan.</p>
   </div>
 
-  <!-- Materi per Pertemuan -->
-  <div class="jadwal-card">
-    <h5 class="fw-bold mb-3"><i class="bi bi-list-task me-2"></i>Materi Perkuliahan (16 Pertemuan)</h5>
+  <!-- Daftar Tugas -->
+  <div class="info-card">
+    <h5><i class="bi bi-file-earmark-text"></i> Tugas & Deadline</h5>
+    <% if (!tugasList || tugasList.length === 0) { %>
+      <p class="text-muted text-center py-4">Belum ada tugas untuk mata kuliah ini.</p>
+    <% } else { %>
+      <div class="tugas-list">
+        <% tugasList.forEach(t => { %>
+          <div class="tugas-item">
+            <div style="flex:1">
+              <h6><%= t.judul %></h6>
+              <div class="tugas-meta">
+                <span><i class="bi bi-calendar me-1"></i> <%= new Date(t.deadline).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) %></span>
+                <span><i class="bi bi-tag me-1"></i> <%= t.tipe || 'Tugas' %></span>
+              </div>
+            </div>
+            <div class="tugas-actions">
+              <a href="/mahasiswa/elearning/tugas/<%= t.id %>" class="btn-detail">
+                <i class="bi bi-eye"></i> Detail
+              </a>
+              <% if (t.pengumpulan) { %>
+                <span class="badge-status badge-selesai">
+                  <i class="bi bi-check-circle"></i> Sudah
+                </span>
+                <% if (t.pengumpulan.nilai) { %>
+                  <span class="badge-status badge-selesai">Nilai: <%= t.pengumpulan.nilai %></span>
+                <% } %>
+              <% } else { %>
+                <span class="badge-status badge-belum">
+                  <i class="bi bi-hourglass"></i> Belum
+                </span>
+              <% } %>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+
+  <!-- Materi Perkuliahan (Tabel) -->
+  <div class="info-card">
+    <h5><i class="bi bi-list-task"></i> Materi Perkuliahan</h5>
     <div class="table-responsive">
-      <table class="table table-bordered materi-table">
+      <table class="table materi-table">
         <thead>
           <tr>
-            <th>Pertemuan</th>
+            <th>No</th>
             <th>Topik</th>
-            <th>Tanggal</th>
             <th>Status</th>
             <th>Materi</th>
           </tr>
         </thead>
         <tbody>
           <% if (!materi || materi.length === 0) { %>
-            <tr><td colspan="5" class="text-center">Belum ada materi yang diinput dosen.</td></tr>
+            <tr><td colspan="4" class="text-center py-4">Belum ada materi yang diinput dosen.</td></tr>
           <% } else { %>
-            <% materi.forEach(m => { %>
-              <tr class="<%= m.status === 'selesai' ? 'table-success' : '' %>">
-                <td class="text-center fw-bold"><%= m.pertemuan %></td>
-                <td><%= m.topik %></td>
-                <td><%= m.tanggal ? new Date(m.tanggal).toLocaleDateString('id-ID') : '-' %></td>
+            <% materi.forEach((m, index) => { %>
+              <tr>
+                <td class="text-center fw-bold"><%= index + 1 %></td>
+                <td><%= m.topik || '-' %></td>
                 <td>
                   <span class="badge-status <%= m.status === 'selesai' ? 'badge-selesai' : 'badge-belum' %>">
                     <%= m.status %>
@@ -178,7 +398,7 @@
                 </td>
                 <td>
                   <% if (m.fileUrl) { %>
-                    <a href="<%= m.fileUrl %>" target="_blank" class="btn btn-sm btn-outline-info">
+                    <a href="<%= m.fileUrl %>" target="_blank" class="btn-download">
                       <i class="bi bi-download"></i> Unduh
                     </a>
                   <% } else { %>
@@ -191,44 +411,6 @@
         </tbody>
       </table>
     </div>
-  </div>
-
-  <!-- Daftar Tugas -->
-  <div class="jadwal-card">
-    <h5 class="fw-bold mb-3"><i class="bi bi-file-earmark-text me-2"></i>Tugas & Deadline</h5>
-    <% if (!tugasList || tugasList.length === 0) { %>
-      <p class="text-muted">Belum ada tugas untuk mata kuliah ini.</p>
-    <% } else { %>
-      <% tugasList.forEach(t => { %>
-        <div class="tugas-item d-flex justify-content-between align-items-center flex-wrap">
-          <div style="flex: 1;">
-            <h6 class="fw-bold mb-1"><%= t.judul %></h6>
-            <p class="text-muted small mb-1"><%= t.deskripsi || 'Tidak ada deskripsi' %></p>
-            <div class="d-flex flex-wrap gap-3">
-              <small class="text-muted">
-                <i class="bi bi-calendar me-1"></i> Deadline: <%= new Date(t.deadline).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) %>
-              </small>
-              <small class="text-muted">
-                <i class="bi bi-tag me-1"></i> <%= t.tipe %>
-              </small>
-            </div>
-          </div>
-          <div class="mt-2 mt-sm-0 d-flex align-items-center gap-2">
-            <a href="/mahasiswa/elearning/tugas/<%= t.id %>" class="btn-gradient btn-sm">
-              <i class="bi bi-eye me-1"></i>Detail
-            </a>
-            <% if (t.pengumpulan) { %>
-              <span class="badge bg-success">Sudah dikumpul</span>
-              <% if (t.pengumpulan.nilai) { %>
-                <span class="badge bg-primary">Nilai: <%= t.pengumpulan.nilai %></span>
-              <% } %>
-            <% } else { %>
-              <span class="badge bg-warning text-dark">Belum dikumpul</span>
-            <% } %>
-          </div>
-        </div>
-      <% }) %>
-    <% } %>
   </div>
 </div>
 
