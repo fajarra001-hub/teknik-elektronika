@@ -12,7 +12,6 @@
   if (typeof pertemuanRata === 'undefined') pertemuanRata = 0;
   if (typeof uploadSuccess === 'undefined') uploadSuccess = false;
 
-  // Fungsi untuk mengambil ID dari URL Google Drive
   const getFileIdFromUrl = (url) => {
     if (!url) return null;
     let match = url.match(/[?&]id=([^&]+)/);
@@ -22,84 +21,23 @@
     return null;
   };
 
-  // Pastikan tagihan adalah array untuk keamanan
   const tagihanList = Array.isArray(tagihan) ? tagihan : [];
-  // Hitung total tagihan yang belum lunas
   const totalBelumLunas = tagihanList.reduce((sum, t) => {
     return sum + (t.status !== 'lunas' ? (Number(t.jumlah) || 0) : 0);
   }, 0);
   const isLunas = totalBelumLunas <= 0;
-  // Filter hanya tagihan yang belum lunas
   const unpaidTagihan = tagihanList.filter(t => t.status !== 'lunas');
-
-  // Pastikan tugasAktif adalah array
   const tugasAktifList = Array.isArray(tugasAktif) ? tugasAktif : [];
 %>
 
 <style>
-
-@media (max-width: 768px) {
-    body {
-        zoom: 0.50; 
-    }
-}
-  @media (max-width: 766px) {
-  .profile-card {
-    padding: 1rem;
-  }
-  .profile-card h2 {
-    font-size: 1.3rem;
-  }
-  .profile-card p {
-    font-size: 0.8rem;
-  }
-  .profile-avatar {
-    width: 60px;
-    height: 60px;
-  }
-  .stat-value {
-    font-size: 1.3rem;
-  }
-  .badge-tagihan {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.8rem;
-  }
-  .badge-tagihan i {
-    font-size: 1rem;
-  }
-  .tagihan-item {
-    padding: 0.8rem 1rem;
-  }
-  .tagihan-item .fs-5 {
-    font-size: 1rem !important;
-  }
-  .menu-grid {
-    gap: 0.8rem;
-  }
-  .menu-card {
-    padding: 1rem 0.5rem;
-  }
-  .menu-icon {
-    width: 50px;
-    height: 50px;
-    font-size: 1.8rem;
-  }
-  .menu-title {
-    font-size: 0.9rem;
-  }
-  .menu-desc {
-    font-size: 0.7rem;
-  }
-  .section-title {
-    font-size: 1.2rem;
-  }
-}
-  /* ===== VARIABEL WARNA ===== */
+  /* ===== VARIABEL WARNA (sesuai navbar) ===== */
   :root {
-    --primary-start: #2193b0;
-    --primary-end: #6dd5ed;
-    --primary-light: rgba(33,147,176,0.1);
-    --primary-dark: #1a7a8f;
+    --primary-start: #1e3a8a;
+    --primary-end: #3b82f6;
+    --primary-light: rgba(30,58,138,0.1);
+    --primary-dark: #0f2b5c;
+    --warning-gradient: linear-gradient(135deg, #f97316, #fbbf24);
   }
 
   /* ===== PROFILE CARD ===== */
@@ -109,7 +47,7 @@
     padding: 1.5rem;
     color: white;
     margin-bottom: 1.5rem;
-    box-shadow: 0 15px 30px rgba(33,147,176,0.3);
+    box-shadow: 0 15px 30px rgba(30,58,138,0.3);
     position: relative;
     overflow: hidden;
   }
@@ -125,19 +63,15 @@
     transform: rotate(25deg);
   }
   .profile-card h2 {
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     font-weight: 700;
     position: relative;
     z-index: 1;
-  }
-  .profile-card p {
-    font-size: 0.95rem;
-    position: relative;
-    z-index: 1;
+    margin-bottom: 0.5rem;
   }
   .profile-avatar {
-    width: 80px;
-    height: 80px;
+    width: 70px;
+    height: 70px;
     border-radius: 50%;
     object-fit: cover;
     border: 4px solid rgba(255,255,255,0.5);
@@ -147,84 +81,87 @@
   .profile-avatar:hover {
     transform: scale(1.05);
   }
-
-  /* ===== BADGE TAGIHAN (MODERN) ===== */
-  .badge-tagihan {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    color: white;
-    padding: 0.6rem 1.4rem;
+  .profile-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 1.5rem;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    background: rgba(255,255,255,0.15);
+    padding: 0.6rem 1rem;
     border-radius: 50px;
-    font-weight: 600;
-    font-size: 0.95rem;
+    backdrop-filter: blur(4px);
+  }
+  .profile-stats span {
     display: inline-flex;
     align-items: center;
-    gap: 0.6rem;
-    box-shadow: 0 6px 15px rgba(245, 87, 108, 0.25);
+    gap: 0.4rem;
+  }
+  .profile-stats i {
+    font-size: 1rem;
+  }
+
+  /* ===== BADGE TAGIHAN (warna oranye selaras tombol kumpul) ===== */
+  .badge-tagihan {
+    background: var(--warning-gradient);
+    color: white;
+    padding: 0.5rem 1.2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 6px 15px rgba(249,115,22,0.25);
     border: 1px solid rgba(255,255,255,0.15);
     backdrop-filter: blur(2px);
-    letter-spacing: 0.3px;
     transition: all 0.3s ease;
   }
   .badge-tagihan i {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
   }
   .badge-tagihan:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(245, 87, 108, 0.4);
+    box-shadow: 0 10px 20px rgba(249,115,22,0.4);
   }
   .badge-lunas {
-    background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
-    color: #1e3c72;
-    box-shadow: 0 6px 15px rgba(132, 250, 176, 0.25);
+    background: linear-gradient(135deg, #10b981, #34d399);
+    color: white;
+    box-shadow: 0 6px 15px rgba(16,185,129,0.25);
   }
-  .badge-lunas:hover {
-    box-shadow: 0 10px 20px rgba(132, 250, 176, 0.4);
+  .badge-belum {
+    background: #fef3c7;
+    color: #92400e;
   }
 
-  /* ===== STATISTIK CARDS ===== */
-  .stat-card {
+  /* ===== CARD RINGKASAN (hanya event & tugas) ===== */
+  .ringkasan-card {
     background: white;
     border-radius: 1.2rem;
-    padding: 1.2rem 1rem;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.03);
-    transition: all 0.3s;
-    height: 100%;
-    border: 1px solid rgba(33,147,176,0.1);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    overflow: hidden;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(30,58,138,0.1);
   }
-  .stat-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 35px rgba(33,147,176,0.15);
-    border-color: transparent;
+  .ringkasan-header {
+    background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+    color: white;
+    padding: 1rem 1.5rem;
   }
-  .stat-icon {
-    width: 55px;
-    height: 55px;
-    border-radius: 50%;
+  .ringkasan-header h5 {
+    font-size: 1.1rem;
+    font-weight: 600;
     display: flex;
     align-items: center;
-    justify-content: center;
-    font-size: 1.6rem;
-    margin-bottom: 0.8rem;
-    transition: all 0.3s;
+    gap: 0.5rem;
   }
-  .stat-card:hover .stat-icon {
-    transform: scale(1.1);
-  }
-  .stat-value {
-    font-size: 1.7rem;
-    font-weight: 700;
-    color: #1e293b;
-    line-height: 1.2;
-  }
-  .stat-label {
-    color: #64748b;
+  .ringkasan-header .badge-tugas {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    padding: 0.3rem 1rem;
+    border-radius: 50px;
     font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    font-weight: 600;
   }
 
   /* ===== TAGIHAN CARD ===== */
@@ -234,7 +171,7 @@
     box-shadow: 0 10px 30px rgba(0,0,0,0.05);
     overflow: hidden;
     margin-bottom: 2rem;
-    border: 1px solid rgba(33,147,176,0.1);
+    border: 1px solid rgba(30,58,138,0.1);
   }
   .tagihan-header {
     background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
@@ -277,36 +214,36 @@
   /* ===== MENU CARDS ===== */
   .menu-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 1.2rem;
     margin-top: 1rem;
   }
   .menu-card {
     background: white;
     border-radius: 1.2rem;
-    padding: 1.5rem 1rem;
+    padding: 1.2rem 0.8rem;
     text-align: center;
     text-decoration: none;
     transition: all 0.3s;
-    border: 1px solid rgba(33,147,176,0.1);
+    border: 1px solid rgba(30,58,138,0.1);
     box-shadow: 0 5px 15px rgba(0,0,0,0.02);
     display: block;
     height: 100%;
   }
   .menu-card:hover {
     transform: translateY(-8px);
-    box-shadow: 0 20px 30px rgba(33,147,176,0.15);
+    box-shadow: 0 20px 30px rgba(30,58,138,0.15);
     border-color: transparent;
   }
   .menu-icon {
-    width: 70px;
-    height: 70px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2.2rem;
-    margin: 0 auto 1rem;
+    font-size: 2rem;
+    margin: 0 auto 0.8rem;
     transition: all 0.3s;
   }
   .menu-card:hover .menu-icon {
@@ -315,13 +252,13 @@
   .menu-title {
     font-weight: 700;
     color: #1e293b;
-    font-size: 1.1rem;
+    font-size: 1rem;
     margin-bottom: 0.3rem;
   }
   .menu-desc {
     color: #64748b;
-    font-size: 0.8rem;
-    line-height: 1.4;
+    font-size: 0.75rem;
+    line-height: 1.3;
   }
 
   /* ===== UTILITY ===== */
@@ -343,9 +280,37 @@
     background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
     border-radius: 5px;
   }
+
+  /* ===== RESPONSIVE UNTUK HP (diperkecil) ===== */
+  @media (max-width: 768px) {
+    body { zoom: 0.95; }
+    .profile-card h2 { font-size: 1.3rem; }
+    .profile-avatar { width: 60px; height: 60px; }
+    .profile-stats { font-size: 0.8rem; padding: 0.4rem 0.8rem; }
+    .badge-tagihan { padding: 0.4rem 1rem; font-size: 0.8rem; }
+    .menu-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+  }
+
+  @media (max-width: 480px) {
+    body { zoom: 0.9; }
+    .profile-card h2 { font-size: 1.1rem; }
+    .profile-avatar { width: 50px; height: 50px; }
+    .profile-stats { flex-direction: column; gap: 0.3rem; border-radius: 20px; }
+    .ringkasan-header h5 { font-size: 1rem; }
+    .badge-tagihan { padding: 0.3rem 0.8rem; font-size: 0.7rem; }
+    .menu-grid { grid-template-columns: repeat(2, 1fr); gap: 0.8rem; }
+    .menu-icon { width: 50px; height: 50px; font-size: 1.6rem; }
+    .menu-title { font-size: 0.85rem; }
+  }
+
+  @media (max-width: 360px) {
+    body { zoom: 0.85; }
+    .profile-stats { font-size: 0.7rem; }
+    .menu-grid { grid-template-columns: 1fr; }
+  }
 </style>
 
-<div class="container-fluid mt-4">
+<div class="container mt-4">
   <!-- Notifikasi Upload Sukses -->
   <% if (uploadSuccess) { %>
     <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
@@ -354,7 +319,7 @@
     </div>
   <% } %>
 
-  <!-- Profile Card dengan Foto -->
+  <!-- Profile Card dengan Foto + Statistik -->
   <div class="profile-card">
     <div class="d-flex align-items-center flex-wrap">
       <div class="flex-shrink-0">
@@ -372,265 +337,171 @@
         <% } %>
       </div>
       <div class="flex-grow-1 ms-3 mt-2 mt-sm-0">
-        <h2 class="fw-bold mb-1">Selamat Datang, <%= user.nama || user.email %>!</h2>
-        <p class="mb-0 opacity-75">
-          <i class="bi bi-qr-code me-2"></i>NIM: <%= user.nim || '-' %> 
-          <span class="mx-3">|</span>
-          <i class="bi bi-envelope me-2"></i><%= user.email %>
-        </p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Card Ringkasan Akademik, Jadwal Penting, dan Tugas Aktif -->
-  <div class="row mb-4">
-    <div class="col-12">
-      <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
-        <div class="card-header bg-white border-0 pt-4 px-4 pb-0 d-flex flex-wrap justify-content-between align-items-center">
-          <h5 class="fw-bold mb-0"><i class="bi bi-mortarboard me-2 text-primary"></i>Ringkasan Akademik</h5>
-          <div class="d-flex align-items-center gap-3 mt-2 mt-sm-0">
-            <!-- Badge jumlah tugas aktif -->
-            <span class="badge bg-warning bg-opacity-10 text-warning px-3 py-2 rounded-pill">
-              <i class="bi bi-file-earmark-text me-1"></i><%= tugasAktifList.length %> tugas
-            </span>
-            <a href="/mahasiswa/elearning/tugas-aktif" class="btn btn-outline-warning btn-sm rounded-pill px-3">
-              Lihat Semua <i class="bi bi-arrow-right ms-1"></i>
-            </a>
-          </div>
-        </div>
-        <div class="card-body p-4">
-          <!-- Tiga statistik dalam satu baris -->
-          <div class="row g-3 mb-4">
-            <div class="col-md-4 col-6">
-              <div class="d-flex align-items-center">
-                <div class="flex-shrink-0 me-3">
-                  <div class="rounded-circle p-2" style="background: rgba(13,110,253,0.1);">
-                    <i class="bi bi-book fs-5" style="color: #0d6efd;"></i>
-                  </div>
-                </div>
-                <div>
-                  <div class="fw-bold fs-4"><%= totalSks %></div>
-                  <div class="text-muted small">SKS Diambil</div>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-4 col-6">
-              <div class="d-flex align-items-center">
-                <div class="flex-shrink-0 me-3">
-                  <div class="rounded-circle p-2" style="background: rgba(25,135,84,0.1);">
-                    <i class="bi bi-calendar-week fs-5" style="color: #198754;"></i>
-                  </div>
-                </div>
-                <div>
-                  <div class="fw-bold fs-4"><%= semesterSekarang %></div>
-                  <div class="text-muted small">Semester Aktif</div>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-4 col-6">
-              <div class="d-flex align-items-center">
-                <div class="flex-shrink-0 me-3">
-                  <div class="rounded-circle p-2" style="background: rgba(13,202,240,0.1);">
-                    <i class="bi bi-bar-chart-steps fs-5" style="color: #0dcaf0;"></i>
-                  </div>
-                </div>
-                <div>
-                  <div class="fw-bold fs-4"><%= pertemuanRata %> / 16</div>
-                  <div class="text-muted small">Pertemuan Terkini</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Jadwal Penting Mendatang -->
-          <% if (upcomingEvents.length > 0) { %>
-            <div class="mb-4">
-              <h6 class="fw-semibold mb-3"><i class="bi bi-calendar-event me-2"></i>Jadwal Penting</h6>
-              <div class="d-flex flex-wrap gap-3">
-                <% upcomingEvents.forEach(event => { %>
-                  <div class="flex-grow-1" style="min-width: 150px;">
-                    <div class="p-3 rounded-3" style="background: rgba(33,147,176,0.05); border-left: 3px solid #2193b0;">
-                      <div class="fw-semibold"><%= event.judul %></div>
-                      <div class="small text-muted">
-                        <i class="bi bi-calendar3 me-1"></i><%= new Date(event.tanggal).toLocaleDateString('id-ID', { day: 'numeric', month: 'long' }) %>
-                      </div>
-                    </div>
-                  </div>
-                <% }) %>
-              </div>
-            </div>
-          <% } %>
-
-          <!-- Daftar Tugas Aktif -->
-          <h6 class="fw-semibold mb-3"><i class="bi bi-list-task me-2"></i>Tugas Aktif</h6>
-          <% if (tugasAktifList.length === 0) { %>
-            <div class="text-center py-3">
-              <i class="bi bi-check-circle-fill fs-1 text-success mb-2"></i>
-              <p class="text-muted mb-0">Tidak ada tugas aktif saat ini.</p>
-            </div>
-          <% } else { %>
-            <div style="max-height: 300px; overflow-y: auto; padding-right: 8px;">
-              <% tugasAktifList.slice(0, 5).forEach(t => { 
-                const deadline = new Date(t.deadline);
-                const now = new Date();
-                const deadlineLewat = deadline < now;
-              %>
-                <div class="d-flex flex-wrap justify-content-between align-items-center py-3 border-bottom border-light">
-                  <div style="min-width: 0; flex: 1;">
-                    <strong class="fs-6"><%= t.judul %></strong>
-                    <p class="mb-0 text-muted small">
-                      <i class="bi bi-journal-bookmark-fill me-1"></i><%= t.mkKode || '-' %> <%= t.mkNama ? '- ' + t.mkNama : '' %>
-                    </p>
-                    <p class="mb-0 text-muted small <%= deadlineLewat ? 'text-danger' : '' %>">
-                      <i class="bi bi-calendar3 me-1"></i>Deadline: <%= deadline.toLocaleString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) %>
-                    </p>
-                  </div>
-                  <div class="mt-2 mt-sm-0 ms-2">
-                    <a href="/mahasiswa/elearning/tugas/<%= t.id %>" class="btn btn-sm btn-warning rounded-pill px-3">
-                      <i class="bi bi-cloud-upload me-1"></i>Kumpul
-                    </a>
-                  </div>
-                </div>
-              <% }) %>
-              <% if (tugasAktifList.length > 5) { %>
-                <div class="text-center mt-3">
-                  <a href="/mahasiswa/elearning/tugas-aktif" class="btn btn-sm btn-outline-secondary rounded-pill px-4">
-                    Lihat <%= tugasAktifList.length - 5 %> tugas lainnya
-                  </a>
-                </div>
-              <% } %>
-            </div>
-          <% } %>
+        <h2 class="fw-bold mb-1"><%= user.nama || user.email %></h2>
+        <div class="profile-stats">
+          <span><i class="bi bi-qr-code"></i> NIM: <%= user.nim || '-' %></span>
+          <span><i class="bi bi-book"></i> SKS: <%= totalSks %></span>
+          <span><i class="bi bi-calendar-week"></i> <%= semesterSekarang %></span>
+          <span><i class="bi bi-bar-chart-steps"></i> Pertemuan: <%= pertemuanRata %>/16</span>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Tagihan SPP (semua semester dalam scroll) -->
-  <div class="row mb-4">
-    <div class="col-12">
-      <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
-        <div class="card-header bg-white border-0 pt-4 px-4 pb-0 d-flex flex-wrap justify-content-between align-items-center">
-          <h5 class="fw-bold mb-0"><i class="bi bi-cash-coin me-2 text-primary"></i>Tagihan SPP</h5>
-          <div class="d-flex align-items-center gap-3 mt-2 mt-sm-0">
-            <!-- Badge ringkasan tagihan -->
-            <span class="badge-tagihan <%= isLunas ? 'badge-lunas' : '' %>">
-              <i class="bi bi-<%= isLunas ? 'check-circle-fill' : 'wallet2' %> me-1"></i>
-              <% if (isLunas) { %>
-                Lunas
-              <% } else { %>
-                Rp <%= new Intl.NumberFormat('id-ID').format(totalBelumLunas) %>
-              <% } %>
-            </span>
-            <a href="/mahasiswa/tagihan" class="btn btn-outline-primary btn-sm rounded-pill px-3">
-              Kelola <i class="bi bi-arrow-right ms-1"></i>
-            </a>
-          </div>
-        </div>
-        <div class="card-body p-4">
-          <% if (unpaidTagihan.length === 0) { %>
-            <!-- Empty state jika tidak ada tagihan belum lunas -->
-            <div class="text-center py-4">
-              <i class="bi bi-check-circle-fill fs-1 text-success mb-3 d-block"></i>
-              <p class="text-muted mb-0">Tidak ada tagihan aktif.</p>
-            </div>
-          <% } else { %>
-            <!-- Container dengan scroll untuk semua tagihan yang belum lunas -->
-            <div style="max-height: 400px; overflow-y: auto; padding-right: 8px;">
-              <% unpaidTagihan.forEach(t => { %>
-                <div class="d-flex flex-wrap justify-content-between align-items-center py-3 border-bottom border-light">
-                  <div>
-                    <strong class="fs-6"><%= t.semester || 'Semester ' + t.semester %></strong>
-                    <p class="mb-0 text-muted small">
-                      <i class="bi bi-calendar3 me-1"></i>Jatuh tempo: 
-                      <%= t.jatuhTempo ? new Date(t.jatuhTempo).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '-' %>
-                    </p>
-                  </div>
-                  <div class="text-end mt-2 mt-sm-0">
-                    <span class="fw-bold fs-5 d-block">Rp <%= new Intl.NumberFormat('id-ID').format(t.jumlah) %></span>
-                    <span class="badge-tagihan <%= t.status === 'lunas' ? 'badge-lunas' : 'badge-belum' %> mt-1">
-                      <%= t.status === 'lunas' ? 'Lunas' : 'Belum Lunas' %>
-                    </span>
+  <!-- Card Ringkasan (hanya Jadwal Penting + Tugas Aktif) -->
+  <div class="ringkasan-card">
+    <div class="ringkasan-header d-flex justify-content-between align-items-center">
+      <h5 class="fw-bold mb-0"><i class="bi bi-mortarboard me-2"></i>Ringkasan Akademik</h5>
+      <span class="badge-tugas"><i class="bi bi-file-earmark-text me-1"></i><%= tugasAktifList.length %> tugas</span>
+    </div>
+    <div class="card-body p-4">
+      <!-- Jadwal Penting Mendatang -->
+      <% if (upcomingEvents.length > 0) { %>
+        <div class="mb-4">
+          <h6 class="fw-semibold mb-3"><i class="bi bi-calendar-event me-2"></i>Jadwal Penting</h6>
+          <div class="d-flex flex-wrap gap-3">
+            <% upcomingEvents.forEach(event => { %>
+              <div class="flex-grow-1" style="min-width: 150px;">
+                <div class="p-3 rounded-3" style="background: rgba(30,58,138,0.05); border-left: 3px solid var(--primary-start);">
+                  <div class="fw-semibold"><%= event.judul %></div>
+                  <div class="small text-muted">
+                    <i class="bi bi-calendar3 me-1"></i><%= new Date(event.tanggal).toLocaleDateString('id-ID', { day: 'numeric', month: 'long' }) %>
                   </div>
                 </div>
-              <% }) %>
+              </div>
+            <% }) %>
+          </div>
+        </div>
+      <% } %>
+
+      <!-- Daftar Tugas Aktif -->
+      <h6 class="fw-semibold mb-3"><i class="bi bi-list-task me-2"></i>Tugas Aktif</h6>
+      <% if (tugasAktifList.length === 0) { %>
+        <div class="text-center py-3">
+          <i class="bi bi-check-circle-fill fs-1 text-success mb-2"></i>
+          <p class="text-muted mb-0">Tidak ada tugas aktif saat ini.</p>
+        </div>
+      <% } else { %>
+        <div style="max-height: 300px; overflow-y: auto; padding-right: 8px;">
+          <% tugasAktifList.slice(0, 5).forEach(t => { 
+            const deadline = new Date(t.deadline);
+            const now = new Date();
+            const deadlineLewat = deadline < now;
+          %>
+            <div class="d-flex flex-wrap justify-content-between align-items-center py-3 border-bottom border-light">
+              <div style="min-width: 0; flex: 1;">
+                <strong class="fs-6"><%= t.judul %></strong>
+                <p class="mb-0 text-muted small">
+                  <i class="bi bi-journal-bookmark-fill me-1"></i><%= t.mkKode || '-' %> <%= t.mkNama ? '- ' + t.mkNama : '' %>
+                </p>
+                <p class="mb-0 text-muted small <%= deadlineLewat ? 'text-danger' : '' %>">
+                  <i class="bi bi-calendar3 me-1"></i>Deadline: <%= deadline.toLocaleString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) %>
+                </p>
+              </div>
+              <div class="mt-2 mt-sm-0 ms-2">
+                <a href="/mahasiswa/elearning/tugas/<%= t.id %>" class="btn btn-sm btn-warning rounded-pill px-3">
+                  <i class="bi bi-cloud-upload me-1"></i>Kumpul
+                </a>
+              </div>
+            </div>
+          <% }) %>
+          <% if (tugasAktifList.length > 5) { %>
+            <div class="text-center mt-3">
+              <a href="/mahasiswa/elearning/tugas-aktif" class="btn btn-sm btn-outline-secondary rounded-pill px-4">
+                Lihat <%= tugasAktifList.length - 5 %> tugas lainnya
+              </a>
             </div>
           <% } %>
         </div>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- Tagihan SPP -->
+  <div class="tagihan-card">
+    <div class="tagihan-header d-flex flex-wrap justify-content-between align-items-center">
+      <h5 class="fw-bold mb-0"><i class="bi bi-cash-coin me-2"></i>Tagihan SPP</h5>
+      <div class="d-flex align-items-center gap-3 mt-2 mt-sm-0">
+        <span class="badge-tagihan <%= isLunas ? 'badge-lunas' : '' %>">
+          <i class="bi bi-<%= isLunas ? 'check-circle-fill' : 'wallet2' %> me-1"></i>
+          <% if (isLunas) { %> Lunas <% } else { %> Rp <%= new Intl.NumberFormat('id-ID').format(totalBelumLunas) %> <% } %>
+        </span>
+        <a href="/mahasiswa/tagihan" class="btn btn-light btn-sm rounded-pill px-3">Kelola</a>
       </div>
+    </div>
+    <div class="card-body p-4">
+      <% if (unpaidTagihan.length === 0) { %>
+        <div class="text-center py-4">
+          <i class="bi bi-check-circle-fill fs-1 text-success mb-3 d-block"></i>
+          <p class="text-muted mb-0">Tidak ada tagihan aktif.</p>
+        </div>
+      <% } else { %>
+        <div style="max-height: 400px; overflow-y: auto; padding-right: 8px;">
+          <% unpaidTagihan.forEach(t => { %>
+            <div class="d-flex flex-wrap justify-content-between align-items-center py-3 border-bottom border-light">
+              <div>
+                <strong class="fs-6"><%= t.semester || 'Semester ' + t.semester %></strong>
+                <p class="mb-0 text-muted small">
+                  <i class="bi bi-calendar3 me-1"></i>Jatuh tempo: 
+                  <%= t.jatuhTempo ? new Date(t.jatuhTempo).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '-' %>
+                </p>
+              </div>
+              <div class="text-end mt-2 mt-sm-0">
+                <span class="fw-bold fs-5 d-block">Rp <%= new Intl.NumberFormat('id-ID').format(t.jumlah) %></span>
+                <span class="badge-tagihan <%= t.status === 'lunas' ? 'badge-lunas' : 'badge-belum' %> mt-1">
+                  <%= t.status === 'lunas' ? 'Lunas' : 'Belum Lunas' %>
+                </span>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      <% } %>
     </div>
   </div>
 
   <!-- Menu Akses Cepat -->
   <h4 class="section-title">Layanan Mahasiswa</h4>
   <div class="menu-grid">
-    <!-- Akademik -->
     <a href="/mahasiswa/akademik" class="menu-card">
-      <div class="menu-icon" style="background: rgba(13,110,253,0.1); color: #0d6efd;">
-        <i class="bi bi-journal-bookmark-fill"></i>
-      </div>
+      <div class="menu-icon" style="background: rgba(30,58,138,0.1); color: var(--primary-start);"><i class="bi bi-journal-bookmark-fill"></i></div>
       <h6 class="menu-title">Akademik</h6>
-      <p class="menu-desc">KRS, KHS, Transkrip Mahasiswa</p>
+      <p class="menu-desc">KRS, KHS, Transkrip</p>
     </a>
-
-    <!-- Kalender Akademik (langsung di dashboard) -->
     <a href="/mahasiswa/kalender" class="menu-card">
-      <div class="menu-icon" style="background: rgba(13,202,240,0.1); color: #0dcaf0;">
-        <i class="bi bi-calendar-event"></i>
-      </div>
-      <h6 class="menu-title">Kalender Akademik</h6>
-      <p class="menu-desc">Jadwal penting, libur, dan kegiatan akademik</p>
+      <div class="menu-icon" style="background: rgba(30,58,138,0.1); color: var(--primary-end);"><i class="bi bi-calendar-event"></i></div>
+      <h6 class="menu-title">Kalender</h6>
+      <p class="menu-desc">Jadwal penting, libur</p>
     </a>
-
-    <!-- ELK-Learning -->
     <a href="/mahasiswa/elearning" class="menu-card">
-      <div class="menu-icon" style="background: rgba(25,135,84,0.1); color: #198754;">
-        <i class="bi bi-laptop"></i>
-      </div>
+      <div class="menu-icon" style="background: rgba(30,58,138,0.1); color: var(--primary-start);"><i class="bi bi-laptop"></i></div>
       <h6 class="menu-title">ELK-Learning</h6>
-      <p class="menu-desc">Jadwal kuliah, tugas, kumpul tugas online</p>
+      <p class="menu-desc">Tugas, kuliah online</p>
     </a>
-
-    <!-- ELK-Magang -->
     <a href="/mahasiswa/magang" class="menu-card">
-      <div class="menu-icon" style="background: rgba(255,193,7,0.1); color: #ffc107;">
-        <i class="bi bi-briefcase"></i>
-      </div>
+      <div class="menu-icon" style="background: rgba(30,58,138,0.1); color: var(--primary-end);"><i class="bi bi-briefcase"></i></div>
       <h6 class="menu-title">ELK-Magang</h6>
-      <p class="menu-desc">Logbook, upload nilai, permohonan seminar</p>
+      <p class="menu-desc">Logbook, seminar</p>
     </a>
-
-    <!-- Persuratan -->
     <a href="/mahasiswa/persuratan" class="menu-card">
-      <div class="menu-icon" style="background: rgba(13,202,240,0.1); color: #0dcaf0;">
-        <i class="bi bi-envelope-paper"></i>
-      </div>
+      <div class="menu-icon" style="background: rgba(30,58,138,0.1); color: var(--primary-start);"><i class="bi bi-envelope-paper"></i></div>
       <h6 class="menu-title">Persuratan</h6>
-      <p class="menu-desc">Surat aktif kuliah, rekomendasi, dll.</p>
+      <p class="menu-desc">Surat aktif kuliah</p>
     </a>
-
-    <!-- Tracer Study -->
     <a href="/mahasiswa/tracer" class="menu-card">
-      <div class="menu-icon" style="background: rgba(220,53,69,0.1); color: #dc3545;">
-        <i class="bi bi-bar-chart-line"></i>
-      </div>
+      <div class="menu-icon" style="background: rgba(30,58,138,0.1); color: var(--primary-end);"><i class="bi bi-bar-chart-line"></i></div>
       <h6 class="menu-title">Tracer Study</h6>
-      <p class="menu-desc">Isi survei keberkerjaan alumni</p>
+      <p class="menu-desc">Survei alumni</p>
     </a>
-
-    <!-- Biodata -->
     <a href="/mahasiswa/biodata" class="menu-card">
-      <div class="menu-icon" style="background: rgba(108,117,125,0.1); color: #6c757d;">
-        <i class="bi bi-person-circle"></i>
-      </div>
+      <div class="menu-icon" style="background: rgba(30,58,138,0.1); color: var(--primary-start);"><i class="bi bi-person-circle"></i></div>
       <h6 class="menu-title">Biodata</h6>
-      <p class="menu-desc">Profil, foto, ubah password</p>
+      <p class="menu-desc">Profil, password</p>
     </a>
   </div>
 
-  <!-- Footer kecil -->
+  <!-- Footer -->
   <div class="text-center text-muted mt-5 mb-3">
-    <small><i class="bi bi-shield-check me-1"></i> Sistem Informasi Mahasiswa Elektronika - Politeknik Dewantara 2025 by Fajar Elektrik</small>
+    <small><i class="bi bi-shield-check me-1"></i> Sistem Informasi Mahasiswa Elektronika - Politeknik Dewantara 2025</small>
   </div>
 </div>
 
