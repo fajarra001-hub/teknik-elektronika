@@ -1,17 +1,32 @@
 <%- include('../../partials/header') %>
 
 <style>
-  @media (max-width: 480px) {
-    body {
-        zoom: 0.72; 
-    }
-}
-  /* ===== VARIABEL WARNA ===== */
+  /* ===== VARIABEL WARNA (sesuai navbar) ===== */
   :root {
-    --primary-start: #2193b0;
-    --primary-end: #6dd5ed;
-    --primary-light: rgba(33,147,176,0.1);
-    --primary-dark: #1a7a8f;
+    --primary-start: #1e3a8a;
+    --primary-end: #3b82f6;
+    --primary-light: rgba(30,58,138,0.1);
+    --primary-dark: #0f2b5c;
+    --warning-bg: #fef3c7;
+    --warning-text: #92400e;
+    --success-bg: #d1fae5;
+    --success-text: #065f46;
+    --danger-bg: #fee2e2;
+    --danger-text: #991b1b;
+    --info-bg: #dbeafe;
+    --info-text: #1e40af;
+    --secondary-bg: #e9ecef;
+    --secondary-text: #495057;
+    --font-base: 16px;
+  }
+
+  html {
+    font-size: 16px;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background-color: #f8fafc;
   }
 
   /* ===== HEADER ===== */
@@ -21,7 +36,7 @@
     padding: 2rem;
     color: white;
     margin-bottom: 2rem;
-    box-shadow: 0 15px 30px rgba(33,147,176,0.25);
+    box-shadow: 0 15px 30px rgba(30,58,138,0.25);
     position: relative;
     overflow: hidden;
   }
@@ -41,12 +56,14 @@
     margin-bottom: 0.5rem;
     position: relative;
     z-index: 1;
+    font-size: 2.2rem;
   }
   .persuratan-header p {
     margin-bottom: 0;
     opacity: 0.9;
     position: relative;
     z-index: 1;
+    font-size: 1.1rem;
   }
 
   /* ===== TOMBOL GRADIEN ===== */
@@ -58,13 +75,14 @@
     padding: 0.6rem 1.5rem;
     border-radius: 50px;
     transition: all 0.3s;
-    box-shadow: 0 5px 15px rgba(33,147,176,0.2);
+    box-shadow: 0 5px 15px rgba(30,58,138,0.2);
     text-decoration: none;
     display: inline-block;
+    font-size: 0.95rem;
   }
   .btn-gradient:hover {
     transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(33,147,176,0.4);
+    box-shadow: 0 10px 25px rgba(30,58,138,0.4);
     color: white;
   }
   .btn-outline-gradient {
@@ -72,18 +90,19 @@
     border: 2px solid var(--primary-start);
     color: var(--primary-start);
     font-weight: 500;
-    padding: 0.5rem 1.5rem;
+    padding: 0.6rem 1.5rem;
     border-radius: 50px;
     transition: all 0.3s;
     text-decoration: none;
     display: inline-block;
+    font-size: 0.95rem;
   }
   .btn-outline-gradient:hover {
     background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
     border-color: transparent;
     color: white;
     transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(33,147,176,0.3);
+    box-shadow: 0 10px 25px rgba(30,58,138,0.3);
   }
   .btn-icon {
     display: inline-flex;
@@ -100,39 +119,44 @@
     flex-wrap: wrap;
   }
 
-  /* ===== TABEL ===== */
+  /* ===== TABEL MINIMALIS (seperti di MK) ===== */
   .table-container {
     background: white;
     border-radius: 1.5rem;
     box-shadow: 0 10px 30px rgba(0,0,0,0.05);
     padding: 1.5rem;
     margin-bottom: 2rem;
+    border: 1px solid rgba(30,58,138,0.1);
+  }
+  .table-responsive {
+    border-radius: 1rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
   .surat-table {
+    width: 100%;
+    border-collapse: collapse;
     margin-bottom: 0;
   }
-  .surat-table thead th {
-    background: linear-gradient(135deg, var(--primary-light), rgba(109,213,237,0.1));
-    color: var(--primary-dark);
+  .surat-table th {
+    background: #f8f9fa;
+    color: #1e293b;
     font-weight: 600;
-    text-transform: uppercase;
     font-size: 0.85rem;
+    text-transform: uppercase;
     letter-spacing: 0.5px;
-    border-bottom: 2px solid var(--primary-start);
-    padding: 1rem 0.75rem;
-  }
-  .surat-table tbody tr {
-    transition: all 0.2s;
-  }
-  .surat-table tbody tr:hover {
-    background-color: var(--primary-light);
-    transform: scale(1.01);
-    box-shadow: 0 5px 15px rgba(33,147,176,0.1);
+    border: 1px solid #dee2e6;
+    padding: 0.75rem 1rem;
+    white-space: nowrap;
   }
   .surat-table td {
-    padding: 1rem 0.75rem;
     vertical-align: middle;
-    border-bottom: 1px solid #e9ecef;
+    padding: 0.75rem 1rem;
+    border: 1px solid #dee2e6;
+    font-size: 0.9rem;
+  }
+  .surat-table tbody tr:hover {
+    background-color: #f2f2f2;
   }
 
   /* ===== BADGE STATUS ===== */
@@ -143,34 +167,71 @@
     padding: 0.4rem 1rem;
     border-radius: 50px;
     font-weight: 500;
-    font-size: 0.85rem;
-    background: #f8f9fa;
+    font-size: 0.8rem;
     border: 1px solid transparent;
   }
   .badge-pending {
-    background: #fff3cd;
-    color: #856404;
-    border-color: #ffeeba;
+    background: var(--warning-bg);
+    color: var(--warning-text);
+    border-color: #fde68a;
   }
   .badge-approved {
-    background: #d4edda;
-    color: #155724;
-    border-color: #c3e6cb;
+    background: var(--success-bg);
+    color: var(--success-text);
+    border-color: #a7f3d0;
   }
   .badge-rejected {
-    background: #f8d7da;
-    color: #721c24;
-    border-color: #f5c6cb;
+    background: var(--danger-bg);
+    color: var(--danger-text);
+    border-color: #fecaca;
   }
   .badge-cancelled {
-    background: #e2e3e5;
-    color: #383d41;
-    border-color: #d6d8db;
+    background: var(--secondary-bg);
+    color: var(--secondary-text);
+    border-color: #ced4da;
   }
   .badge-completed {
-    background: #d1ecf1;
-    color: #0c5460;
-    border-color: #bee5eb;
+    background: var(--info-bg);
+    color: var(--info-text);
+    border-color: #bfdbfe;
+  }
+
+  /* ===== TOMBOL AKSI TABEL ===== */
+  .btn-outline-primary {
+    border: 1px solid var(--primary-start);
+    color: var(--primary-start);
+    background: transparent;
+    border-radius: 50px;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.8rem;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  .btn-outline-primary:hover {
+    background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+    border-color: transparent;
+    color: white;
+  }
+  .btn-outline-success {
+    border: 1px solid #10b981;
+    color: #10b981;
+    background: transparent;
+    border-radius: 50px;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.8rem;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  .btn-outline-success:hover {
+    background: #10b981;
+    border-color: transparent;
+    color: white;
   }
 
   /* ===== EMPTY STATE ===== */
@@ -193,11 +254,37 @@
   }
   .empty-state p {
     color: #6c757d;
-    margin-bottom: 1.5rem;
+    margin-bottom: 0;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    html { font-size: 15px; }
+    .persuratan-header h2 { font-size: 1.8rem; }
+    .persuratan-header p { font-size: 1rem; }
+    .surat-table th { font-size: 0.8rem; padding: 0.5rem; }
+    .surat-table td { font-size: 0.85rem; padding: 0.5rem; }
+  }
+
+  @media (max-width: 576px) {
+    html { font-size: 14px; }
+    .persuratan-header h2 { font-size: 1.5rem; }
+    .persuratan-header p { font-size: 0.9rem; }
+    .action-buttons { flex-direction: column; }
+    .btn-gradient, .btn-outline-gradient { text-align: center; }
+  }
+
+  @media (max-width: 400px) {
+    html { font-size: 13px; }
+    .persuratan-header h2 { font-size: 1.3rem; }
+  }
+
+  @media (max-width: 340px) {
+    html { font-size: 12px; }
   }
 </style>
 
-<div class="container-fluid mt-4">
+<div class="container mt-4">
   <!-- HEADER DENGAN GRADIEN (tanpa tombol) -->
   <div class="persuratan-header">
     <h2><i class="bi bi-envelope-paper-fill me-2"></i>Persuratan</h2>
@@ -263,11 +350,11 @@
               </td>
               <td>
                 <div class="d-flex gap-2">
-                  <a href="/mahasiswa/persuratan/<%= surat.id %>" class="btn btn-sm btn-outline-primary" title="Detail">
+                  <a href="/mahasiswa/persuratan/<%= surat.id %>" class="btn-outline-primary" title="Detail">
                     <i class="bi bi-eye"></i>
                   </a>
                   <% if (surat.status === 'completed' && surat.fileUrl) { %>
-                    <a href="/mahasiswa/persuratan/<%= surat.id %>/download" class="btn btn-sm btn-outline-success" target="_blank" title="Unduh">
+                    <a href="/mahasiswa/persuratan/<%= surat.id %>/download" class="btn-outline-success" target="_blank" title="Unduh">
                       <i class="bi bi-download"></i>
                     </a>
                   <% } %>

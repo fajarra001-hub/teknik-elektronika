@@ -1,17 +1,22 @@
 <%- include('../../partials/header') %>
 
 <style>
-  @media (max-width: 480px) {
-    body {
-        zoom: 0.72; 
-    }
-}
-  /* ===== VARIABEL WARNA ===== */
+  /* ===== VARIABEL WARNA (sesuai navbar) ===== */
   :root {
-    --primary-start: #2193b0;
-    --primary-end: #6dd5ed;
-    --primary-light: rgba(33,147,176,0.1);
-    --primary-dark: #1a7a8f;
+    --primary-start: #1e3a8a;
+    --primary-end: #3b82f6;
+    --primary-light: rgba(30,58,138,0.1);
+    --primary-dark: #0f2b5c;
+    --font-base: 16px;
+  }
+
+  html {
+    font-size: 16px; /* basis desktop */
+  }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background-color: #f8fafc;
   }
 
   /* ===== HEADER MAGANG ===== */
@@ -21,7 +26,7 @@
     padding: 2rem;
     color: white;
     margin-bottom: 2rem;
-    box-shadow: 0 15px 30px rgba(33,147,176,0.25);
+    box-shadow: 0 15px 30px rgba(30,58,138,0.25);
     position: relative;
     overflow: hidden;
   }
@@ -74,6 +79,8 @@
     text-align: center;
     position: relative;
     overflow: hidden;
+    text-decoration: none;
+    display: block;
   }
   .menu-card::after {
     content: '';
@@ -88,7 +95,7 @@
   }
   .menu-card:hover {
     transform: translateY(-10px);
-    box-shadow: 0 20px 35px rgba(33,147,176,0.2);
+    box-shadow: 0 20px 35px rgba(30,58,138,0.2);
   }
   .menu-card:hover::after {
     transform: scaleX(1);
@@ -110,7 +117,7 @@
     transform: scale(1.1);
     background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
     color: white;
-    box-shadow: 0 10px 20px rgba(33,147,176,0.3);
+    box-shadow: 0 10px 20px rgba(30,58,138,0.3);
   }
   .menu-title {
     font-weight: 700;
@@ -124,14 +131,14 @@
     line-height: 1.5;
   }
 
-  /* ===== INFO TAMBAHAN (opsional) ===== */
+  /* ===== INFO TAMBAHAN ===== */
   .info-section {
     background: white;
     border-radius: 1.5rem;
     padding: 1.5rem;
     margin-top: 3rem;
     box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-    border: 1px solid rgba(33,147,176,0.1);
+    border: 1px solid rgba(30,58,138,0.1);
   }
   .info-item {
     display: flex;
@@ -153,21 +160,42 @@
 
   /* ===== RESPONSIF ===== */
   @media (max-width: 768px) {
-    .magang-header h2 {
-      font-size: 1.8rem;
-    }
-    .menu-icon {
-      width: 70px;
-      height: 70px;
-      font-size: 2.2rem;
-    }
-    .menu-title {
-      font-size: 1.2rem;
-    }
+    html { font-size: 15px; }
+    .magang-header h2 { font-size: 1.8rem; }
+    .magang-header p { font-size: 1rem; }
+    .menu-icon { width: 70px; height: 70px; font-size: 2.2rem; }
+    .menu-title { font-size: 1.2rem; }
+    .menu-desc { font-size: 0.9rem; }
+  }
+
+  @media (max-width: 576px) {
+    html { font-size: 14px; }
+    .magang-header h2 { font-size: 1.5rem; }
+    .magang-header p { font-size: 0.9rem; }
+    .menu-card { padding: 1.5rem 1rem; }
+    .menu-icon { width: 60px; height: 60px; font-size: 1.8rem; margin-bottom: 1rem; }
+    .menu-title { font-size: 1.1rem; }
+    .menu-desc { font-size: 0.85rem; }
+    .info-item { gap: 0.8rem; }
+    .info-icon { width: 35px; height: 35px; font-size: 1rem; }
+  }
+
+  @media (max-width: 400px) {
+    html { font-size: 13px; }
+    .magang-header { padding: 1.5rem; }
+    .magang-header h2 { font-size: 1.3rem; }
+    .menu-icon { width: 55px; height: 55px; font-size: 1.6rem; }
+  }
+
+  @media (max-width: 340px) {
+    html { font-size: 12px; }
+    .magang-header h2 { font-size: 1.2rem; }
+    .menu-icon { width: 50px; height: 50px; font-size: 1.4rem; }
+    .menu-title { font-size: 1rem; }
   }
 </style>
 
-<div class="container-fluid mt-4">
+<div class="container mt-4">
   <!-- Header dengan gradien dan efek -->
   <div class="magang-header d-flex flex-wrap justify-content-between align-items-center">
     <div>
@@ -184,57 +212,50 @@
   <div class="row g-4">
     <!-- Logbook Magang -->
     <div class="col-md-4">
-      <a href="/mahasiswa/magang/logbook" class="text-decoration-none">
-        <div class="menu-card">
-          <div class="menu-icon">
-            <i class="bi bi-journal-bookmark-fill"></i>
-          </div>
-          <h5 class="menu-title">Logbook Magang</h5>
-          <p class="menu-desc">Catat kegiatan harian magang, upload dokumentasi, dan pantau status verifikasi</p>
-          <!-- Badge kecil untuk info jumlah (jika ada data) -->
-          <% if (typeof logbookCount !== 'undefined') { %>
-            <span class="badge bg-primary mt-2"><%= logbookCount %> entri</span>
-          <% } %>
+      <a href="/mahasiswa/magang/logbook" class="menu-card">
+        <div class="menu-icon">
+          <i class="bi bi-journal-bookmark-fill"></i>
         </div>
+        <h5 class="menu-title">Logbook Magang</h5>
+        <p class="menu-desc">Catat kegiatan harian magang, upload dokumentasi, dan pantau status verifikasi</p>
+        <% if (typeof logbookCount !== 'undefined') { %>
+          <span class="badge bg-primary mt-2"><%= logbookCount %> entri</span>
+        <% } %>
       </a>
     </div>
 
     <!-- Laporan Magang -->
     <div class="col-md-4">
-      <a href="/mahasiswa/magang/laporan" class="text-decoration-none">
-        <div class="menu-card">
-          <div class="menu-icon">
-            <i class="bi bi-file-earmark-pdf"></i>
-          </div>
-          <h5 class="menu-title">Laporan Magang</h5>
-          <p class="menu-desc">Unggah dan kelola laporan magang akhir (Laporan 1, 2, dan 3) dengan mudah</p>
-          <% if (typeof laporanCount !== 'undefined') { %>
-            <span class="badge bg-success mt-2"><%= laporanCount %> laporan</span>
-          <% } %>
+      <a href="/mahasiswa/magang/laporan" class="menu-card">
+        <div class="menu-icon">
+          <i class="bi bi-file-earmark-pdf"></i>
         </div>
+        <h5 class="menu-title">Laporan Magang</h5>
+        <p class="menu-desc">Unggah dan kelola laporan magang akhir (Laporan 1, 2, dan 3) dengan mudah</p>
+        <% if (typeof laporanCount !== 'undefined') { %>
+          <span class="badge bg-success mt-2"><%= laporanCount %> laporan</span>
+        <% } %>
       </a>
     </div>
 
     <!-- Seminar Magang -->
     <div class="col-md-4">
-      <a href="/mahasiswa/magang/seminar" class="text-decoration-none">
-        <div class="menu-card">
-          <div class="menu-icon">
-            <i class="bi bi-calendar-check"></i>
-          </div>
-          <h5 class="menu-title">Seminar Magang</h5>
-          <p class="menu-desc">Ajukan permohonan seminar, cek jadwal, dan lihat hasil penilaian seminar</p>
-          <% if (typeof seminarStatus !== 'undefined') { %>
-            <span class="badge bg-warning mt-2"><%= seminarStatus %></span>
-          <% } %>
+      <a href="/mahasiswa/magang/seminar" class="menu-card">
+        <div class="menu-icon">
+          <i class="bi bi-calendar-check"></i>
         </div>
+        <h5 class="menu-title">Seminar Magang</h5>
+        <p class="menu-desc">Ajukan permohonan seminar, cek jadwal, dan lihat hasil penilaian seminar</p>
+        <% if (typeof seminarStatus !== 'undefined') { %>
+          <span class="badge bg-warning mt-2"><%= seminarStatus %></span>
+        <% } %>
       </a>
     </div>
   </div>
 
   <!-- Bagian informasi tambahan (opsional) -->
   <div class="info-section">
-    <h5 class="fw-bold mb-3"><i class="bi bi-question-circle me-2" style="color: #2193b0;"></i>Panduan Magang</h5>
+    <h5 class="fw-bold mb-3"><i class="bi bi-question-circle me-2" style="color: var(--primary-start);"></i>Panduan Magang</h5>
     <div class="row">
       <div class="col-md-6">
         <div class="info-item">

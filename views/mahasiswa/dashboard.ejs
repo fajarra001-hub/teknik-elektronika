@@ -9,7 +9,6 @@
   if (typeof tugasAktif === 'undefined') tugasAktif = [];
   if (typeof totalSks === 'undefined') totalSks = 0;
   if (typeof semesterSekarang === 'undefined') semesterSekarang = 'Genap 2025/2026';
-  if (typeof pertemuanRata === 'undefined') pertemuanRata = 0;
   if (typeof uploadSuccess === 'undefined') uploadSuccess = false;
 
   const getFileIdFromUrl = (url) => {
@@ -38,12 +37,11 @@
     --primary-light: rgba(30,58,138,0.1);
     --primary-dark: #0f2b5c;
     --warning-gradient: linear-gradient(135deg, #f97316, #fbbf24);
-    --font-base: 16px; /* base font size desktop */
+    --font-base: 16px;
   }
 
-  /* Base styles */
   html {
-    font-size: 16px; /* default desktop */
+    font-size: 16px;
   }
 
   body {
@@ -112,37 +110,51 @@
     font-size: 1rem;
   }
 
-  /* ===== BADGE TAGIHAN ===== */
-  .badge-tagihan {
-    background: var(--warning-gradient);
+  /* ===== BADGE TOTAL TAGIHAN (mirip badge tugas) ===== */
+  .badge-total-tagihan {
+    background: rgba(255,255,255,0.2);
     color: white;
-    padding: 0.5rem 1.2rem;
+    padding: 0.3rem 1rem;
     border-radius: 50px;
+    font-size: 0.8rem;
     font-weight: 600;
-    font-size: 0.9rem;
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    box-shadow: 0 6px 15px rgba(249,115,22,0.25);
-    border: 1px solid rgba(255,255,255,0.15);
     backdrop-filter: blur(2px);
+    text-decoration: none;
     transition: all 0.3s ease;
   }
-  .badge-tagihan i {
-    font-size: 1.1rem;
-  }
-  .badge-tagihan:hover {
+  .badge-total-tagihan:hover {
+    background: rgba(255,255,255,0.3);
     transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(249,115,22,0.4);
   }
+
+  /* ===== BADGE STATUS (lunas & belum lunas) ===== */
   .badge-lunas {
     background: linear-gradient(135deg, #10b981, #34d399);
     color: white;
-    box-shadow: 0 6px 15px rgba(16,185,129,0.25);
+    padding: 0.3rem 0.8rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    border: none;
+    box-shadow: 0 4px 10px rgba(16,185,129,0.2);
   }
-  .badge-belum {
-    background: #fef3c7;
-    color: #92400e;
+  .badge-warning {
+    background: #ffc107;
+    color: #212529;
+    padding: 0.3rem 0.8rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    border: none;
   }
 
   /* ===== CARD RINGKASAN ===== */
@@ -292,13 +304,12 @@
     border-radius: 5px;
   }
 
-  /* ===== RESPONSIVE UNTUK HP (diperkecil dan konsisten) ===== */
+  /* ===== RESPONSIVE ===== */
   @media (max-width: 768px) {
     html { font-size: 15px; }
     .profile-card h2 { font-size: 1.4rem; }
     .profile-avatar { width: 60px; height: 60px; }
     .profile-stats { font-size: 0.85rem; padding: 0.5rem 0.9rem; }
-    .badge-tagihan { font-size: 0.85rem; padding: 0.4rem 1rem; }
     .menu-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
   }
 
@@ -316,8 +327,8 @@
     .profile-stats span { font-size: 0.8rem; }
     .ringkasan-header h5 { font-size: 1rem; }
     .ringkasan-header .badge-tugas { font-size: 0.75rem; }
-    .badge-tagihan { font-size: 0.8rem; padding: 0.3rem 0.8rem; }
-    .badge-tagihan i { font-size: 1rem; }
+    .badge-total-tagihan { font-size: 0.8rem; padding: 0.3rem 0.8rem; }
+    .badge-lunas, .badge-warning { font-size: 0.75rem; padding: 0.2rem 0.6rem; }
     .menu-grid { 
       grid-template-columns: repeat(2, 1fr); 
       gap: 0.8rem; 
@@ -326,7 +337,6 @@
     .menu-title { font-size: 0.9rem; }
     .menu-desc { font-size: 0.7rem; }
     .tagihan-header h5 { font-size: 1rem; }
-    .tagihan-header .btn-light { font-size: 0.8rem; padding: 0.2rem 0.8rem; }
     .tagihan-item .fs-5 { font-size: 1rem !important; }
     .section-title { font-size: 1.2rem; }
   }
@@ -336,7 +346,6 @@
     .profile-card h2 { font-size: 1.1rem; }
     .profile-avatar { width: 50px; height: 50px; }
     .profile-stats span { font-size: 0.7rem; }
-    .badge-tagihan { font-size: 0.7rem; padding: 0.2rem 0.6rem; }
     .menu-grid { gap: 0.5rem; }
     .menu-icon { width: 48px; height: 48px; font-size: 1.5rem; }
     .menu-title { font-size: 0.8rem; }
@@ -387,7 +396,6 @@
           <span><i class="bi bi-qr-code"></i> NIM: <%= user.nim || '-' %></span>
           <span><i class="bi bi-book"></i> SKS: <%= totalSks %></span>
           <span><i class="bi bi-calendar-week"></i> <%= semesterSekarang %></span>
-          <span><i class="bi bi-bar-chart-steps"></i> Pertemuan: <%= pertemuanRata %>/16</span>
         </div>
       </div>
     </div>
@@ -396,7 +404,7 @@
   <!-- Card Ringkasan (hanya Jadwal Penting + Tugas Aktif) -->
   <div class="ringkasan-card">
     <div class="ringkasan-header d-flex justify-content-between align-items-center">
-      <h5 class="fw-bold mb-0"><i class="bi bi-mortarboard me-2"></i>Ringkasan Akademik</h5>
+      <h5 class="fw-bold mb-0"><i class="bi bi-mortarboard me-2"></i>Informasi Mahasiswa</h5>
       <span class="badge-tugas"><i class="bi bi-file-earmark-text me-1"></i><%= tugasAktifList.length %> tugas</span>
     </div>
     <div class="card-body p-4">
@@ -466,12 +474,14 @@
   <div class="tagihan-card">
     <div class="tagihan-header d-flex flex-wrap justify-content-between align-items-center">
       <h5 class="fw-bold mb-0"><i class="bi bi-cash-coin me-2"></i>Tagihan SPP</h5>
+      <!-- Badge ringkasan tagihan sebagai link ke halaman tagihan -->
       <div class="d-flex align-items-center gap-3 mt-2 mt-sm-0">
-        <span class="badge-tagihan <%= isLunas ? 'badge-lunas' : '' %>">
-          <i class="bi bi-<%= isLunas ? 'check-circle-fill' : 'wallet2' %> me-1"></i>
-          <% if (isLunas) { %> Lunas <% } else { %> Rp <%= new Intl.NumberFormat('id-ID').format(totalBelumLunas) %> <% } %>
-        </span>
-        <a href="/mahasiswa/tagihan" class="btn btn-light btn-sm rounded-pill px-3">Kelola</a>
+        <a href="/mahasiswa/tagihan" class="text-decoration-none">
+          <span class="badge-total-tagihan">
+            <i class="bi bi-<%= isLunas ? 'check-circle-fill' : 'wallet2' %> me-1"></i>
+            <% if (isLunas) { %> Lunas <% } else { %> Rp <%= new Intl.NumberFormat('id-ID').format(totalBelumLunas) %> <% } %>
+          </span>
+        </a>
       </div>
     </div>
     <div class="card-body p-4">
@@ -493,7 +503,8 @@
               </div>
               <div class="text-end mt-2 mt-sm-0">
                 <span class="fw-bold fs-5 d-block">Rp <%= new Intl.NumberFormat('id-ID').format(t.jumlah) %></span>
-                <span class="badge-tagihan <%= t.status === 'lunas' ? 'badge-lunas' : 'badge-belum' %> mt-1">
+                <span class="<%= t.status === 'lunas' ? 'badge-lunas' : 'badge-warning' %> mt-1">
+                  <i class="bi bi-<%= t.status === 'lunas' ? 'check-circle-fill' : 'hourglass-split' %> me-1"></i>
                   <%= t.status === 'lunas' ? 'Lunas' : 'Belum Lunas' %>
                 </span>
               </div>
