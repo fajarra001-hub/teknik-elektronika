@@ -1,30 +1,169 @@
 <%- include('../partials/header') %>
 
 <style>
+  /* ===== VARIABEL WARNA (sama) ===== */
+  :root {
+    --primary-start: #1e3a8a;
+    --primary-end: #3b82f6;
+    --primary-light: rgba(30,58,138,0.1);
+    --primary-dark: #0f2b5c;
+    --warning-bg: #fef3c7;
+    --warning-text: #92400e;
+    --success-bg: #d1fae5;
+    --success-text: #065f46;
+    --danger-bg: #fee2e2;
+    --danger-text: #991b1b;
+    --font-base: 16px;
+  }
+
+  html {
+    font-size: 16px;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background-color: #f8fafc;
+  }
+
+  /* Detail Header */
   .detail-header {
-    background: linear-gradient(135deg, #2193b0, #6dd5ed);
-    border-radius: 1rem;
+    background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+    border-radius: 1.5rem;
     padding: 2rem;
     color: white;
     margin-bottom: 2rem;
+    box-shadow: 0 15px 30px rgba(30,58,138,0.25);
+    position: relative;
+    overflow: hidden;
   }
+  .detail-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 300px;
+    height: 300px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+    transform: rotate(25deg);
+  }
+  .detail-header h2 {
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    position: relative;
+    z-index: 1;
+  }
+  .detail-header p {
+    margin-bottom: 0;
+    opacity: 0.9;
+    position: relative;
+    z-index: 1;
+  }
+  .detail-header .btn-back {
+    background: white;
+    border: none;
+    border-radius: 50px;
+    padding: 0.5rem 1.5rem;
+    font-weight: 600;
+    color: var(--primary-start);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .detail-header .btn-back:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    color: var(--primary-dark);
+  }
+
+  /* Laporan Card */
   .laporan-card {
     background: white;
-    border-radius: 1rem;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    border-radius: 1.2rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
     padding: 1.5rem;
     margin-bottom: 1.5rem;
+    border: 1px solid rgba(30,58,138,0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .laporan-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 35px rgba(30,58,138,0.15);
+  }
+  .laporan-card h5 {
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 1rem;
+  }
+  .badge-status {
+    padding: 0.4rem 1rem;
+    border-radius: 50px;
+    font-weight: 500;
+    font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  .badge-submitted {
+    background: var(--warning-bg);
+    color: var(--warning-text);
+    border: 1px solid #fde68a;
+  }
+  .badge-approved {
+    background: var(--success-bg);
+    color: var(--success-text);
+    border: 1px solid #a7f3d0;
+  }
+  .badge-rejected {
+    background: var(--danger-bg);
+    color: var(--danger-text);
+    border: 1px solid #fecaca;
+  }
+  .btn-download {
+    background: transparent;
+    border: 1.5px solid var(--primary-start);
+    color: var(--primary-start);
+    border-radius: 50px;
+    padding: 0.4rem 1.2rem;
+    font-size: 0.85rem;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .btn-download:hover {
+    background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+    border-color: transparent;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(30,58,138,0.3);
+  }
+
+  /* Responsif */
+  @media (max-width: 768px) {
+    html { font-size: 15px; }
+    .detail-header { padding: 1.5rem; }
+    .detail-header h2 { font-size: 1.5rem; }
+  }
+  @media (max-width: 576px) {
+    html { font-size: 14px; }
+    .detail-header h2 { font-size: 1.3rem; }
   }
 </style>
 
-<div class="container-fluid mt-4">
-  <div class="detail-header d-flex justify-content-between align-items-center">
+<div class="container mt-4">
+  <!-- Header dengan tombol kembali -->
+  <div class="detail-header d-flex flex-wrap justify-content-between align-items-center">
     <div>
       <h2><i class="bi bi-file-earmark-pdf me-2"></i>Laporan Magang - <%= mahasiswa.nama %></h2>
-      <p class="mb-0 opacity-75">NIM: <%= mahasiswa.nim || '-' %></p>
+      <p class="mb-0">NIM: <%= mahasiswa.nim || '-' %></p>
     </div>
-    <a href="/dosen/laporan-magang" class="btn btn-light">
-      <i class="bi bi-arrow-left me-2"></i>Kembali
+    <a href="/dosen/laporan-magang" class="btn-back mt-2 mt-sm-0">
+      <i class="bi bi-arrow-left"></i> Kembali
     </a>
   </div>
 
@@ -32,18 +171,21 @@
     const laporan = laporanList.find(l => l.laporanKe === i);
   %>
     <div class="laporan-card">
-      <h5 class="fw-bold mb-3">Laporan Magang <%= i %></h5>
+      <h5>Laporan Magang <%= i %></h5>
       <% if (laporan) { %>
-        <p><strong>File:</strong> <a href="<%= laporan.fileUrl %>" target="_blank"><%= laporan.fileName %></a></p>
+        <p><strong>File:</strong> 
+          <a href="<%= laporan.fileUrl %>" target="_blank" class="btn-download">
+            <i class="bi bi-download"></i> <%= laporan.fileName || 'Unduh' %>
+          </a>
+        </p>
         <p><strong>Diunggah:</strong> <%= new Date(laporan.uploadedAt).toLocaleString('id-ID') %></p>
         <p><strong>Status:</strong> 
-          <% if (laporan.status === 'submitted') { %>
-            <span class="badge bg-warning text-dark">Menunggu</span>
-          <% } else if (laporan.status === 'approved') { %>
-            <span class="badge bg-success">Disetujui</span>
-          <% } else if (laporan.status === 'rejected') { %>
-            <span class="badge bg-danger">Ditolak</span>
-          <% } %>
+          <span class="badge-status 
+            <%= laporan.status === 'submitted' ? 'badge-submitted' : '' %>
+            <%= laporan.status === 'approved' ? 'badge-approved' : '' %>
+            <%= laporan.status === 'rejected' ? 'badge-rejected' : '' %>">
+            <%= laporan.status === 'submitted' ? 'Menunggu' : (laporan.status === 'approved' ? 'Disetujui' : 'Ditolak') %>
+          </span>
         </p>
         <% if (laporan.catatanAdmin) { %>
           <p><strong>Catatan Admin:</strong> <%= laporan.catatanAdmin %></p>

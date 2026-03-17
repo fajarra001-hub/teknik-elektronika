@@ -9,12 +9,22 @@
 %>
 
 <style>
-  /* ===== TEMA KONSISTEN ===== */
+  /* ===== VARIABEL WARNA (sesuai navbar) ===== */
   :root {
-    --primary-start: #2193b0;
-    --primary-end: #6dd5ed;
-    --primary-light: rgba(33,147,176,0.1);
-    --primary-dark: #1a7a8f;
+    --primary-start: #1e3a8a;
+    --primary-end: #3b82f6;
+    --primary-light: rgba(30,58,138,0.1);
+    --primary-dark: #0f2b5c;
+    --font-base: 16px;
+  }
+
+  html {
+    font-size: 16px;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background-color: #f8fafc;
   }
 
   /* Header Detail */
@@ -24,7 +34,7 @@
     padding: 2rem;
     border-radius: 1.5rem;
     margin-bottom: 2rem;
-    box-shadow: 0 15px 30px rgba(33,147,176,0.25);
+    box-shadow: 0 15px 30px rgba(30,58,138,0.25);
     position: relative;
     overflow: hidden;
   }
@@ -80,7 +90,7 @@
     box-shadow: 0 10px 30px rgba(0,0,0,0.03);
     padding: 1.8rem;
     margin-bottom: 2rem;
-    border: 1px solid rgba(33,147,176,0.1);
+    border: 1px solid rgba(30,58,138,0.1);
   }
   .info-card h5 {
     font-weight: 700;
@@ -89,6 +99,7 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    font-size: 1.2rem;
   }
   .info-card h5 i {
     color: var(--primary-start);
@@ -98,7 +109,7 @@
   .dosen-badge {
     background: var(--primary-light);
     color: var(--primary-start);
-    border: 1px solid rgba(33,147,176,0.2);
+    border: 1px solid rgba(30,58,138,0.2);
     padding: 0.5rem 1.2rem;
     border-radius: 50px;
     font-weight: 500;
@@ -108,7 +119,7 @@
 
   /* Progress Bar */
   .progress-lg {
-    height: 1.5rem;
+    height: 1.2rem;
     border-radius: 1rem;
     background-color: #e9ecef;
     overflow: hidden;
@@ -117,7 +128,11 @@
     background: linear-gradient(90deg, var(--primary-start), var(--primary-end));
     border-radius: 1rem;
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   /* List Group Mahasiswa */
@@ -155,7 +170,7 @@
     border-radius: 1.2rem;
     overflow: hidden;
     box-shadow: 0 10px 30px rgba(0,0,0,0.03);
-    border: 1px solid rgba(33,147,176,0.1);
+    border: 1px solid rgba(30,58,138,0.1);
   }
   .pertemuan-table {
     margin-bottom: 0;
@@ -163,7 +178,7 @@
   .pertemuan-table thead th {
     background: #f8f9fa;
     font-weight: 600;
-    color: #2c3e50;
+    color: #1e293b;
     border-bottom: 2px solid var(--primary-start);
     padding: 1rem;
     white-space: nowrap;
@@ -174,7 +189,7 @@
     border-bottom: 1px solid #e9ecef;
   }
   .pertemuan-table tbody tr:hover {
-    background-color: #f8f9fa;
+    background-color: #f8fafc;
   }
   .pertemuan-table .table-success {
     background-color: #f0f9ff;
@@ -220,7 +235,7 @@
     border-color: transparent;
     color: white;
     transform: translateY(-2px);
-    box-shadow: 0 5px 10px rgba(33,147,176,0.3);
+    box-shadow: 0 5px 10px rgba(30,58,138,0.3);
   }
 
   /* Upload Form */
@@ -256,7 +271,7 @@
   .btn-upload:hover {
     background: var(--primary-dark);
     transform: translateY(-2px);
-    box-shadow: 0 5px 10px rgba(33,147,176,0.3);
+    box-shadow: 0 5px 10px rgba(30,58,138,0.3);
   }
 
   /* Link File */
@@ -299,22 +314,21 @@
 
   /* Responsif */
   @media (max-width: 768px) {
-    .detail-header .d-flex {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 1rem;
-    }
-    .upload-form {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-    .upload-form .form-control-sm {
-      width: 100%;
-    }
+    html { font-size: 15px; }
+    .detail-header h1 { font-size: 1.8rem; }
+    .detail-header .d-flex { flex-direction: column; align-items: flex-start; gap: 1rem; }
+    .upload-form { flex-direction: column; align-items: flex-start; }
+    .upload-form .form-control-sm { width: 100%; }
+    .pertemuan-table thead th { font-size: 0.8rem; padding: 0.75rem; }
+    .pertemuan-table tbody td { font-size: 0.9rem; padding: 0.75rem; }
+  }
+  @media (max-width: 576px) {
+    html { font-size: 14px; }
+    .detail-header h1 { font-size: 1.5rem; }
   }
 </style>
 
-<div class="container-fluid mt-4">
+<div class="container mt-4">
   <!-- Header -->
   <div class="detail-header">
     <div class="d-flex flex-wrap justify-content-between align-items-center">

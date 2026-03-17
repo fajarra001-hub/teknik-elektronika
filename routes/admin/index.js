@@ -17,7 +17,7 @@ const { db } = require('../../config/firebaseAdmin');
 const usersRoutes = require('./users');
 const laporanMagangRouter = require('./elkLibrary');
 const seminarRouter = require('./seminar');          // pastikan file seminar.js ada di folder admin
-
+const dashboardRouter = require('./dashboard');
 // ============================================================================
 // MIDDLEWARE UMUM (semua rute di bawah ini hanya untuk admin yang login)
 // ============================================================================
@@ -36,7 +36,7 @@ router.use((req, res, next) => {
 
 // Kelola Pengguna (users) – CRUD akun
 router.use('/users', usersRoutes);
-
+router.use('/dashboard', dashboardRouter);
 // Laporan Magang
 router.use('/laporan-magang', require('./laporanMagang'));   // untuk persetujuan laporan
 router.use('/elk-library', require('./elkLibrary'));        // untuk kelola konten library

@@ -1,18 +1,36 @@
 <%- include('../partials/header') %>
 
 <style>
-  /* ===== VARIABEL WARNA ===== */
+  /* ===== VARIABEL WARNA (sesuai navbar) ===== */
   :root {
-    --primary-start: #2193b0;
-    --primary-end: #6dd5ed;
-    --primary-light: rgba(33,147,176,0.1);
-    --primary-dark: #1a7a8f;
+    --primary-start: #1e3a8a;
+    --primary-end: #3b82f6;
+    --primary-light: rgba(30,58,138,0.1);
+    --primary-dark: #0f2b5c;
+    --warning-bg: #fef3c7;
+    --warning-text: #92400e;
+    --success-bg: #d1fae5;
+    --success-text: #065f46;
+    --danger-bg: #fee2e2;
+    --danger-text: #991b1b;
+    --info-bg: #dbeafe;
+    --info-text: #1e40af;
+    --font-base: 16px;
+  }
+
+  html {
+    font-size: 16px;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background-color: #f8fafc;
   }
 
   /* ===== FILTER CARD ===== */
   .filter-card {
     border-radius: 1.2rem;
-    border: 1px solid rgba(33,147,176,0.1);
+    border: 1px solid rgba(30,58,138,0.1);
     box-shadow: 0 10px 25px rgba(0,0,0,0.05);
     background: white;
     padding: 1.5rem;
@@ -21,6 +39,7 @@
   .filter-card .form-label {
     font-weight: 600;
     color: #1e293b;
+    font-size: 0.9rem;
   }
   .filter-card .form-select,
   .filter-card .form-control {
@@ -28,11 +47,12 @@
     border: 1px solid #dee2e6;
     padding: 0.6rem 1rem;
     transition: all 0.2s;
+    font-size: 0.95rem;
   }
   .filter-card .form-select:focus,
   .filter-card .form-control:focus {
     border-color: var(--primary-start);
-    box-shadow: 0 0 0 0.25rem rgba(33,147,176,0.25);
+    box-shadow: 0 0 0 0.25rem rgba(30,58,138,0.25);
   }
   .btn-filter {
     background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
@@ -42,30 +62,33 @@
     padding: 0.6rem 1.5rem;
     border-radius: 50px;
     transition: all 0.3s;
-    box-shadow: 0 5px 15px rgba(33,147,176,0.2);
+    box-shadow: 0 5px 15px rgba(30,58,138,0.2);
     width: 100%;
   }
   .btn-filter:hover {
     transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(33,147,176,0.4);
+    box-shadow: 0 10px 25px rgba(30,58,138,0.4);
     color: white;
   }
   .btn-reset {
     background: transparent;
-    border: 2px solid var(--primary-start);
+    border: 1.5px solid var(--primary-start);
     color: var(--primary-start);
     font-weight: 500;
-    padding: 0.5rem 1.5rem;
+    padding: 0.6rem 1.5rem;
     border-radius: 50px;
     transition: all 0.3s;
     width: 100%;
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
   }
   .btn-reset:hover {
     background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
     border-color: transparent;
     color: white;
     transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(33,147,176,0.3);
+    box-shadow: 0 10px 20px rgba(30,58,138,0.3);
   }
 
   /* ===== TABEL ===== */
@@ -75,32 +98,37 @@
     box-shadow: 0 10px 30px rgba(0,0,0,0.05);
     padding: 1.5rem;
     margin-bottom: 2rem;
+    border: 1px solid rgba(30,58,138,0.1);
+  }
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
   .krs-table {
+    width: 100%;
+    border-collapse: collapse;
     margin-bottom: 0;
   }
   .krs-table thead th {
-    background: linear-gradient(135deg, var(--primary-light), rgba(109,213,237,0.1));
-    color: var(--primary-dark);
+    background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+    color: white;
     font-weight: 600;
     text-transform: uppercase;
     font-size: 0.85rem;
     letter-spacing: 0.5px;
-    border-bottom: 2px solid var(--primary-start);
-    padding: 1rem 0.75rem;
+    border: none;
+    padding: 1rem;
+    white-space: nowrap;
+    text-align: left;
   }
-  .krs-table tbody tr {
-    transition: all 0.2s;
-  }
-  .krs-table tbody tr:hover {
-    background-color: var(--primary-light);
-    transform: scale(1.01);
-    box-shadow: 0 5px 15px rgba(33,147,176,0.1);
-  }
-  .krs-table td {
-    padding: 1rem 0.75rem;
+  .krs-table tbody td {
     vertical-align: middle;
+    padding: 1rem;
     border-bottom: 1px solid #e9ecef;
+    font-size: 0.95rem;
+  }
+  .krs-table tbody tr:hover td {
+    background-color: #f8fafc;
   }
 
   /* ===== BADGE STATUS ===== */
@@ -111,29 +139,28 @@
     padding: 0.4rem 1rem;
     border-radius: 50px;
     font-weight: 500;
-    font-size: 0.85rem;
-    background: #f8f9fa;
+    font-size: 0.8rem;
     border: 1px solid transparent;
   }
   .badge-pending {
-    background: #fff3cd;
-    color: #856404;
-    border-color: #ffeeba;
+    background: var(--warning-bg);
+    color: var(--warning-text);
+    border-color: #fde68a;
   }
   .badge-approved {
-    background: #d4edda;
-    color: #155724;
-    border-color: #c3e6cb;
+    background: var(--success-bg);
+    color: var(--success-text);
+    border-color: #a7f3d0;
   }
   .badge-rejected {
-    background: #f8d7da;
-    color: #721c24;
-    border-color: #f5c6cb;
+    background: var(--danger-bg);
+    color: var(--danger-text);
+    border-color: #fecaca;
   }
   .badge-stored {
-    background: #d1ecf1;
-    color: #0c5460;
-    border-color: #bee5eb;
+    background: var(--info-bg);
+    color: var(--info-text);
+    border-color: #bfdbfe;
   }
 
   /* ===== TOMBOL AKSI ===== */
@@ -147,25 +174,27 @@
     border: 1px solid transparent;
     transition: all 0.2s;
     color: white;
+    margin: 2px;
+    background: transparent;
   }
   .btn-icon-sm i {
     font-size: 1rem;
   }
   .btn-approve {
-    background: #28a745;
+    background: #10b981;
   }
   .btn-approve:hover {
-    background: #218838;
+    background: #059669;
     transform: translateY(-2px);
-    box-shadow: 0 5px 10px rgba(40,167,69,0.3);
+    box-shadow: 0 5px 10px rgba(16,185,129,0.3);
   }
   .btn-reject {
-    background: #dc3545;
+    background: #ef4444;
   }
   .btn-reject:hover {
-    background: #c82333;
+    background: #dc2626;
     transform: translateY(-2px);
-    box-shadow: 0 5px 10px rgba(220,53,69,0.3);
+    box-shadow: 0 5px 10px rgba(239,68,68,0.3);
   }
   .btn-detail {
     background: var(--primary-start);
@@ -173,7 +202,7 @@
   .btn-detail:hover {
     background: var(--primary-dark);
     transform: translateY(-2px);
-    box-shadow: 0 5px 10px rgba(33,147,176,0.3);
+    box-shadow: 0 5px 10px rgba(30,58,138,0.3);
   }
   .btn-delete {
     background: #6c757d;
@@ -185,16 +214,23 @@
   }
   .btn-outline-file {
     padding: 0.3rem 1rem;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     border-radius: 50px;
-    border: 1px solid var(--primary-start);
+    border: 1.5px solid var(--primary-start);
     color: var(--primary-start);
     background: transparent;
     transition: all 0.2s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
   }
   .btn-outline-file:hover {
-    background: var(--primary-start);
+    background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+    border-color: transparent;
     color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(30,58,138,0.3);
   }
 
   /* ===== AVATAR ===== */
@@ -209,25 +245,30 @@
     justify-content: center;
     font-weight: 600;
     font-size: 1.2rem;
-    box-shadow: 0 5px 10px rgba(33,147,176,0.2);
+    box-shadow: 0 5px 10px rgba(30,58,138,0.2);
   }
 
   /* ===== MATA KULIAH BADGE ===== */
   .mk-badge {
     background: var(--primary-light);
     color: var(--primary-dark);
-    padding: 0.2rem 0.5rem;
+    padding: 0.2rem 0.6rem;
     border-radius: 50px;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     display: inline-block;
-    margin-right: 0.3rem;
-    margin-bottom: 0.3rem;
+    margin-right: 0.2rem;
+    margin-bottom: 0.2rem;
+    border: 1px solid rgba(30,58,138,0.2);
   }
 
   /* ===== ALERT ===== */
   .alert-custom {
     border-radius: 1rem;
     border-left: 4px solid;
+    padding: 1rem 1.5rem;
+    background: white;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    border: 1px solid rgba(30,58,138,0.1);
   }
 
   /* ===== EMPTY STATE ===== */
@@ -236,12 +277,11 @@
     text-align: center;
     background: #f8f9fa;
     border-radius: 1.5rem;
-    margin: 2rem 0;
   }
   .empty-state i {
     font-size: 4rem;
     color: #adb5bd;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
   }
   .empty-state h4 {
     font-weight: 600;
@@ -250,34 +290,49 @@
   }
   .empty-state p {
     color: #6c757d;
-    margin-bottom: 1.5rem;
+    font-size: 1rem;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    html { font-size: 15px; }
+    .krs-table thead th { font-size: 0.8rem; padding: 0.75rem; }
+    .krs-table tbody td { font-size: 0.9rem; padding: 0.75rem; }
+    .filter-card .row { flex-direction: column; }
+    .btn-filter, .btn-reset { width: 100%; margin-bottom: 0.5rem; }
+  }
+
+  @media (max-width: 576px) {
+    html { font-size: 14px; }
+    .badge-status { font-size: 0.7rem; padding: 0.2rem 0.6rem; }
+    .mk-badge { font-size: 0.7rem; }
   }
 </style>
 
-<div class="container-fluid mt-4">
+<div class="container mt-4">
   <!-- Header -->
   <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold"><i class="bi bi-file-earmark-text me-2" style="color: var(--primary-start);"></i>Daftar KRS Mahasiswa</h2>
-    <span class="badge bg-gradient p-3" style="background: linear-gradient(135deg, var(--primary-start), var(--primary-end)); color: white; font-size: 1rem;">
+    <h2 class="fw-bold" style="font-size: 2rem;"><i class="bi bi-file-earmark-text me-2" style="color: var(--primary-start);"></i>Daftar KRS Mahasiswa</h2>
+    <span class="badge p-3" style="background: linear-gradient(135deg, var(--primary-start), var(--primary-end)); color: white; font-size: 1rem; border-radius: 50px;">
       <i class="bi bi-calendar-check me-1"></i>Semester Aktif: Genap 2025/2026
     </span>
   </div>
 
   <!-- Notifikasi Sukses -->
   <% if (typeof success !== 'undefined' && success === 'approved') { %>
-    <div class="alert alert-success alert-dismissible fade show mb-4 alert-custom" role="alert" style="border-left-color: #28a745;">
+    <div class="alert alert-success alert-dismissible fade show mb-4 alert-custom" role="alert" style="border-left-color: #10b981;">
       <i class="bi bi-check-circle-fill me-2"></i>KRS berhasil disetujui.
       <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
   <% } %>
   <% if (typeof success !== 'undefined' && success === 'rejected') { %>
-    <div class="alert alert-warning alert-dismissible fade show mb-4 alert-custom" role="alert" style="border-left-color: #ffc107;">
+    <div class="alert alert-warning alert-dismissible fade show mb-4 alert-custom" role="alert" style="border-left-color: #f59e0b;">
       <i class="bi bi-exclamation-triangle-fill me-2"></i>KRS ditolak.
       <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
   <% } %>
   <% if (typeof success !== 'undefined' && success === 'deleted') { %>
-    <div class="alert alert-info alert-dismissible fade show mb-4 alert-custom" role="alert" style="border-left-color: #17a2b8;">
+    <div class="alert alert-info alert-dismissible fade show mb-4 alert-custom" role="alert" style="border-left-color: #3b82f6;">
       <i class="bi bi-trash-fill me-2"></i>KRS berhasil dihapus.
       <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
@@ -288,15 +343,21 @@
     <form method="GET" class="row g-3 align-items-end">
       <div class="col-md-3">
         <label for="semester" class="form-label fw-semibold"><i class="bi bi-funnel me-1"></i>Filter Semester</label>
-        <select class="form-select" id="semester" name="semester">
-          <option value="">Semua Semester</option>
-          <% 
-            const semesters = ['Ganjil 2024/2025', 'Genap 2024/2025', 'Ganjil 2025/2026', 'Genap 2025/2026'];
-            semesters.forEach(s => { 
-          %>
-          <option value="<%= s %>" <%= filters && filters.semester === s ? 'selected' : '' %>><%= s %></option>
-          <% }) %>
-        </select>
+<select class="form-select" id="semester" name="semester">
+  <option value="">Semua Semester</option>
+  <%
+    // Rentang tahun dari 2018 sampai 2028
+    const startYear = 2018;
+    const endYear = 2028;
+    for (let year = endYear; year >= startYear; year--) {
+      // Tampilkan Genap dulu (karena biasanya lebih baru)
+      const genap = `Genap ${year-1}/${year}`;
+      const ganjil = `Ganjil ${year-1}/${year}`;
+  %>
+  <option value="<%= genap %>" <%= filters && filters.semester === genap ? 'selected' : '' %>><%= genap %></option>
+  <option value="<%= ganjil %>" <%= filters && filters.semester === ganjil ? 'selected' : '' %>><%= ganjil %></option>
+  <% } %>
+</select>
       </div>
       <div class="col-md-3">
         <label for="status" class="form-label fw-semibold"><i class="bi bi-tag me-1"></i>Filter Status</label>
@@ -372,7 +433,7 @@
                       <span class="mk-badge"><%= c.kode %> - <%= c.nama.length > 15 ? c.nama.substring(0,15)+'...' : c.nama %></span>
                     <% }) %>
                     <% if (krs.courseCount > 2) { %>
-                      <span class="mk-badge bg-secondary text-white">+ <%= krs.courseCount - 2 %> lainnya</span>
+                      <span class="mk-badge" style="background: #e9ecef; color: #6c757d;">+ <%= krs.courseCount - 2 %> lainnya</span>
                     <% } %>
                   </div>
                 <% } else { %>

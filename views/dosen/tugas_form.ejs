@@ -1,12 +1,22 @@
 <%- include('../partials/header') %>
 
 <style>
-  /* ===== VARIABEL WARNA ===== */
+  /* ===== VARIABEL WARNA (sesuai navbar) ===== */
   :root {
-    --primary-start: #2193b0;
-    --primary-end: #6dd5ed;
-    --primary-light: rgba(33,147,176,0.1);
-    --primary-dark: #1a7a8f;
+    --primary-start: #1e3a8a;
+    --primary-end: #3b82f6;
+    --primary-light: rgba(30,58,138,0.1);
+    --primary-dark: #0f2b5c;
+    --font-base: 16px;
+  }
+
+  html {
+    font-size: 16px;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background-color: #f8fafc;
   }
 
   /* ===== FORM CARD ===== */
@@ -21,7 +31,7 @@
     transition: transform 0.3s, box-shadow 0.3s;
   }
   .form-card:hover {
-    box-shadow: 0 25px 45px rgba(33,147,176,0.15);
+    box-shadow: 0 25px 45px rgba(30,58,138,0.15);
   }
 
   /* ===== HEADER ===== */
@@ -83,7 +93,7 @@
   }
   .form-control:focus, .form-select:focus {
     border-color: var(--primary-start);
-    box-shadow: 0 0 0 0.2rem rgba(33,147,176,0.25);
+    box-shadow: 0 0 0 0.2rem rgba(30,58,138,0.25);
   }
 
   /* ===== TOMBOL ===== */
@@ -98,11 +108,12 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    box-shadow: 0 5px 15px rgba(33,147,176,0.2);
+    box-shadow: 0 5px 15px rgba(30,58,138,0.2);
+    border: none;
   }
   .btn-gradient:hover {
     transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(33,147,176,0.4);
+    box-shadow: 0 10px 25px rgba(30,58,138,0.4);
     color: white;
   }
 
@@ -117,13 +128,14 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
+    text-decoration: none;
   }
   .btn-outline-gradient:hover {
     background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
     border-color: transparent;
     color: white;
     transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(33,147,176,0.3);
+    box-shadow: 0 10px 20px rgba(30,58,138,0.3);
   }
 
   /* ===== TEXT MUTED ===== */
@@ -132,6 +144,28 @@
     font-size: 0.85rem;
     margin-top: 0.3rem;
     display: block;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    html { font-size: 15px; }
+    .form-header h3 { font-size: 1.6rem; }
+    .form-body { padding: 1.5rem; }
+  }
+
+  @media (max-width: 576px) {
+    html { font-size: 14px; }
+    .form-header h3 { font-size: 1.4rem; }
+    .btn-gradient, .btn-outline-gradient { padding: 0.5rem 1.5rem; }
+    .form-body { padding: 1rem; }
+  }
+
+  @media (max-width: 400px) {
+    html { font-size: 13px; }
+  }
+
+  @media (max-width: 340px) {
+    html { font-size: 12px; }
   }
 </style>
 
@@ -213,7 +247,7 @@
             <i class="bi bi-arrow-left"></i> Kembali
           </a>
           <button type="submit" class="btn-gradient">
-            <i class="bi bi-save"></i> Simpan Tugas
+            <i class="bi bi-save"></i> Buat Tugas
           </button>
         </div>
       </form>
