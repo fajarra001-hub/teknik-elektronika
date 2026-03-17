@@ -13,12 +13,22 @@
 %>
 
 <style>
-  /* ===== TEMA KONSISTEN ===== */
+  /* ===== VARIABEL WARNA (sesuai navbar) ===== */
   :root {
-    --primary-start: #2193b0;
-    --primary-end: #6dd5ed;
-    --primary-light: rgba(33,147,176,0.1);
-    --primary-dark: #1a7a8f;
+    --primary-start: #1e3a8a;
+    --primary-end: #3b82f6;
+    --primary-light: rgba(30,58,138,0.1);
+    --primary-dark: #0f2b5c;
+    --font-base: 16px;
+  }
+
+  html {
+    font-size: 16px;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background-color: #f8fafc;
   }
 
   /* Page Header */
@@ -28,7 +38,7 @@
     padding: 2rem;
     border-radius: 1.5rem;
     margin-bottom: 2rem;
-    box-shadow: 0 15px 30px rgba(33,147,176,0.25);
+    box-shadow: 0 15px 30px rgba(30,58,138,0.25);
     position: relative;
     overflow: hidden;
   }
@@ -48,12 +58,14 @@
     margin-bottom: 0.5rem;
     position: relative;
     z-index: 1;
+    font-size: 2rem;
   }
   .page-header p {
     margin-bottom: 0;
     opacity: 0.9;
     position: relative;
     z-index: 1;
+    font-size: 1rem;
   }
   .page-header .btn-light {
     background: white;
@@ -77,18 +89,70 @@
     color: var(--primary-dark);
   }
 
+  /* Filter Section */
+  .filter-section {
+    background: white;
+    border-radius: 1.2rem;
+    padding: 1.2rem 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    border: 1px solid rgba(30,58,138,0.1);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+  }
+  .filter-section .form-control,
+  .filter-section .form-select {
+    border-radius: 50px;
+    padding: 0.5rem 1rem;
+    border: 1px solid #cbd5e1;
+    min-width: 200px;
+    flex: 1 1 auto;
+  }
+  .filter-section .btn-filter {
+    background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 0.5rem 1.5rem;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+  .filter-section .btn-filter:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(30,58,138,0.3);
+  }
+  .filter-section .btn-reset {
+    background: transparent;
+    border: 1.5px solid var(--primary-start);
+    color: var(--primary-start);
+    border-radius: 50px;
+    padding: 0.5rem 1.5rem;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+  .filter-section .btn-reset:hover {
+    background: var(--primary-start);
+    color: white;
+    transform: translateY(-2px);
+  }
+
   /* Tabel Container */
   .table-container {
     background: white;
     border-radius: 1.5rem;
     box-shadow: 0 10px 30px rgba(0,0,0,0.05);
     overflow: hidden;
-    border: 1px solid rgba(33,147,176,0.1);
+    border: 1px solid rgba(30,58,138,0.1);
   }
   .table-responsive {
-    margin: 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
   .mahasiswa-table {
+    width: 100%;
+    border-collapse: collapse;
     margin-bottom: 0;
   }
   .mahasiswa-table thead th {
@@ -99,16 +163,18 @@
     font-size: 0.85rem;
     letter-spacing: 0.5px;
     border: none;
-    padding: 1.2rem 1rem;
+    padding: 1rem;
+    white-space: nowrap;
+    text-align: center;
   }
   .mahasiswa-table tbody td {
     vertical-align: middle;
-    padding: 1rem 1rem;
-    background-color: white;
+    padding: 0.75rem 1rem;
     border-bottom: 1px solid #e9ecef;
+    font-size: 0.95rem;
   }
   .mahasiswa-table tbody tr:hover td {
-    background-color: #f8f9fa;
+    background-color: #f8fafc;
   }
 
   /* Avatar dan Foto */
@@ -124,7 +190,8 @@
     font-weight: 700;
     font-size: 1.2rem;
     text-transform: uppercase;
-    box-shadow: 0 4px 10px rgba(33,147,176,0.3);
+    box-shadow: 0 4px 10px rgba(30,58,138,0.3);
+    margin: 0 auto;
   }
   .foto-mahasiswa {
     width: 45px;
@@ -133,6 +200,8 @@
     border-radius: 50%;
     border: 3px solid white;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    display: block;
+    margin: 0 auto;
   }
 
   /* Tombol Detail */
@@ -141,35 +210,35 @@
     border: 1.5px solid var(--primary-start);
     color: var(--primary-start);
     font-weight: 600;
-    padding: 0.4rem 1.2rem;
+    padding: 0.3rem 1rem;
     border-radius: 50px;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     transition: all 0.3s;
     text-decoration: none;
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.3rem;
   }
   .btn-detail:hover {
     background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
     border-color: transparent;
     color: white;
     transform: translateY(-2px);
-    box-shadow: 0 8px 15px rgba(33,147,176,0.3);
+    box-shadow: 0 8px 15px rgba(30,58,138,0.3);
   }
 
   /* NIM styling */
   .nim-text {
     font-weight: 500;
-    color: #2c3e50;
+    color: #1e293b;
   }
 
   /* Empty state */
   .empty-state {
-    padding: 4rem;
+    padding: 4rem 2rem;
     text-align: center;
     background: #f8f9fa;
-    border-radius: 1rem;
+    border-radius: 1.5rem;
   }
   .empty-state i {
     font-size: 4rem;
@@ -181,22 +250,37 @@
     font-size: 1.1rem;
   }
 
+  /* No results message */
+  .no-results {
+    text-align: center;
+    padding: 2rem;
+    color: #64748b;
+    font-style: italic;
+    display: none;
+  }
+
   /* Responsif */
   @media (max-width: 768px) {
-    .page-header {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 1rem;
-    }
-    .page-header .btn-light {
-      width: 100%;
-      justify-content: center;
-    }
+    html { font-size: 15px; }
+    .page-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+    .page-header h2 { font-size: 1.6rem; }
+    .page-header .btn-light { width: 100%; justify-content: center; }
+    .filter-section { flex-direction: column; align-items: stretch; }
+    .filter-section .form-control,
+    .filter-section .form-select,
+    .filter-section .btn-filter,
+    .filter-section .btn-reset { width: 100%; }
+    .mahasiswa-table thead th { font-size: 0.8rem; padding: 0.75rem; }
+    .mahasiswa-table tbody td { font-size: 0.9rem; padding: 0.5rem; }
+  }
+  @media (max-width: 576px) {
+    html { font-size: 14px; }
+    .page-header h2 { font-size: 1.4rem; }
   }
 </style>
 
-<div class="container-fluid mt-4">
-  <!-- Page Header dengan gradien -->
+<div class="container mt-4">
+  <!-- Page Header -->
   <div class="page-header d-flex flex-wrap justify-content-between align-items-center">
     <div>
       <h2><%= mk.kode %> - <%= mk.nama %></h2>
@@ -206,6 +290,19 @@
       <i class="bi bi-arrow-left"></i> Kembali ke Detail MK
     </a>
   </div>
+
+  <% if (mahasiswaList.length > 0) { %>
+    <!-- Filter Section -->
+    <div class="filter-section">
+      <input type="text" id="searchInput" class="form-control" placeholder="Cari nama atau NIM...">
+      <select id="angkatanFilter" class="form-select">
+        <option value="">Semua Angkatan</option>
+        <!-- Options akan diisi dengan JavaScript -->
+      </select>
+      <button class="btn-filter" id="applyFilter">Terapkan</button>
+      <button class="btn-reset" id="resetFilter">Reset</button>
+    </div>
+  <% } %>
 
   <!-- Tabel Mahasiswa -->
   <div class="table-container">
@@ -233,19 +330,29 @@
           <% } else { %>
             <% mahasiswaList.forEach((m, index) => { 
               const fotoUrl = m.foto ? getDriveThumbnail(m.foto) : null;
+              // Menentukan angkatan dari NIM
+              let angkatan = '';
+              const nim = m.nim || '';
+              if (nim) {
+                if (nim.length >= 4 && !isNaN(nim.substring(0,4)) && parseInt(nim.substring(0,4)) > 2000) {
+                  angkatan = nim.substring(0,4);
+                } else if (nim.length >= 2) {
+                  angkatan = '20' + nim.substring(0,2);
+                }
+              }
             %>
-            <tr>
+            <tr data-nama="<%= m.nama.toLowerCase() %>" data-nim="<%= nim %>" data-angkatan="<%= angkatan %>">
               <td class="fw-bold text-center"><%= index + 1 %></td>
-              <td>
+              <td class="text-center">
                 <% if (fotoUrl) { %>
-                  <img src="<%= fotoUrl %>" alt="foto <%= m.nama %>" class="foto-mahasiswa" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=<%= encodeURIComponent(m.nama) %>&background=2193b0&color=fff&size=45';">
+                  <img src="<%= fotoUrl %>" alt="foto <%= m.nama %>" class="foto-mahasiswa" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=<%= encodeURIComponent(m.nama) %>&background=1e3a8a&color=fff&size=45';">
                 <% } else { %>
                   <div class="avatar-circle"><%= (m.nama || '?').charAt(0).toUpperCase() %></div>
                 <% } %>
               </td>
-              <td><span class="nim-text"><%= m.nim || '-' %></span></td>
+              <td class="text-center"><span class="nim-text"><%= nim || '-' %></span></td>
               <td><strong><%= m.nama %></strong></td>
-              <td>
+              <td class="text-center">
                 <a href="/dosen/mahasiswa/<%= m.id %>" class="btn-detail">
                   <i class="bi bi-eye"></i> Detail
                 </a>
@@ -255,8 +362,91 @@
           <% } %>
         </tbody>
       </table>
+      <div id="noFilterResult" class="no-results">Tidak ada mahasiswa yang cocok dengan filter.</div>
     </div>
   </div>
 </div>
+
+<% if (mahasiswaList.length > 0) { %>
+<script>
+  (function() {
+    // Fungsi untuk mendapatkan daftar angkatan unik dari data attribute
+    function getUniqueAngkatan() {
+      const rows = document.querySelectorAll('.mahasiswa-table tbody tr[data-angkatan]');
+      const angkatanSet = new Set();
+      rows.forEach(row => {
+        const angkatan = row.getAttribute('data-angkatan');
+        if (angkatan) angkatanSet.add(angkatan);
+      });
+      return Array.from(angkatanSet).sort();
+    }
+
+    // Isi dropdown angkatan
+    const angkatanFilter = document.getElementById('angkatanFilter');
+    const angkatanList = getUniqueAngkatan();
+    angkatanList.forEach(angkatan => {
+      const option = document.createElement('option');
+      option.value = angkatan;
+      option.textContent = angkatan;
+      angkatanFilter.appendChild(option);
+    });
+
+    // Fungsi filter
+    function filterTable() {
+      const searchInput = document.getElementById('searchInput').value.toLowerCase().trim();
+      const angkatanValue = document.getElementById('angkatanFilter').value;
+      const rows = document.querySelectorAll('.mahasiswa-table tbody tr[data-nama]');
+      let visibleCount = 0;
+
+      rows.forEach(row => {
+        const nama = row.getAttribute('data-nama') || '';
+        const nim = row.getAttribute('data-nim') || '';
+        const angkatan = row.getAttribute('data-angkatan') || '';
+
+        let matchSearch = true;
+        if (searchInput !== '') {
+          matchSearch = nama.includes(searchInput) || nim.includes(searchInput);
+        }
+
+        let matchAngkatan = true;
+        if (angkatanValue !== '') {
+          matchAngkatan = angkatan === angkatanValue;
+        }
+
+        if (matchSearch && matchAngkatan) {
+          row.style.display = '';
+          visibleCount++;
+        } else {
+          row.style.display = 'none';
+        }
+      });
+
+      const noResultDiv = document.getElementById('noFilterResult');
+      if (visibleCount === 0) {
+        noResultDiv.style.display = 'block';
+      } else {
+        noResultDiv.style.display = 'none';
+      }
+    }
+
+    // Reset filter
+    function resetFilter() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('angkatanFilter').value = '';
+      const rows = document.querySelectorAll('.mahasiswa-table tbody tr[data-nama]');
+      rows.forEach(row => row.style.display = '');
+      document.getElementById('noFilterResult').style.display = 'none';
+    }
+
+    // Event listeners
+    document.getElementById('applyFilter').addEventListener('click', filterTable);
+    document.getElementById('resetFilter').addEventListener('click', resetFilter);
+    document.getElementById('searchInput').addEventListener('keyup', function(e) {
+      if (e.key === 'Enter') filterTable();
+    });
+    document.getElementById('angkatanFilter').addEventListener('change', filterTable);
+  })();
+</script>
+<% } %>
 
 <%- include('../partials/footer') %>

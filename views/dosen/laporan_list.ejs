@@ -1,53 +1,385 @@
 <%- include('../partials/header') %>
 
 <style>
+  /* ===== VARIABEL WARNA (sesuai navbar) ===== */
+  :root {
+    --primary-start: #1e3a8a;
+    --primary-end: #3b82f6;
+    --primary-light: rgba(30,58,138,0.1);
+    --primary-dark: #0f2b5c;
+    --warning-bg: #fef3c7;
+    --warning-text: #92400e;
+    --success-bg: #d1fae5;
+    --success-text: #065f46;
+    --danger-bg: #fee2e2;
+    --danger-text: #991b1b;
+    --font-base: 16px;
+  }
+
+  html {
+    font-size: 16px;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background-color: #f8fafc;
+  }
+
+  /* Page Header */
+  .page-header {
+    background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+    border-radius: 1.5rem;
+    padding: 1.5rem 2rem;
+    color: white;
+    margin-bottom: 2rem;
+    box-shadow: 0 15px 30px rgba(30,58,138,0.25);
+    position: relative;
+    overflow: hidden;
+  }
+  .page-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 300px;
+    height: 300px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+    transform: rotate(25deg);
+  }
+  .page-header h2 {
+    font-weight: 700;
+    margin: 0;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 2rem;
+  }
+
+  /* Filter Section */
+  .filter-section {
+    background: white;
+    border-radius: 1.2rem;
+    padding: 1.2rem 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    border: 1px solid rgba(30,58,138,0.1);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+  }
+  .filter-section .form-control,
+  .filter-section .form-select {
+    border-radius: 50px;
+    padding: 0.5rem 1rem;
+    border: 1px solid #cbd5e1;
+    min-width: 200px;
+    flex: 1 1 auto;
+  }
+  .filter-section .btn-filter {
+    background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 0.5rem 1.5rem;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+  .filter-section .btn-filter:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(30,58,138,0.3);
+  }
+  .filter-section .btn-reset {
+    background: transparent;
+    border: 1.5px solid var(--primary-start);
+    color: var(--primary-start);
+    border-radius: 50px;
+    padding: 0.5rem 1.5rem;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+  .filter-section .btn-reset:hover {
+    background: var(--primary-start);
+    color: white;
+    transform: translateY(-2px);
+  }
+
+  /* Group Card */
   .group-card {
     background: white;
-    border-radius: 1rem;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    border-radius: 1.2rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
     padding: 1.5rem;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(30,58,138,0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .group-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 35px rgba(30,58,138,0.15);
+  }
+  .group-card h5 {
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 0.25rem;
+  }
+  .group-card .text-muted {
+    color: #64748b;
+    font-size: 0.9rem;
+  }
+  .laporan-badge {
+    display: inline-block;
+    padding: 0.4rem 1rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    min-width: 90px;
+    text-align: center;
+  }
+  .badge-submitted {
+    background: var(--warning-bg);
+    color: var(--warning-text);
+    border: 1px solid #fde68a;
+  }
+  .badge-approved {
+    background: var(--success-bg);
+    color: var(--success-text);
+    border: 1px solid #a7f3d0;
+  }
+  .badge-rejected {
+    background: var(--danger-bg);
+    color: var(--danger-text);
+    border: 1px solid #fecaca;
+  }
+  .btn-view {
+    background: transparent;
+    border: 1.5px solid var(--primary-start);
+    color: var(--primary-start);
+    border-radius: 50px;
+    padding: 0.4rem 1.2rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .btn-view:hover {
+    background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+    border-color: transparent;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(30,58,138,0.3);
+  }
+
+  /* Empty State */
+  .empty-state {
+    padding: 4rem 2rem;
+    text-align: center;
+    background: #f8f9fa;
+    border-radius: 1.5rem;
+  }
+  .empty-state i {
+    font-size: 4rem;
+    color: #adb5bd;
+    margin-bottom: 1rem;
+  }
+  .empty-state p {
+    color: #6c757d;
+    font-size: 1.1rem;
+  }
+
+  /* No results message */
+  .no-results {
+    text-align: center;
+    padding: 2rem;
+    color: #64748b;
+    font-style: italic;
+    display: none;
+  }
+
+  /* Responsif */
+  @media (max-width: 768px) {
+    html { font-size: 15px; }
+    .page-header h2 { font-size: 1.6rem; }
+    .filter-section { flex-direction: column; align-items: stretch; }
+    .filter-section .form-control,
+    .filter-section .form-select,
+    .filter-section .btn-filter,
+    .filter-section .btn-reset { width: 100%; }
+    .group-card { padding: 1.2rem; }
+  }
+  @media (max-width: 576px) {
+    html { font-size: 14px; }
+    .page-header h2 { font-size: 1.4rem; }
   }
 </style>
 
-<div class="container-fluid mt-4">
-  <h2 class="fw-bold mb-4">Laporan Magang Mahasiswa</h2>
+<div class="container mt-4">
+  <!-- Page Header -->
+  <div class="page-header">
+    <h2>
+      <i class="bi bi-file-earmark-pdf"></i> Laporan Magang Mahasiswa
+    </h2>
+  </div>
+
+  <!-- Filter Section -->
+  <div class="filter-section">
+    <input type="text" id="searchInput" class="form-control" placeholder="Cari nama atau NIM...">
+    <select id="angkatanFilter" class="form-select">
+      <option value="">Semua Angkatan</option>
+      <!-- Options akan diisi dengan JavaScript -->
+    </select>
+    <button class="btn-filter" id="applyFilter">Terapkan</button>
+    <button class="btn-reset" id="resetFilter">Reset</button>
+  </div>
 
   <% if (groupedList.length === 0) { %>
-    <div class="alert alert-info">Belum ada laporan yang diupload.</div>
-  <% } %>
-
-  <% groupedList.forEach(group => { %>
-    <div class="group-card">
-      <div class="d-flex align-items-center mb-3">
-        <div>
-          <h5 class="fw-bold mb-1"><%= group.mahasiswa.nama %></h5>
-          <p class="text-muted mb-0"><%= group.mahasiswa.nim || '-' %></p>
-        </div>
-        <div class="ms-auto">
-          <a href="/dosen/laporan-magang/mahasiswa/<%= group.mahasiswa.id %>" class="btn btn-outline-primary btn-sm">
-            Lihat Detail Laporan
-          </a>
-        </div>
-      </div>
-      <div class="d-flex gap-3 flex-wrap">
-        <% for (let i = 1; i <= 3; i++) { 
-          const laporan = group.laporan.find(l => l.laporanKe === i);
-        %>
-          <div class="border rounded p-2" style="min-width: 120px;">
-            <div class="fw-bold">Lap <%= i %></div>
-            <% if (laporan) { %>
-              <span class="badge bg-<%= laporan.status === 'submitted' ? 'warning' : (laporan.status === 'approved' ? 'success' : 'danger') %>">
-                <%= laporan.status === 'submitted' ? 'Menunggu' : (laporan.status === 'approved' ? 'Disetujui' : 'Ditolak') %>
-              </span>
-            <% } else { %>
-              <span class="text-muted">-</span>
+    <div class="empty-state">
+      <i class="bi bi-inbox"></i>
+      <p>Belum ada laporan yang diupload mahasiswa.</p>
+    </div>
+  <% } else { %>
+    <div id="groupContainer">
+      <% groupedList.forEach(group => { 
+        // Ekstrak angkatan dari NIM
+        let angkatan = '';
+        const nim = group.mahasiswa.nim || '';
+        if (nim) {
+          if (nim.length >= 4 && !isNaN(nim.substring(0,4)) && parseInt(nim.substring(0,4)) > 2000) {
+            angkatan = nim.substring(0,4);
+          } else if (nim.length >= 2) {
+            angkatan = '20' + nim.substring(0,2);
+          }
+        }
+      %>
+        <div class="group-card" 
+             data-nama="<%= group.mahasiswa.nama.toLowerCase() %>" 
+             data-nim="<%= group.mahasiswa.nim %>" 
+             data-angkatan="<%= angkatan %>">
+          <div class="d-flex flex-wrap align-items-center justify-content-between mb-3">
+            <div>
+              <h5 class="fw-bold mb-1"><%= group.mahasiswa.nama %></h5>
+              <p class="text-muted mb-0"><%= group.mahasiswa.nim || '-' %></p>
+            </div>
+            <div class="mt-2 mt-sm-0">
+              <a href="/dosen/laporan-magang/mahasiswa/<%= group.mahasiswa.id %>" class="btn-view">
+                <i class="bi bi-eye"></i> Detail Laporan
+              </a>
+            </div>
+          </div>
+          <div class="d-flex flex-wrap gap-3">
+            <% for (let i = 1; i <= 3; i++) { 
+              const laporan = group.laporan.find(l => l.laporanKe === i);
+            %>
+              <div class="border rounded p-3" style="min-width: 120px; flex: 1 0 auto;">
+                <div class="fw-bold mb-2">Laporan <%= i %></div>
+                <% if (laporan) { %>
+                  <span class="laporan-badge 
+                    <%= laporan.status === 'submitted' ? 'badge-submitted' : '' %>
+                    <%= laporan.status === 'approved' ? 'badge-approved' : '' %>
+                    <%= laporan.status === 'rejected' ? 'badge-rejected' : '' %>">
+                    <%= laporan.status === 'submitted' ? 'Menunggu' : (laporan.status === 'approved' ? 'Disetujui' : 'Ditolak') %>
+                  </span>
+                <% } else { %>
+                  <span class="text-muted">-</span>
+                <% } %>
+              </div>
             <% } %>
           </div>
-        <% } %>
-      </div>
+        </div>
+      <% }) %>
     </div>
-  <% }) %>
+    <div id="noFilterResult" class="no-results">Tidak ada mahasiswa yang cocok dengan filter.</div>
+  <% } %>
 </div>
+
+<script>
+  (function() {
+    // Fungsi untuk mendapatkan daftar angkatan unik dari data attribute
+    function getUniqueAngkatan() {
+      const cards = document.querySelectorAll('.group-card');
+      const angkatanSet = new Set();
+      cards.forEach(card => {
+        const angkatan = card.getAttribute('data-angkatan');
+        if (angkatan) angkatanSet.add(angkatan);
+      });
+      return Array.from(angkatanSet).sort();
+    }
+
+    // Isi dropdown angkatan
+    const angkatanFilter = document.getElementById('angkatanFilter');
+    if (angkatanFilter) {
+      const angkatanList = getUniqueAngkatan();
+      angkatanList.forEach(angkatan => {
+        const option = document.createElement('option');
+        option.value = angkatan;
+        option.textContent = angkatan;
+        angkatanFilter.appendChild(option);
+      });
+    }
+
+    // Fungsi filter
+    function filterCards() {
+      const searchInput = document.getElementById('searchInput').value.toLowerCase().trim();
+      const angkatanValue = document.getElementById('angkatanFilter').value;
+      const cards = document.querySelectorAll('.group-card');
+      let visibleCount = 0;
+
+      cards.forEach(card => {
+        const nama = card.getAttribute('data-nama') || '';
+        const nim = card.getAttribute('data-nim') || '';
+        const angkatan = card.getAttribute('data-angkatan') || '';
+
+        let matchSearch = true;
+        if (searchInput !== '') {
+          matchSearch = nama.includes(searchInput) || nim.includes(searchInput);
+        }
+
+        let matchAngkatan = true;
+        if (angkatanValue !== '') {
+          matchAngkatan = angkatan === angkatanValue;
+        }
+
+        if (matchSearch && matchAngkatan) {
+          card.style.display = '';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      const noResultDiv = document.getElementById('noFilterResult');
+      if (noResultDiv) {
+        if (visibleCount === 0) {
+          noResultDiv.style.display = 'block';
+        } else {
+          noResultDiv.style.display = 'none';
+        }
+      }
+    }
+
+    // Reset filter
+    function resetFilter() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('angkatanFilter').value = '';
+      const cards = document.querySelectorAll('.group-card');
+      cards.forEach(card => card.style.display = '');
+      const noResultDiv = document.getElementById('noFilterResult');
+      if (noResultDiv) noResultDiv.style.display = 'none';
+    }
+
+    // Event listeners
+    document.getElementById('applyFilter').addEventListener('click', filterCards);
+    document.getElementById('resetFilter').addEventListener('click', resetFilter);
+    document.getElementById('searchInput').addEventListener('keyup', function(e) {
+      if (e.key === 'Enter') filterCards();
+    });
+  })();
+</script>
 
 <%- include('../partials/footer') %>

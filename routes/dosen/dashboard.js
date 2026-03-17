@@ -35,14 +35,17 @@ router.get('/', async (req, res) => {
       sks: doc.data().sks
     }));
 
-    // ===== 2. Hitung total mahasiswa dari semua MK yang diampu =====
-    let totalMahasiswa = 0;
+    // ===== 2. Hitung total mahasiswa unik dari semua MK yang diampu =====
+    const mahasiswaSet = new Set();
     for (const mk of mkSnapshot.docs) {
       const enrollmentSnapshot = await db.collection('enrollment')
         .where('mkId', '==', mk.id)
         .get();
-      totalMahasiswa += enrollmentSnapshot.size;
+      enrollmentSnapshot.docs.forEach(doc => {
+        mahasiswaSet.add(doc.data().userId); // tambahkan userId ke Set
+      });
     }
+    const totalMahasiswa = mahasiswaSet.size; // ukuran Set adalah jumlah mahasiswa unik
 
     // ===== 3. Hitung jumlah tugas aktif (deadline > sekarang) =====
     const now = new Date().toISOString();
@@ -66,7 +69,16 @@ router.get('/', async (req, res) => {
       pengumpulanBelumDinilai += pengumpulanSnapshot.size;
     }
 
-    // ===== 5. Render halaman dashboard dengan semua data =====
+    // ===== 5. Ambil event terdekat (untuk ditampilkan di dashboard) =====
+    const today = new Date().toISOString().split('T')[0];
+    const eventsSnapshot = await db.collection('jadwalPenting')
+      .where('tanggal', '>=', today)
+      .orderBy('tanggal', 'asc')
+      .limit(5)
+      .get();
+    const events = eventsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    // ===== 6. Render halaman dashboard dengan semua data =====
     res.render('dosen/dashboard', {
       title: 'Dashboard Dosen',
       dosen,
@@ -74,7 +86,9 @@ router.get('/', async (req, res) => {
       totalMahasiswa,
       tugasAktif,
       pengumpulanBelumDinilai,
-      mkList: mkList.slice(0, 5) // tampilkan 5 MK terbaru (opsional)
+      events,          // <-- data event untuk ditampilkan
+      mkList: mkList.slice(0, 5), // tampilkan 5 MK terbaru (opsional)
+      berita: []       // jika tidak ada berita, kirim array kosong
     });
 
   } catch (error) {

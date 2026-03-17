@@ -1,43 +1,129 @@
 <%- include('../partials/header') %>
 
+<%
+  // Fungsi untuk mendapatkan thumbnail dari Google Drive
+  const getDriveThumbnail = (url, size = 200) => {
+    if (!url) return null;
+    let match = url.match(/[?&]id=([^&]+)/);
+    if (match) return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w${size}`;
+    match = url.match(/\/d\/([^\/]+)/);
+    if (match) return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w${size}`;
+    return url;
+  };
+
+  const fotoThumb = mahasiswa.foto ? getDriveThumbnail(mahasiswa.foto, 200) : null;
+%>
+
 <style>
+  /* ===== VARIABEL WARNA (sesuai navbar) ===== */
+  :root {
+    --primary-start: #1e3a8a;
+    --primary-end: #3b82f6;
+    --primary-light: rgba(30,58,138,0.1);
+    --primary-dark: #0f2b5c;
+    --font-base: 16px;
+  }
+
+  html {
+    font-size: 16px;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background-color: #f8fafc;
+  }
+
+  /* Detail Header */
   .detail-header {
-    background: linear-gradient(135deg, #2193b0, #6dd5ed);
-    border-radius: 1rem;
+    background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+    border-radius: 1.5rem;
     padding: 2rem;
     color: white;
     margin-bottom: 2rem;
+    box-shadow: 0 15px 30px rgba(30,58,138,0.25);
+    position: relative;
+    overflow: hidden;
   }
+  .detail-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 300px;
+    height: 300px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+    transform: rotate(25deg);
+  }
+  .detail-header h2 {
+    font-weight: 700;
+    margin-bottom: 0;
+    position: relative;
+    z-index: 1;
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .detail-header .btn-light {
+    background: white;
+    border: none;
+    border-radius: 50px;
+    padding: 0.6rem 1.8rem;
+    font-weight: 600;
+    color: var(--primary-start);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    position: relative;
+    z-index: 1;
+  }
+  .detail-header .btn-light:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    color: var(--primary-dark);
+  }
+
+  /* Profile Card */
   .profile-card {
     background: white;
-    border-radius: 1rem;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    border-radius: 1.5rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
     padding: 2rem;
     margin-bottom: 2rem;
+    border: 1px solid rgba(30,58,138,0.1);
   }
   .profile-avatar {
     width: 120px;
     height: 120px;
     border-radius: 50%;
     object-fit: cover;
-    border: 4px solid #2193b0;
+    border: 4px solid var(--primary-start);
+    box-shadow: 0 5px 15px rgba(30,58,138,0.3);
   }
   .avatar-circle {
     width: 120px;
     height: 120px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
     color: white;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 3rem;
     font-weight: 600;
+    margin: 0 auto 1rem;
+    border: 4px solid rgba(255,255,255,0.5);
+    box-shadow: 0 5px 15px rgba(30,58,138,0.3);
   }
   .info-item {
     padding: 0.75rem 0;
     border-bottom: 1px solid #e9ecef;
     display: flex;
+    align-items: center;
   }
   .info-item:last-child {
     border-bottom: none;
@@ -47,58 +133,85 @@
     width: 120px;
     color: #1e293b;
   }
+  .info-item span:last-child {
+    color: #64748b;
+  }
+
+  /* MK Card */
   .mk-card {
     border: none;
-    border-radius: 1rem;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-    transition: transform 0.3s;
+    border-radius: 1.2rem;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    transition: all 0.3s;
     height: 100%;
+    border: 1px solid rgba(30,58,138,0.1);
+    background: white;
   }
   .mk-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(33,147,176,0.15);
+    box-shadow: 0 20px 35px rgba(30,58,138,0.15);
+    border-color: transparent;
+  }
+  .mk-card .card-body {
+    padding: 1.5rem;
+  }
+  .mk-card h5 {
+    font-weight: 700;
+    color: var(--primary-start);
+    margin-bottom: 0.5rem;
+  }
+  .mk-card .small {
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
   }
   .nilai-badge {
-    background: #28a745;
-    color: white;
-    padding: 0.3rem 0.6rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-  }
-  .btn-back {
-    background: transparent;
-    border: 2px solid #2193b0;
-    color: #2193b0;
-    font-weight: 600;
-    padding: 0.6rem 2rem;
+    background: var(--primary-light);
+    color: var(--primary-start);
+    padding: 0.3rem 0.8rem;
     border-radius: 50px;
-    transition: all 0.3s;
-    text-decoration: none;
+    font-size: 0.75rem;
+    font-weight: 600;
     display: inline-block;
+    margin-right: 0.3rem;
+    margin-bottom: 0.3rem;
+    border: 1px solid rgba(30,58,138,0.2);
   }
-  .btn-back:hover {
-    background: linear-gradient(135deg, #2193b0, #6dd5ed);
-    border-color: transparent;
-    color: white;
+
+  /* Responsif */
+  @media (max-width: 768px) {
+    html { font-size: 15px; }
+    .detail-header h2 { font-size: 1.6rem; }
+    .profile-avatar { width: 100px; height: 100px; }
+    .avatar-circle { width: 100px; height: 100px; font-size: 2.5rem; }
+    .info-label { width: 100px; }
+  }
+  @media (max-width: 576px) {
+    html { font-size: 14px; }
+    .detail-header h2 { font-size: 1.4rem; }
+    .profile-card .row { flex-direction: column; }
+    .info-item { flex-direction: column; align-items: flex-start; gap: 0.2rem; }
+    .info-label { width: auto; }
   }
 </style>
 
-<div class="container-fluid mt-4">
-  <div class="detail-header d-flex justify-content-between align-items-center">
-    <div>
-      <h2><i class="bi bi-person-badge me-2"></i>Detail Mahasiswa</h2>
-    </div>
-    <a href="/dosen/mahasiswa" class="btn btn-light">
-      <i class="bi bi-arrow-left me-2"></i>Kembali
+<div class="container mt-4">
+  <!-- Detail Header -->
+  <div class="detail-header d-flex flex-wrap justify-content-between align-items-center">
+    <h2><i class="bi bi-person-badge me-2"></i>Detail Mahasiswa</h2>
+    <a href="/dosen/mahasiswa" class="btn-light">
+      <i class="bi bi-arrow-left"></i> Kembali
     </a>
   </div>
 
   <!-- Profil Mahasiswa -->
   <div class="profile-card">
-    <div class="row">
+    <div class="row align-items-center">
       <div class="col-md-3 text-center">
-        <% if (mahasiswa.foto) { %>
-          <img src="<%= mahasiswa.foto %>" alt="foto" class="profile-avatar mb-3">
+        <% if (fotoThumb) { %>
+          <img src="<%= fotoThumb %>" alt="foto <%= mahasiswa.nama %>" class="profile-avatar mb-3"
+               onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=<%= encodeURIComponent(mahasiswa.nama) %>&background=1e3a8a&color=fff&size=120';">
         <% } else { %>
           <div class="avatar-circle mb-3">
             <%= (mahasiswa.nama || '?').charAt(0).toUpperCase() %>
@@ -141,7 +254,10 @@
   <div class="row g-4 mb-5">
     <% if (mkDiambil.length === 0) { %>
       <div class="col-12">
-        <div class="alert alert-info">Mahasiswa ini tidak mengambil mata kuliah yang Anda ampu.</div>
+        <div class="alert alert-info" style="border-left: 4px solid var(--primary-start); border-radius: 1rem;">
+          <i class="bi bi-info-circle me-2"></i>
+          Mahasiswa ini tidak mengambil mata kuliah yang Anda ampu.
+        </div>
       </div>
     <% } else { %>
       <% mkDiambil.forEach(mk => { 
@@ -151,14 +267,14 @@
           <div class="mk-card">
             <div class="card-body">
               <h5 class="fw-bold"><%= mk.kode %></h5>
-              <p class="card-text"><%= mk.nama %></p>
+              <p class="fw-semibold" style="color: #1e293b;"><%= mk.nama %></p>
               <p class="small text-muted">
                 <i class="bi bi-clock"></i> <%= mk.sks %> SKS
               </p>
               <% if (nilai && nilai.nilai) { %>
                 <div class="mt-2">
                   <% Object.entries(nilai.nilai).forEach(([tipe, val]) => { %>
-                    <span class="badge bg-primary me-1"><%= tipe %>: <%= val %></span>
+                    <span class="nilai-badge"><%= tipe %>: <%= val %></span>
                   <% }) %>
                 </div>
               <% } else { %>

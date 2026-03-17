@@ -1,15 +1,25 @@
 <%- include('../partials/header') %>
 
 <style>
-  /* ===== VARIABEL WARNA ===== */
+  /* ===== VARIABEL WARNA (sesuai navbar) ===== */
   :root {
-    --primary-start: #2193b0;
-    --primary-end: #6dd5ed;
-    --primary-light: rgba(33,147,176,0.1);
-    --primary-dark: #1a7a8f;
+    --primary-start: #1e3a8a;
+    --primary-end: #3b82f6;
+    --primary-light: rgba(30,58,138,0.1);
+    --primary-dark: #0f2b5c;
+    --font-base: 16px;
   }
 
-  /* ===== HEADER ===== */
+  html {
+    font-size: 16px;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background-color: #f8fafc;
+  }
+
+  /* Page Header */
   .page-header {
     background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
     border-radius: 1.5rem;
@@ -19,7 +29,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 15px 30px rgba(33,147,176,0.25);
+    box-shadow: 0 15px 30px rgba(30,58,138,0.25);
     position: relative;
     overflow: hidden;
   }
@@ -39,12 +49,16 @@
     margin-bottom: 0;
     position: relative;
     z-index: 1;
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
   .btn-gradient {
     background: white;
     border: none;
     color: var(--primary-start);
-    font-weight: 500;
+    font-weight: 600;
     padding: 0.6rem 1.5rem;
     border-radius: 50px;
     transition: all 0.3s;
@@ -55,6 +69,7 @@
     gap: 0.5rem;
     position: relative;
     z-index: 1;
+    font-size: 0.95rem;
   }
   .btn-gradient:hover {
     transform: translateY(-3px);
@@ -62,87 +77,95 @@
     color: var(--primary-dark);
   }
 
-  /* ===== TABEL ===== */
+  /* Tabel Container */
   .table-container {
     background: white;
     border-radius: 1.5rem;
     box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-    padding: 1.5rem;
-    border: 1px solid rgba(33,147,176,0.1);
     overflow: hidden;
+    border: 1px solid rgba(30,58,138,0.1);
+    padding: 0;
   }
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Tabel minimalis */
   .artikel-table {
+    width: 100%;
+    border-collapse: collapse;
     margin-bottom: 0;
   }
   .artikel-table thead th {
-    background: linear-gradient(135deg, var(--primary-light), rgba(109,213,237,0.1));
-    color: var(--primary-dark);
+    background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+    color: white;
     font-weight: 600;
     text-transform: uppercase;
     font-size: 0.85rem;
     letter-spacing: 0.5px;
-    border-bottom: 2px solid var(--primary-start);
-    padding: 1rem 0.75rem;
+    border: none;
+    padding: 1.2rem 1rem;
     white-space: nowrap;
+    text-align: left;
   }
-  .artikel-table tbody tr {
-    transition: all 0.2s;
-  }
-  .artikel-table tbody tr:hover {
-    background-color: var(--primary-light);
-    transform: scale(1.01);
-    box-shadow: 0 5px 15px rgba(33,147,176,0.1);
-  }
-  .artikel-table td {
-    padding: 1rem 0.75rem;
+  .artikel-table tbody td {
     vertical-align: middle;
+    padding: 1.2rem 1rem;
+    background-color: white;
     border-bottom: 1px solid #e9ecef;
+    font-size: 0.95rem;
   }
-  .artikel-table td:last-child {
-    white-space: nowrap;
-    width: 1%;
+  .artikel-table tbody tr:hover td {
+    background-color: #f8fafc;
+  }
+  .artikel-table tbody tr:last-child td {
+    border-bottom: none;
   }
 
-  /* ===== BADGE STATUS ===== */
+  /* Badge status */
   .badge-status {
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    padding: 0.3rem 1rem;
+    padding: 0.4rem 1rem;
     border-radius: 50px;
     font-weight: 500;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     background: #f8f9fa;
     border: 1px solid transparent;
   }
   .badge-pending {
-    background: #fff3cd;
-    color: #856404;
-    border-color: #ffeeba;
+    background: #fef3c7;
+    color: #92400e;
+    border-color: #fde68a;
   }
   .badge-approved {
-    background: #d4edda;
-    color: #155724;
-    border-color: #c3e6cb;
+    background: #d1fae5;
+    color: #065f46;
+    border-color: #a7f3d0;
   }
   .badge-rejected {
-    background: #f8d7da;
-    color: #721c24;
-    border-color: #f5c6cb;
+    background: #fee2e2;
+    color: #991b1b;
+    border-color: #fecaca;
   }
 
-  /* ===== TOMBOL AKSI ===== */
+  /* Tombol aksi */
   .btn-icon-sm {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    border: 1px solid transparent;
-    transition: all 0.2s;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    border: none;
+    transition: all 0.3s;
     color: white;
     margin: 0 2px;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 1rem;
   }
   .btn-icon-sm i {
     font-size: 1rem;
@@ -153,32 +176,43 @@
   .btn-detail:hover {
     background: var(--primary-dark);
     transform: translateY(-2px);
-    box-shadow: 0 5px 10px rgba(33,147,176,0.3);
+    box-shadow: 0 5px 10px rgba(30,58,138,0.3);
   }
   .btn-edit {
-    background: #ffc107;
+    background: #f97316;
   }
   .btn-edit:hover {
-    background: #e0a800;
+    background: #ea580c;
     transform: translateY(-2px);
-    box-shadow: 0 5px 10px rgba(255,193,7,0.3);
+    box-shadow: 0 5px 10px rgba(249,115,22,0.3);
   }
   .btn-delete {
-    background: #dc3545;
+    background: #ef4444;
   }
   .btn-delete:hover {
-    background: #c82333;
+    background: #dc2626;
     transform: translateY(-2px);
-    box-shadow: 0 5px 10px rgba(220,53,69,0.3);
+    box-shadow: 0 5px 10px rgba(239,68,68,0.3);
   }
 
-  /* ===== EMPTY STATE ===== */
+  /* Alert */
+  .custom-alert {
+    border-radius: 1rem;
+    border-left: 4px solid #17a2b8;
+    background: white;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    padding: 1rem 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(23,162,184,0.2);
+    color: #0f2b5c;
+  }
+
+  /* Empty state */
   .empty-state {
     padding: 4rem 2rem;
     text-align: center;
     background: #f8fafc;
     border-radius: 1.5rem;
-    margin: 2rem 0;
   }
   .empty-state i {
     font-size: 4rem;
@@ -194,9 +228,33 @@
     color: #6c757d;
     margin-bottom: 0;
   }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    html { font-size: 15px; }
+    .page-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+    .page-header h2 { font-size: 1.6rem; }
+    .btn-gradient { width: 100%; justify-content: center; }
+    .artikel-table thead th { font-size: 0.8rem; padding: 1rem 0.8rem; }
+    .artikel-table tbody td { font-size: 0.9rem; padding: 1rem 0.8rem; }
+  }
+
+  @media (max-width: 576px) {
+    html { font-size: 14px; }
+    .page-header h2 { font-size: 1.4rem; }
+    .artikel-table thead th { font-size: 0.75rem; padding: 0.8rem 0.5rem; }
+    .artikel-table tbody td { font-size: 0.85rem; padding: 0.8rem 0.5rem; }
+    .badge-status { font-size: 0.7rem; padding: 0.3rem 0.8rem; }
+    .btn-icon-sm { width: 30px; height: 30px; }
+  }
+
+  @media (max-width: 400px) {
+    html { font-size: 13px; }
+    .page-header h2 { font-size: 1.2rem; }
+  }
 </style>
 
-<div class="container-fluid mt-4">
+<div class="container mt-4">
   <!-- Header dengan tombol buat baru -->
   <div class="page-header">
     <h2><i class="bi bi-journal-richtext me-2"></i>Artikel Saya</h2>
@@ -207,9 +265,9 @@
 
   <!-- Notifikasi sukses hapus -->
   <% if (typeof success !== 'undefined' && success === 'deleted') { %>
-    <div class="alert alert-info alert-dismissible fade show mb-4" role="alert" style="border-left: 4px solid #17a2b8; border-radius: 1rem;">
-      <i class="bi bi-trash-fill me-2"></i>Artikel berhasil dihapus.
-      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <div class="custom-alert">
+      <i class="bi bi-trash-fill me-2" style="color: #17a2b8;"></i>Artikel berhasil dihapus.
+      <button type="button" class="btn-close float-end" data-bs-dismiss="alert"></button>
     </div>
   <% } %>
 

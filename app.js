@@ -73,6 +73,8 @@ app.get('/panduan', (req, res) => {
 // Rute publik elk library (sudah ada)
 const elkLibraryRouter = require('./routes/elkLibrary');
 app.use('/elk-library', elkLibraryRouter);
+const dosenRouter = require('./routes/dosen');
+app.use('/dosen', dosenRouter);
 const mahasiswaKalenderRouter = require('./routes/mahasiswa/kalender');
 app.use('/mahasiswa/kalender', mahasiswaKalenderRouter);
 const dosenKalenderRouter = require('./routes/dosen/kalender');

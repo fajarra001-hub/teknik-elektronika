@@ -1,7 +1,7 @@
 /**
  * routes/dosen/kurikulum.js
- * Kurikulum Prodi – melihat daftar mata kuliah beserta RPS, CPL, dan tugas
- * (Hanya untuk viewing, tidak ada fitur edit)
+ * Menampilkan kurikulum prodi (daftar mata kuliah) dan detail MK
+ * Serta halaman MyRPS (daftar MK yang diampu dosen) dan halaman RPS statis per kode MK
  */
 
 const express = require('express');
@@ -17,44 +17,56 @@ router.use(isDosen);
 // ============================================================================
 
 /**
- * Mendapatkan nama dosen dari ID (array)
+ * Mendapatkan daftar semester unik dari semua mata kuliah
+ */
+async function getSemesterList() {
+  const mkSnapshot = await db.collection('mataKuliah').get();
+  const semesters = new Set();
+  mkSnapshot.docs.forEach(doc => {
+    const semester = doc.data().semester;
+    if (semester) semesters.add(semester);
+  });
+  return Array.from(semesters).sort((a, b) => a - b);
+}
+
+/**
+ * Mendapatkan nama dosen dari array ID dosen
  */
 async function getDosenNames(dosenIds) {
-  if (!dosenIds || !Array.isArray(dosenIds)) return [];
+  if (!dosenIds || dosenIds.length === 0) return '-';
   const names = [];
   for (const id of dosenIds) {
-    const doc = await db.collection('dosen').doc(id).get();
-    if (doc.exists) {
-      names.push(doc.data().nama);
-    } else {
-      names.push('Unknown');
+    const dosenDoc = await db.collection('dosen').doc(id).get();
+    if (dosenDoc.exists) {
+      names.push(dosenDoc.data().nama);
     }
   }
-  return names;
+  return names.join(', ') || '-';
 }
 
 // ============================================================================
-// DAFTAR MATA KULIAH (KURIKULUM)
+// HALAMAN DAFTAR MATA KULIAH (KURIKULUM) - SEMUA MK
 // ============================================================================
-
-/**
- * GET /dosen/kurikulum
- * Menampilkan semua mata kuliah yang ada di prodi
- * (bisa difilter berdasarkan semester)
- */
 router.get('/', async (req, res) => {
   try {
     const { semester } = req.query;
 
-    let query = db.collection('mataKuliah').orderBy('semester').orderBy('kode');
+    let mkSnapshot;
     if (semester) {
-      query = query.where('semester', '==', parseInt(semester));
+      mkSnapshot = await db.collection('mataKuliah')
+        .where('semester', '==', parseInt(semester))
+        .orderBy('semester')
+        .orderBy('kode')
+        .get();
+    } else {
+      mkSnapshot = await db.collection('mataKuliah')
+        .orderBy('semester')
+        .orderBy('kode')
+        .get();
     }
 
-    const snapshot = await query.get();
     const mkList = [];
-
-    for (const doc of snapshot.docs) {
+    for (const doc of mkSnapshot.docs) {
       const data = doc.data();
       const dosenNames = await getDosenNames(data.dosenIds || []);
       mkList.push({
@@ -63,81 +75,136 @@ router.get('/', async (req, res) => {
         nama: data.nama,
         sks: data.sks,
         semester: data.semester,
-        dosen: dosenNames.join(', '),
-        cpl: data.cpl || null,
+        dosen: dosenNames,
         rpsUrl: data.rpsUrl || null
       });
     }
 
-    // Ambil daftar semester unik untuk dropdown filter
-    const semuaSnapshot = await db.collection('mataKuliah').get();
-    const semesterSet = new Set();
-    semuaSnapshot.docs.forEach(doc => {
-      if (doc.data().semester) semesterSet.add(doc.data().semester);
-    });
-    const semesterList = Array.from(semesterSet).sort((a, b) => a - b);
+    const semesterList = await getSemesterList();
 
-    res.render('dosen/kurikulum_list', {
+    res.render('dosen/kurikulum/index', {
       title: 'Kurikulum Prodi',
       mkList,
       semesterList,
       selectedSemester: semester || ''
     });
   } catch (error) {
-    console.error('Error mengambil kurikulum:', error);
-    res.status(500).render('error', { message: 'Gagal mengambil data kurikulum' });
+    console.error('Error memuat kurikulum:', error);
+    res.status(500).render('error', { message: 'Gagal memuat data kurikulum' });
   }
 });
 
 // ============================================================================
-// DETAIL MATA KULIAH (RPS, CPL, TUGAS)
+// HALAMAN MY RPS (DAFTAR MK YANG DIAMPU DOSEN)
 // ============================================================================
+router.get('/my-rps', async (req, res) => {
+  try {
+    const dosenId = req.dosen.id;
 
-/**
- * GET /dosen/kurikulum/:id
- * Menampilkan detail mata kuliah: RPS, CPL, materi, tugas
- */
+    // Ambil mata kuliah yang diampu oleh dosen ini
+    const mkSnapshot = await db.collection('mataKuliah')
+      .where('dosenIds', 'array-contains', dosenId)
+      .orderBy('semester')
+      .orderBy('kode')
+      .get();
+
+    const mkList = mkSnapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        kode: data.kode,
+        nama: data.nama,
+        sks: data.sks,
+        semester: data.semester,
+        rpsUrl: data.rpsUrl || null
+      };
+    });
+
+    res.render('dosen/kurikulum/my_rps', {
+      title: 'My RPS',
+      mkList
+    });
+  } catch (error) {
+    console.error('Error memuat My RPS:', error);
+    res.status(500).render('error', { message: 'Gagal memuat data RPS' });
+  }
+});
+
+// ============================================================================
+// HALAMAN RPS PER MATA KULIAH (STATIS, BERDASARKAN KODE MK)
+// ============================================================================
+router.get('/rps/:kode', async (req, res) => {
+  try {
+    const { kode } = req.params;
+
+    // Cari mata kuliah berdasarkan kode
+    const mkSnapshot = await db.collection('mataKuliah')
+      .where('kode', '==', kode)
+      .limit(1)
+      .get();
+
+    if (mkSnapshot.empty) {
+      return res.status(404).send('Mata kuliah tidak ditemukan');
+    }
+
+    const mkDoc = mkSnapshot.docs[0];
+    const mk = { id: mkDoc.id, ...mkDoc.data() };
+
+    // Cek apakah dosen yang login mengampu mata kuliah ini
+    if (!mk.dosenIds || !mk.dosenIds.includes(req.dosen.id)) {
+      return res.status(403).send('Anda tidak memiliki akses ke mata kuliah ini');
+    }
+
+    // Render file EJS sesuai dengan kode MK (misal: rps_EL2001.ejs)
+    // File harus berada di folder views/dosen/kurikulum/rps/
+    res.render(`dosen/kurikulum/rps/${kode}`, { mk });
+  } catch (error) {
+    console.error('Error memuat halaman RPS:', error);
+    res.status(500).render('error', { message: 'Gagal memuat RPS' });
+  }
+});
+
+// ============================================================================
+// HALAMAN DETAIL MATA KULIAH (BERDASARKAN ID)
+// ============================================================================
 router.get('/:id', async (req, res) => {
   try {
     const mkDoc = await db.collection('mataKuliah').doc(req.params.id).get();
     if (!mkDoc.exists) {
       return res.status(404).send('Mata kuliah tidak ditemukan');
     }
+
     const mk = { id: mkDoc.id, ...mkDoc.data() };
 
     // Ambil nama dosen pengampu
     const dosenList = [];
-    if (mk.dosenIds && mk.dosenIds.length > 0) {
-      for (const id of mk.dosenIds) {
-        const d = await db.collection('dosen').doc(id).get();
-        if (d.exists) dosenList.push(d.data().nama);
-        else dosenList.push('Unknown');
+    for (const id of mk.dosenIds || []) {
+      const dosenDoc = await db.collection('dosen').doc(id).get();
+      if (dosenDoc.exists) {
+        dosenList.push(dosenDoc.data().nama);
       }
     }
 
-    // Ambil tugas yang terkait dengan MK ini
+    // Ambil materi (jika ada)
+    const materi = mk.materi || [];
+
+    // Ambil tugas terkait (jika ada)
     const tugasSnapshot = await db.collection('tugas')
       .where('mkId', '==', req.params.id)
       .orderBy('deadline', 'asc')
       .get();
-    const tugasList = tugasSnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
+    const tugasList = tugasSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-    // Materi per pertemuan (jika ada)
-    const materi = mk.materi || [];
-
-    res.render('dosen/kurikulum_detail', {
-      title: `${mk.kode} - ${mk.nama}`,
+    res.render('dosen/kurikulum/detail', {
+      title: `Detail MK - ${mk.kode}`,
       mk,
       dosenList,
-      tugasList,
-      materi
+      materi,
+      tugasList
     });
   } catch (error) {
-    console.error('Error detail kurikulum:', error);
-    res.status(500).render('error', { message: 'Gagal memuat detail kurikulum' });
+    console.error('Error memuat detail MK:', error);
+    res.status(500).render('error', { message: 'Gagal memuat detail mata kuliah' });
   }
 });
 

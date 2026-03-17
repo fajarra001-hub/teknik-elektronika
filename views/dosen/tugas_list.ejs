@@ -1,7 +1,7 @@
 <%- include('../partials/header') %>
 
 <%
-  // Fungsi untuk memformat tanggal (jika diperlukan)
+  // Fungsi untuk memformat tanggal
   const formatDate = (date) => {
     if (!date) return '-';
     return new Date(date).toLocaleDateString('id-ID', { 
@@ -15,12 +15,22 @@
 %>
 
 <style>
-  /* ===== TEMA KONSISTEN ===== */
+  /* ===== VARIABEL WARNA (sesuai navbar) ===== */
   :root {
-    --primary-start: #2193b0;
-    --primary-end: #6dd5ed;
-    --primary-light: rgba(33,147,176,0.1);
-    --primary-dark: #1a7a8f;
+    --primary-start: #1e3a8a;
+    --primary-end: #3b82f6;
+    --primary-light: rgba(30,58,138,0.1);
+    --primary-dark: #0f2b5c;
+    --font-base: 16px;
+  }
+
+  html {
+    font-size: 16px;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background-color: #f8fafc;
   }
 
   /* Page Header */
@@ -30,7 +40,7 @@
     padding: 1.5rem 2rem;
     color: white;
     margin-bottom: 2rem;
-    box-shadow: 0 15px 30px rgba(33,147,176,0.25);
+    box-shadow: 0 15px 30px rgba(30,58,138,0.25);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -56,6 +66,7 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
+    font-size: 2rem;
   }
   .page-header .btn-create {
     background: white;
@@ -80,40 +91,44 @@
     color: var(--primary-dark);
   }
 
-  /* Tabel Container */
+  /* Table Container */
   .table-container {
     background: white;
     border-radius: 1.5rem;
     box-shadow: 0 10px 30px rgba(0,0,0,0.05);
     overflow: hidden;
-    border: 1px solid rgba(33,147,176,0.1);
-    padding: 0;
+    border: 1px solid rgba(30,58,138,0.1);
+    padding: 1.5rem;
   }
   .table-responsive {
-    margin: 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 1rem;
   }
   .tugas-table {
+    width: 100%;
+    border-collapse: collapse;
     margin-bottom: 0;
   }
-  .tugas-table thead th {
-    background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
-    color: white;
+  .tugas-table th {
+    background: #f8f9fa;
+    color: #1e293b;
     font-weight: 600;
-    text-transform: uppercase;
     font-size: 0.85rem;
+    text-transform: uppercase;
     letter-spacing: 0.5px;
-    border: none;
-    padding: 1.2rem 1rem;
+    border: 1px solid #dee2e6;
+    padding: 0.75rem 1rem;
     white-space: nowrap;
   }
-  .tugas-table tbody td {
+  .tugas-table td {
     vertical-align: middle;
-    padding: 1.2rem 1rem;
-    background-color: white;
-    border-bottom: 1px solid #e9ecef;
+    padding: 0.75rem 1rem;
+    border: 1px solid #dee2e6;
+    font-size: 0.95rem;
   }
-  .tugas-table tbody tr:hover td {
-    background-color: #f8f9fa;
+  .tugas-table tbody tr:hover {
+    background-color: #f2f2f2;
   }
 
   /* Badge Tipe Tugas */
@@ -121,13 +136,13 @@
     background: var(--primary-light);
     color: var(--primary-start);
     font-weight: 600;
-    padding: 0.4rem 1rem;
+    padding: 0.3rem 0.8rem;
     border-radius: 50px;
     font-size: 0.8rem;
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
-    border: 1px solid rgba(33,147,176,0.2);
+    border: 1px solid rgba(30,58,138,0.2);
   }
   .badge-tipe i {
     font-size: 0.9rem;
@@ -135,21 +150,20 @@
 
   /* Tombol Aksi */
   .btn-action {
-    margin: 2px;
     border-radius: 50px;
-    padding: 0.4rem 1rem;
-    font-size: 0.85rem;
+    padding: 0.3rem 1rem;
+    font-size: 0.8rem;
     transition: all 0.2s;
     font-weight: 500;
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.3rem;
     border: 1.5px solid transparent;
     text-decoration: none;
     cursor: pointer;
+    background: transparent;
   }
   .btn-action-outline {
-    background: transparent;
     border-color: var(--primary-start);
     color: var(--primary-start);
   }
@@ -158,22 +172,9 @@
     border-color: transparent;
     color: white;
     transform: translateY(-2px);
-    box-shadow: 0 8px 15px rgba(33,147,176,0.3);
-  }
-  .btn-action-info {
-    background: transparent;
-    border-color: #17a2b8;
-    color: #17a2b8;
-  }
-  .btn-action-info:hover {
-    background: #17a2b8;
-    border-color: #17a2b8;
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 15px rgba(23,162,184,0.3);
+    box-shadow: 0 5px 10px rgba(30,58,138,0.3);
   }
   .btn-action-danger {
-    background: transparent;
     border-color: #dc3545;
     color: #dc3545;
   }
@@ -182,51 +183,50 @@
     border-color: #dc3545;
     color: white;
     transform: translateY(-2px);
-    box-shadow: 0 8px 15px rgba(220,53,69,0.3);
-  }
-
-  /* Deadline styling */
-  .deadline {
-    font-weight: 500;
-    color: #2c3e50;
-  }
-  .deadline i {
-    margin-right: 0.3rem;
-    color: var(--primary-start);
+    box-shadow: 0 5px 10px rgba(220,53,69,0.3);
   }
 
   /* Empty state */
   .empty-state {
-    padding: 4rem;
+    padding: 3rem 2rem;
     text-align: center;
     background: #f8f9fa;
     border-radius: 1rem;
   }
   .empty-state i {
-    font-size: 4rem;
+    font-size: 3rem;
     color: #adb5bd;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
   }
   .empty-state p {
     color: #6c757d;
-    font-size: 1.1rem;
+    font-size: 1rem;
+  }
+  .empty-state .btn-create {
+    display: inline-block;
+    margin-top: 1rem;
+    background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 500;
   }
 
   /* Responsif */
   @media (max-width: 768px) {
-    .page-header {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 1rem;
-    }
-    .page-header .btn-create {
-      width: 100%;
-      justify-content: center;
-    }
+    html { font-size: 15px; }
+    .page-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+    .page-header h2 { font-size: 1.6rem; }
+  }
+  @media (max-width: 576px) {
+    html { font-size: 14px; }
+    .tugas-table th { font-size: 0.8rem; padding: 0.5rem; }
+    .tugas-table td { font-size: 0.85rem; padding: 0.5rem; }
   }
 </style>
 
-<div class="container-fluid mt-4">
+<div class="container mt-4">
   <!-- Page Header dengan gradien -->
   <div class="page-header">
     <h2>
@@ -237,7 +237,7 @@
     </a>
   </div>
 
-  <!-- Tabel Tugas -->
+  <!-- Tabel Tugas (tanpa kolom File) -->
   <div class="table-container">
     <div class="table-responsive">
       <table class="table tugas-table">
@@ -247,18 +247,17 @@
             <th>Mata Kuliah</th>
             <th>Deadline</th>
             <th>Tipe</th>
-            <th>File</th>
             <th>Aksi</th>
           </tr>
         </thead>
         <tbody>
           <% if (tugasList.length === 0) { %>
             <tr>
-              <td colspan="6" class="text-center py-5">
+              <td colspan="5" class="text-center py-4">
                 <div class="empty-state">
                   <i class="bi bi-inbox"></i>
                   <p>Belum ada tugas yang dibuat.</p>
-                  <a href="/dosen/tugas/create" class="btn-create" style="display: inline-block; margin-top: 1rem;">
+                  <a href="/dosen/tugas/create" class="btn-create">
                     <i class="bi bi-plus-circle"></i> Buat Tugas Sekarang
                   </a>
                 </div>
@@ -286,23 +285,16 @@
                   </span>
                 </td>
                 <td>
-                  <% if (t.fileUrl) { %>
-                    <a href="<%= t.fileUrl %>" target="_blank" class="btn-action btn-action-info">
-                      <i class="bi bi-file-earmark-pdf"></i> Lihat
+                  <div class="d-flex gap-2 flex-wrap">
+                    <a href="/dosen/tugas/<%= t.id %>" class="btn-action btn-action-outline">
+                      <i class="bi bi-eye"></i> Detail
                     </a>
-                  <% } else { %>
-                    <span class="text-muted">-</span>
-                  <% } %>
-                </td>
-                <td>
-                  <a href="/dosen/tugas/<%= t.id %>" class="btn-action btn-action-outline">
-                    <i class="bi bi-eye"></i> Detail
-                  </a>
-                  <form method="POST" action="/dosen/tugas/<%= t.id %>/delete" style="display:inline;" onsubmit="return confirm('Yakin ingin menghapus tugas ini?')">
-                    <button type="submit" class="btn-action btn-action-danger" style="margin-left: 5px;">
-                      <i class="bi bi-trash"></i> Hapus
-                    </button>
-                  </form>
+                    <form method="POST" action="/dosen/tugas/<%= t.id %>/delete" style="display:inline;" onsubmit="return confirm('Yakin ingin menghapus tugas ini?')">
+                      <button type="submit" class="btn-action btn-action-danger">
+                        <i class="bi bi-trash"></i> Hapus
+                      </button>
+                    </form>
+                  </div>
                 </td>
               </tr>
             <% }) %>

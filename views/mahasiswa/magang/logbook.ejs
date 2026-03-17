@@ -389,7 +389,7 @@
   <div class="magang-header d-flex flex-wrap justify-content-between align-items-center">
     <div>
       <h2><i class="bi bi-journal-bookmark-fill me-2"></i>Logbook Magang</h2>
-      <p class="mb-0">Catat kegiatan harian magang Anda dan pantau status verifikasi</p>
+      <p class="mb-0">Catat kegiatan harian magang Anda dan pantau status verifikasi oleh dosen pembimbing</p>
     </div>
       <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#addLogbookModal"
         <% if (pdkCourses.length === 0) { %>disabled<% } %>>
@@ -403,10 +403,11 @@
       <i class="bi bi-info-circle-fill"></i>
     </div>
     <div class="panduan-text">
-      <strong>Panduan Pengisian Logbook:</strong>
+      <strong>Informasi Pengisian Logbook:</strong>
       <ul>
-        <li>Jika kegiatan magang sama setiap hari, logbook cukup diisi 1x dalam seminggu dengan durasi total (misal: 48 jam).</li>
-        <li>Jika ada aktivitas magang yang berbeda, logbook boleh diisi berkali-kali dalam satu minggu sesuai aktivitas.</li>
+        <li>Logbook magang wajib diisi setiap hari magang.</li>
+        <li>Logbook harus mencantumkan kegiatan, lokasi, dan durasi magang.</li>
+        <li>Logbook harus dikonsultasikan setiap minggu dengan dosen pembimbing 2.</li>
       </ul>
     </div>
   </div>
@@ -549,7 +550,7 @@
                 <input type="number" class="form-control" id="durasi" name="durasi" step="0.5" min="0">
               </div>
               <div class="col-md-12">
-                <label for="images" class="form-label">Dokumentasi (maks 5 gambar)</label>
+                <label for="images" class="form-label">Dokumentasi (1 Gambar/Foto langsung)</label>
                 <input type="file" class="form-control" id="images" name="images" accept="image/*" multiple>
                 <small class="text-muted">Format JPG/PNG, maks 5 file, masing-masing maks 2MB</small>
               </div>

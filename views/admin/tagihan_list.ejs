@@ -1,22 +1,44 @@
 <%- include('../partials/header') %>
 
+<%
+  // Fungsi untuk format angka (opsional, bisa digunakan di view)
+  const formatRupiah = (angka) => {
+    return new Intl.NumberFormat('id-ID').format(angka);
+  };
+%>
+
 <style>
-  /* ===== VARIABEL WARNA ===== */
+  /* ===== VARIABEL WARNA (sesuai navbar) ===== */
   :root {
-    --primary-start: #2193b0;
-    --primary-end: #6dd5ed;
-    --primary-light: rgba(33,147,176,0.1);
-    --primary-dark: #1a7a8f;
+    --primary-start: #1e3a8a;
+    --primary-end: #3b82f6;
+    --primary-light: rgba(30,58,138,0.1);
+    --primary-dark: #0f2b5c;
+    --gradient: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+    --shadow-sm: 0 0.5rem 1rem rgba(0,0,0,0.08);
+    --shadow-hover: 0 1rem 2rem rgba(0,0,0,0.12);
+    --border-radius: 1rem;
+    --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --font-base: 16px;
   }
 
-  /* ===== HEADER ===== */
+  html {
+    font-size: 16px;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: #f8fafc;
+  }
+
+  /* ===== PAGE HEADER ===== */
   .page-header {
-    background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+    background: var(--gradient);
     border-radius: 1.5rem;
     padding: 2rem;
     color: white;
     margin-bottom: 2rem;
-    box-shadow: 0 15px 30px rgba(33,147,176,0.25);
+    box-shadow: 0 15px 30px rgba(30,58,138,0.25);
     position: relative;
     overflow: hidden;
   }
@@ -36,12 +58,14 @@
     margin-bottom: 0.5rem;
     position: relative;
     z-index: 1;
+    font-size: 2.2rem;
   }
   .page-header p {
     margin-bottom: 0;
     opacity: 0.9;
     position: relative;
     z-index: 1;
+    font-size: 1rem;
   }
 
   /* ===== FILTER CARD ===== */
@@ -50,12 +74,13 @@
     border-radius: 1.2rem;
     padding: 1.5rem;
     margin-bottom: 2rem;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-    border: 1px solid rgba(33,147,176,0.1);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid rgba(30,58,138,0.1);
   }
   .filter-card .form-label {
     font-weight: 600;
     color: #1e293b;
+    font-size: 0.9rem;
   }
   .filter-card .form-select,
   .filter-card .form-control {
@@ -63,34 +88,35 @@
     border: 1px solid #dee2e6;
     padding: 0.6rem 1rem;
     transition: all 0.2s;
+    font-size: 0.95rem;
   }
   .filter-card .form-select:focus,
   .filter-card .form-control:focus {
     border-color: var(--primary-start);
-    box-shadow: 0 0 0 0.25rem rgba(33,147,176,0.25);
+    box-shadow: 0 0 0 0.25rem rgba(30,58,138,0.25);
   }
   .btn-filter {
-    background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+    background: var(--gradient);
     border: none;
     color: white;
     font-weight: 500;
     padding: 0.6rem 1.5rem;
     border-radius: 50px;
     transition: all 0.3s;
-    box-shadow: 0 5px 15px rgba(33,147,176,0.2);
+    box-shadow: 0 5px 15px rgba(30,58,138,0.2);
     width: 100%;
   }
   .btn-filter:hover {
     transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(33,147,176,0.4);
+    box-shadow: 0 10px 25px rgba(30,58,138,0.4);
     color: white;
   }
   .btn-reset {
     background: transparent;
-    border: 2px solid var(--primary-start);
+    border: 1.5px solid var(--primary-start);
     color: var(--primary-start);
     font-weight: 500;
-    padding: 0.5rem 1.5rem;
+    padding: 0.6rem 1.5rem;
     border-radius: 50px;
     transition: all 0.3s;
     width: 100%;
@@ -98,51 +124,70 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
+    text-decoration: none;
   }
   .btn-reset:hover {
-    background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+    background: var(--gradient);
     border-color: transparent;
     color: white;
     transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(33,147,176,0.3);
+    box-shadow: 0 10px 20px rgba(30,58,138,0.3);
   }
 
-  /* ===== TABEL ===== */
+  /* ===== INFO JUMLAH ===== */
+  .info-count {
+    background: white;
+    border-radius: 50px;
+    padding: 0.5rem 1rem;
+    display: inline-block;
+    border: 1px solid rgba(30,58,138,0.1);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
+  .info-count strong {
+    color: var(--primary-start);
+  }
+
+  /* ===== TABEL MINIMALIS ===== */
   .table-container {
     background: white;
     border-radius: 1.5rem;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    box-shadow: var(--shadow-sm);
     overflow: hidden;
-    border: 1px solid rgba(33,147,176,0.1);
+    border: 1px solid rgba(30,58,138,0.1);
     transition: box-shadow 0.3s;
   }
   .table-container:hover {
-    box-shadow: 0 20px 35px rgba(33,147,176,0.15);
+    box-shadow: var(--shadow-hover);
+  }
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
   .tagihan-table {
+    width: 100%;
+    border-collapse: collapse;
     margin-bottom: 0;
   }
   .tagihan-table thead th {
-    background: linear-gradient(135deg, var(--primary-light), rgba(109,213,237,0.1));
-    color: var(--primary-dark);
+    background: #f8f9fa;
+    color: #1e293b;
     font-weight: 600;
     text-transform: uppercase;
     font-size: 0.85rem;
     letter-spacing: 0.5px;
-    border-bottom: 2px solid var(--primary-start);
-    padding: 1rem 0.75rem;
+    border: 1px solid #dee2e6;
+    padding: 0.75rem 1rem;
     white-space: nowrap;
   }
-  .tagihan-table tbody tr {
-    transition: all 0.2s;
+  .tagihan-table tbody td {
+    vertical-align: middle;
+    padding: 0.75rem 1rem;
+    border: 1px solid #dee2e6;
+    font-size: 0.95rem;
   }
   .tagihan-table tbody tr:hover {
-    background-color: var(--primary-light);
-  }
-  .tagihan-table td {
-    padding: 1rem 0.75rem;
-    vertical-align: middle;
-    border-bottom: 1px solid #e9ecef;
+    background-color: #f2f2f2;
   }
 
   /* ===== BADGE ===== */
@@ -151,25 +196,40 @@
     color: var(--primary-dark);
     padding: 0.3rem 0.8rem;
     border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    border: 1px solid rgba(30,58,138,0.2);
+  }
+  .badge-nim {
+    background: #e9ecef;
+    color: #1e293b;
+    padding: 0.3rem 0.8rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
     font-weight: 500;
   }
 
   /* ===== TOMBOL AKSI ===== */
   .btn-detail {
     background: transparent;
-    border: 1px solid var(--primary-start);
+    border: 1.5px solid var(--primary-start);
     color: var(--primary-start);
     border-radius: 50px;
     padding: 0.3rem 1rem;
-    font-size: 0.85rem;
-    transition: all 0.2s;
+    font-size: 0.8rem;
+    transition: all 0.3s;
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
+    text-decoration: none;
+    font-weight: 500;
   }
   .btn-detail:hover {
-    background: var(--primary-start);
+    background: var(--gradient);
+    border-color: transparent;
     color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(30,58,138,0.3);
   }
 
   /* ===== EMPTY STATE ===== */
@@ -178,12 +238,11 @@
     text-align: center;
     background: #f8f9fa;
     border-radius: 1.5rem;
-    margin: 2rem 0;
   }
   .empty-state i {
     font-size: 4rem;
     color: #adb5bd;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
   }
   .empty-state h4 {
     font-weight: 600;
@@ -192,32 +251,47 @@
   }
   .empty-state p {
     color: #6c757d;
-    margin-bottom: 1.5rem;
+    font-size: 1rem;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    html { font-size: 15px; }
+    .page-header h2 { font-size: 1.8rem; }
+    .page-header p { font-size: 0.95rem; }
+    .filter-card .row { flex-direction: column; }
+    .btn-filter, .btn-reset { width: 100%; margin-bottom: 0.5rem; }
+    .tagihan-table thead th { font-size: 0.8rem; padding: 0.5rem; }
+    .tagihan-table tbody td { font-size: 0.85rem; padding: 0.5rem; }
+  }
+  @media (max-width: 576px) {
+    html { font-size: 14px; }
+    .page-header h2 { font-size: 1.5rem; }
   }
 </style>
 
-<div class="container-fluid mt-4">
+<div class="container mt-4">
   <!-- Header -->
   <div class="page-header">
     <h2><i class="bi bi-cash-coin me-2"></i>Kelola Tagihan Mahasiswa</h2>
-    <p class="mb-0 opacity-75">Daftar mahasiswa dan ringkasan tagihan SPP</p>
+    <p class="mb-0">Daftar mahasiswa dan ringkasan tagihan SPP</p>
   </div>
 
   <!-- Filter Card -->
   <div class="filter-card">
     <form method="GET" class="row g-3 align-items-end">
       <div class="col-md-4">
-        <label for="angkatan" class="form-label"><i class="bi bi-funnel me-1"></i>Filter Angkatan</label>
+        <label for="angkatan" class="form-label"><i class="bi bi-funnel me-1"></i> Filter Angkatan</label>
         <select class="form-select" id="angkatan" name="angkatan">
           <option value="">Semua Angkatan</option>
           <% angkatanList.forEach(a => { %>
-            <option value="<%= a %>" <%= filters.angkatan === a ? 'selected' : '' %>><%= a %></option>
+            <option value="<%= a %>" <%= filters && filters.angkatan === a ? 'selected' : '' %>><%= a %></option>
           <% }) %>
         </select>
       </div>
       <div class="col-md-4">
-        <label for="search" class="form-label"><i class="bi bi-search me-1"></i>Cari NIM / Nama</label>
-        <input type="text" class="form-control" id="search" name="search" placeholder="Ketik NIM atau nama..." value="<%= filters.search || '' %>">
+        <label for="search" class="form-label"><i class="bi bi-search me-1"></i> Cari NIM / Nama</label>
+        <input type="text" class="form-control" id="search" name="search" placeholder="Ketik NIM atau nama..." value="<%= filters && filters.search ? filters.search : '' %>">
       </div>
       <div class="col-md-2">
         <button type="submit" class="btn-filter">Terapkan</button>
@@ -229,8 +303,8 @@
   </div>
 
   <!-- Info jumlah -->
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <p class="mb-0 fw-semibold"><i class="bi bi-people-fill me-1" style="color: var(--primary-start);"></i> Menampilkan <strong><%= mahasiswaList.length %></strong> mahasiswa</p>
+  <div class="info-count">
+    <i class="bi bi-people-fill me-1" style="color: var(--primary-start);"></i> Menampilkan <strong><%= mahasiswaList.length %></strong> mahasiswa
   </div>
 
   <!-- Tabel -->
@@ -261,12 +335,12 @@
           <% } else { %>
             <% mahasiswaList.forEach((m, index) => { %>
             <tr>
-              <td class="fw-bold"><%= index + 1 %></td>
-              <td><span class="badge bg-secondary"><%= m.nim || '-' %></span></td>
+              <td class="fw-bold text-center"><%= index + 1 %></td>
+              <td><span class="badge-nim"><%= m.nim || '-' %></span></td>
               <td><strong><%= m.nama %></strong></td>
-              <td><span class="badge-count"><%= m.tagihanCount %></span></td>
-              <td class="fw-semibold">Rp <%= new Intl.NumberFormat('id-ID').format(m.totalBelumLunas) %></td>
-              <td>
+              <td class="text-center"><span class="badge-count"><%= m.tagihanCount %></span></td>
+              <td class="fw-semibold">Rp <%= formatRupiah(m.totalBelumLunas) %></td>
+              <td class="text-center">
                 <a href="/admin/tagihan/mahasiswa/<%= m.id %>" class="btn-detail">
                   <i class="bi bi-eye"></i> Detail Tagihan
                 </a>
